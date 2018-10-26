@@ -1,9 +1,9 @@
 grammar Tiger;
 
 options {
-language = JAVA;
+//language = JAVA;
 output = AST;
-backtrack = true;
+backtrack = flase;
 k=1 ;
 }
 
@@ -47,29 +47,25 @@ fieldDec
 	;
 
 funDec 
-	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' '=' exp
-	| 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' ':' TYID '=' exp
+	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' a '=' exp
+ 	TYID '=' exp
 	;
 
+a : ':' TYID
+	|
+	;
 varDec 
-	: 'var' ID ':=' exp
-	| 'var' ID ':' TYID ':=' exp
-	;
+		: 'var' ID ':=' exp
+		| 'var' ID ':' TYID ':=' exp
+		;
 
-lValue
-	: ID
-	| subscript
-	| fieldExp
-	;
+lValue : ID v
+		;
 
-subscript 
-	: lValue '[' exp ']'
+v : '[' exp ']' v
+	| '.' ID v
+	|
 	;
-
-fieldExp
-	: lValue '.' ID
-	;
-
 exp 
 	: lValue
 	| 'nil'
@@ -82,7 +78,6 @@ exp
 	| arrCreate
 	| recCreate
 	| assignment
-	| ifThenElse
 	| ifThen
 	| whileExp
 	| forExp
@@ -122,12 +117,12 @@ assignment
 	: lValue ':=' exp
 	;
 
-ifThenElse
-	: 'if' exp 'then' exp 'else' exp
+ifThen
+	: 'if' exp 'then' exp else
 	;
 
-ifThen
-	: 'if' exp 'then' exp
+else : 	else exp
+		|
 	;
 
 whileExp
@@ -173,12 +168,14 @@ ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
 TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
-INTLIT 
-	:	DIGIT+
+INTLIT 	:	DIGIT+
 	;
-STRINGLIT 
-	:	'"' (PRINTABLE | ESC)* '"'
+STRINGLIT :	'"' (PRINTABLE | ESC)* '"'
 	;
-INFIXOP 
-	: '+'|'-'|'*'|'/'
+
+INFIXOP : '+'
+		|'-'
+		|'*'
+		|'/'
 	;
+
