@@ -1,9 +1,9 @@
 grammar Tiger;
 
 options {
-language = JAVA;
+//language = JAVA;
 output = AST;
-backtrack = true;
+backtrack = false;
 k=1 ;
 }
 
@@ -16,10 +16,10 @@ tokens {
 }
 
 program
-	: exp 
+	: exp
 	;
 
-dec 
+dec
 	: tyDec
 	| varDec
 	| funDec
@@ -34,43 +34,39 @@ ty
 	| recTy
 	;
 
-arrTy 
-	: 'array' 'of' TYID 
+arrTy
+	: 'array' 'of' TYID
 	;
 
-recTy 
+recTy
 	: '{' (fieldDec (',' fieldDec)*)? '}'
 	;
 
-fieldDec 
+fieldDec
 	: ID ':' TYID
 	;
 
-funDec 
+funDec
 	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' '=' exp
 	| 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' ':' TYID '=' exp
 	;
 
-varDec 
+varDec
 	: 'var' ID ':=' exp
 	| 'var' ID ':' TYID ':=' exp
 	;
 
 lValue
-	: ID
-	| subscript
-	| fieldExp
+	: ID v2
 	;
 
-subscript 
-	: lValue '[' exp ']'
+v2		// penser a changer le nom
+	: '[' exp ']' v2
+	| '.' ID v2
+	|
 	;
 
-fieldExp
-	: lValue '.' ID
-	;
-
-exp 
+exp
 	: lValue
 	| 'nil'
 	| INTLIT
@@ -106,12 +102,13 @@ infixExp
 	: exp INFIXOP exp
 	;
 
-arrCreate
-	: TYID '[' exp ']' 'of' exp
+arrRecCreate
+	: TYID arrRec
 	;
 
-recCreate
-	: TYID '{' (fieldCreate(',' fieldCreate)*)? '}'
+arrRec
+	: '[' exp ']' 'of' exp
+	| '{' (fieldCreate(',' fieldCreate)*)? '}'
 	;
 
 fieldCreate
@@ -146,11 +143,11 @@ letExp
 fragment DIGIT  : '0'..'9' ;
 fragment UPPERCASE : 'A'..'Z' ;
 fragment LOWERCASE : 'a'..'z' ;
-fragment LETTRE 
+fragment LETTRE
 	: LOWERCASE
 	| UPPERCASE
 	;
-fragment ESC 
+fragment ESC
 	: '\\' 'n'
 	| '\\' 't'
 	| '\\' '^c'
@@ -173,12 +170,12 @@ ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
 TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
-INTLIT 
+INTLIT
 	:	DIGIT+
 	;
-STRINGLIT 
+STRINGLIT
 	:	'"' (PRINTABLE | ESC)* '"'
 	;
-INFIXOP 
+INFIXOP
 	: '+'|'-'|'*'|'/'
 	;
