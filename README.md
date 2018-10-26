@@ -2,7 +2,9 @@
 
 ## Informations 
 
-Membres : Nathan BARLOY
+Membres :
+
+	  Nathan BARLOY
 	  
 	  Quentin MERITET
 
