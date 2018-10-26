@@ -50,7 +50,8 @@ funDec
 	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' a '=' exp
 	;
 
-a : ':' TYID
+a
+	: ':' TYID
 	|
 	;
 
@@ -66,7 +67,7 @@ vd
 //v : ID v
 		//;
 
-masto	: ID v
+/*masto	: ID v
 		;
 
 v 		: lValue
@@ -79,15 +80,27 @@ lValue : '[' exp ']' lValue
 	| '.' ID lValue
 	|
 	;
+*/
+
+lValue
+	: ID v
+	;
+
+v 
+	: '[' exp ']' v
+	| '.' ID v
+	|
+	;
+
 
 exp
-	: masto infixExp
+	//: masto infixExp
+	: lValue infixExp
 	| 'nil' infixExp
 	| INTLIT infixExp
 	| STRINGLIT infixExp
 	| seqExp infixExp
 	| negation infixExp
-	| infixExp
 	| arrRecCreate infixExp
 	| ifThen infixExp
 	| whileExp infixExp
@@ -129,7 +142,7 @@ ifThen
 	;
 
 els : 	'else' exp
-		|
+	|
 	;
 
 whileExp
@@ -145,47 +158,23 @@ letExp
 	;
 
 //definition des expressions regulieres reconnaissant les tokens
-fragment DIGIT  : '0'..'9' ;
-fragment UPPERCASE : 'A'..'Z' ;
-fragment LOWERCASE : 'a'..'z' ;
-fragment LETTRE
-	: LOWERCASE
-	| UPPERCASE
-	;
-fragment ESC
-	: '\\' 'n'
-	| '\\' 't'
-	| '\\' '^c'
-	| '\\' DIGIT DIGIT DIGIT
-	| '\\' '"'
-	| '\\' '\\'
-	//| '\\s...s\\'
-	;
-fragment PONCTUATION
-	: '.'|','|';'|':'|'?'|'!'|'\''
-	;
-fragment PRINTABLE
-	: LETTRE
-	| DIGIT
-	| PONCTUATION
-	| '+'|'-'|'*'|'/'|'='
-	;
 
-ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
+ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
-TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
+TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
 
 INTLIT
-	:	DIGIT+
+	:	('0'..'9')+
 	;
 
 STRINGLIT
-	:	'"' (PRINTABLE | ESC)* '"'
+	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
 	;
 
-INFIXOP : '+'
-		|'-'
-		|'*'
-		|'/'
+INFIXOP 
+	: '+'
+	| '-'
+	| '*'
+	| '/'
 	;
