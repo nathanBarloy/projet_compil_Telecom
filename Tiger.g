@@ -1,85 +1,184 @@
 grammar Tiger;
 
 options {
-  backtrack=true;
+language = JAVA;
+output = AST;
+backtrack = true;
+k=1 ;
 }
 
-program : exp ;
-dec : tyDec
+tokens {
+	ID ;
+	TYID ;
+	INTLIT ;
+	STRINGLIT ;
+	INFIXOP ;
+}
+
+program
+	: exp 
+	;
+
+dec 
+	: tyDec
 	| varDec
 	| funDec
 	;
-tyDec : type tyId '=' ty ;
+tyDec
+	: 'type' TYID '=' ty
+	;
 
-ty : tyId
+ty
+	: TYID
 	| arrTy
-	| recTy;
-
-arrTy : 'array of' tyId ;
-
-recTy : '{' (fieldDec(,fieldDec)*)?'}';
-
-fieldDec : id ':' tyId;
-
-funDec : function id '('(fieldDec(,fieldDec)*)?')' '=' exp
-	|	 function id '('(fieldDec(,fieldDec)*)?')' ':' tyId '=' exp
+	| recTy
 	;
 
-varDec : var id ':=' exp
-		|var id : tyId ':=' exp
-		;
-
-lValue : id
-		|subscript
-		|fieldExp
-		;
-
-subscript : lValue '[' exp ']';
-
-fieldExp : lValue '.' id
-		;
-
-exp : lValue
-	|nil
-	|intLit
-	|stringLit
-	|seqExp
-	|negation
-	|callExp
-	|infixExp
-	|arrCreate
-	|recCreate
-	|assignment
-	|ifThenElse
-	|ifThen
-	|whileExp
-	|forExp
-	|break
-	|letExp
+arrTy 
+	: 'array' 'of' TYID 
 	;
 
-seqExp : '(' (exp(;exp)*)? ')'
+recTy 
+	: '{' (fieldDec (',' fieldDec)*)? '}'
+	;
 
-negation : '-' exp;
+fieldDec 
+	: ID ':' TYID
+	;
 
-callExp : id '(' (exp(;exp)*)? ')';
+funDec 
+	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' '=' exp
+	| 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' ':' TYID '=' exp
+	;
 
-infixExp : exp infixOp exp;
+varDec 
+	: 'var' ID ':=' exp
+	| 'var' ID : TYID ':=' exp
+	;
 
-arrCreate : tyId '[' exp ']' 'of' exp;
+lValue
+	: ID
+	| subscript
+	| fieldExp
+	;
 
-recCreate : tyId '{' (fieldCreate(,fieldCreate)*)? '}';
+subscript 
+	: lValue '[' exp ']'
+	;
 
-fieldCreate : id '=' exp ;
+fieldExp
+	: lValue '.' ID
+	;
 
-assignment : lValue ':=' exp ;
+exp 
+	: lValue
+	| 'nil'
+	| INTLIT
+	| STRINGLIT
+	| seqExp
+	| negation
+	| callExp
+	| infixExp
+	| arrCreate
+	| recCreate
+	| assignment
+	| ifThenElse
+	| ifThen
+	| whileExp
+	| forExp
+	| 'break'
+	| letExp
+	;
 
-ifThenElse : 'if' exp 'then' exp 'else' exp;
+seqExp
+	: '(' (exp (';' exp)*)? ')'
+	;
 
-ifThen : 'if' exp 'then' exp;
+negation
+	: '-' exp
+	;
 
-whileExp : 'while' exp 'do' exp ;
+callExp
+	: ID '(' (exp(';' exp)*)? ')'
+	;
 
-forExp : 'for' id ':=' exp 'to' exp 'do' exp;
+infixExp
+	: exp INFIXOP exp
+	;
 
-letExp : 'let' (dec)+ 'in' (exp(;exp)*)? 'end';
+arrCreate
+	: TYID '[' exp ']' 'of' exp
+	;
+
+recCreate
+	: TYID '{' (fieldCreate(',' fieldCreate)*)? '}'
+	;
+
+fieldCreate
+	: ID '=' exp
+	;
+
+assignment
+	: lValue ':=' exp
+	;
+
+ifThenElse
+	: 'if' exp 'then' exp 'else' exp
+	;
+
+ifThen
+	: 'if' exp 'then' exp
+	;
+
+whileExp
+	: 'while' exp 'do' exp
+	;
+
+forExp
+	: 'for' ID ':=' exp 'to' exp 'do' exp
+	;
+
+letExp
+	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end'
+	;
+
+//definition des expressions regulieres reconnaissant les tokens
+fragment DIGIT  : '0'..'9' ;
+fragment UPPERCASE : 'A'..'Z' ;
+frangment LOWERCASE : 'a'..'z' ;
+fragment LETTRE 
+	: LOWERCASE
+	| UPPERCASE
+	;
+fragment ESC 
+	: '\\' 'n'
+	| '\\' 't'
+	| '\\' '^c'
+	| '\\' DIGIT DIGIT DIGIT
+	| '\\' '"'
+	| '\\' '\\'
+	//| '\\s...s\\'
+	;
+fragment PONCTUATION
+	: '.'|','|';'|':'|'?'|'!'|'\''
+	;
+fragment PRINTABLE
+	: LETTRE
+	| DIGIT
+	| PONCTUATION
+	| '+'|'-'|'*'|'/'|'='
+	;
+
+ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
+	;
+TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
+	;
+INTLIT 
+	:	DIGIT+
+	;
+STRINGLIT 
+	:	'"' (PRINTABLE | ESC)* '"'
+	;
+INFIXOP 
+	: '+'|'-'|'*'|'/'
+	;
