@@ -63,25 +63,32 @@ vd
 	|
 	;
 
-lValue : ID v
+//v : ID v
+		//;
+
+masto	: ID v
 		;
 
-v : '[' exp ']' v
-	| '.' ID v
+v 		: lValue 
+		| '(' (exp(';' exp)*)? ')'
+		| ID lValue
+		|
+		;
+
+lValue : '[' exp ']' lValue
+	| '.' ID lValue
 	|
 	;
 
 exp
-	: lValue infixExp
+	: masto infixExp
 	| 'nil' infixExp
 	| INTLIT infixExp
 	| STRINGLIT infixExp
 	| seqExp infixExp
 	| negation infixExp
-	| callExp infixExp
 	| infixExp
 	| arrRecCreate infixExp
-	| assignment infixExp
 	| ifThen infixExp
 	| whileExp infixExp
 	| forExp infixExp
@@ -97,9 +104,6 @@ negation
 	: '-' exp
 	;
 
-callExp
-	: ID '(' (exp(';' exp)*)? ')'
-	;
 
 infixExp
 	: INFIXOP exp infixExp
@@ -119,9 +123,6 @@ fieldCreate
 	: ID '=' exp
 	;
 
-assignment
-	: lValue ':=' exp
-	;
 
 ifThen
 	: 'if' exp 'then' exp els
