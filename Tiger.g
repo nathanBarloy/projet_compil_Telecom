@@ -53,7 +53,7 @@ funDec
 
 varDec 
 	: 'var' ID ':=' exp
-	| 'var' ID : TYID ':=' exp
+	| 'var' ID ':' TYID ':=' exp
 	;
 
 lValue
@@ -145,7 +145,7 @@ letExp
 //definition des expressions regulieres reconnaissant les tokens
 fragment DIGIT  : '0'..'9' ;
 fragment UPPERCASE : 'A'..'Z' ;
-frangment LOWERCASE : 'a'..'z' ;
+fragment LOWERCASE : 'a'..'z' ;
 fragment LETTRE 
 	: LOWERCASE
 	| UPPERCASE
