@@ -79,7 +79,7 @@ exp
 	| seqExp infixExp
 	| negation infixExp
 	| callExp infixExp
-	| infixExp infixExp
+	| infixExp
 	| arrRecCreate infixExp
 	| assignment infixExp
 	| ifThen infixExp
@@ -173,7 +173,7 @@ fragment PRINTABLE
 
 ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
-	
+
 TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
 
