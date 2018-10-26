@@ -52,8 +52,12 @@ funDec
 	;
 
 varDec
-	: 'var' ID ':=' exp
-	| 'var' ID ':' TYID ':=' exp
+	: 'var' ID vd ':=' exp
+	;
+
+vd
+	: ':' TYID
+	|
 	;
 
 lValue
@@ -66,24 +70,28 @@ v2		// penser a changer le nom
 	|
 	;
 
+fieldExp
+	: lValue '.' ID
+	;
+
 exp
-	: lValue
-	| 'nil'
-	| INTLIT
-	| STRINGLIT
-	| seqExp
-	| negation
-	| callExp
-	| infixExp
-	| arrCreate
-	| recCreate
-	| assignment
-	| ifThenElse
-	| ifThen
-	| whileExp
-	| forExp
-	| 'break'
-	| letExp
+	: lValue infixExp
+	| 'nil' infixExp
+	| INTLIT infixExp
+	| STRINGLIT infixExp
+	| seqExp infixExp
+	| negation infixExp
+	| callExp infixExp
+	| infixExp infixExp
+	| arrCreate infixExp
+	| recCreate infixExp
+	| assignment infixExp
+	| ifThenElse infixExp
+	| ifThen infixExp
+	| whileExp infixExp
+	| forExp infixExp
+	| 'break' infixExp
+	| letExp infixExp
 	;
 
 seqExp
@@ -99,7 +107,8 @@ callExp
 	;
 
 infixExp
-	: exp INFIXOP exp
+	: INFIXOP exp infixExp
+	|
 	;
 
 arrRecCreate
