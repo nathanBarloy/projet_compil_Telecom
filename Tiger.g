@@ -3,7 +3,7 @@ grammar Tiger;
 options {
 //language = JAVA;
 output = AST;
-backtrack = flase;
+backtrack = false;
 k=1 ;
 }
 
@@ -16,10 +16,10 @@ tokens {
 }
 
 program
-	: exp 
+	: exp
 	;
 
-dec 
+dec
 	: tyDec
 	| varDec
 	| funDec
@@ -34,30 +34,34 @@ ty
 	| recTy
 	;
 
-arrTy 
-	: 'array' 'of' TYID 
+arrTy
+	: 'array' 'of' TYID
 	;
 
-recTy 
+recTy
 	: '{' (fieldDec (',' fieldDec)*)? '}'
 	;
 
-fieldDec 
+fieldDec
 	: ID ':' TYID
 	;
 
 funDec 
 	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' a '=' exp
- 	TYID '=' exp
 	;
 
 a : ':' TYID
 	|
 	;
-varDec 
-		: 'var' ID ':=' exp
-		| 'var' ID ':' TYID ':=' exp
-		;
+
+varDec
+	: 'var' ID vd ':=' exp
+	;
+
+vd
+	: ':' TYID
+	|
+	;
 
 lValue : ID v
 		;
@@ -66,23 +70,23 @@ v : '[' exp ']' v
 	| '.' ID v
 	|
 	;
-exp 
-	: lValue
-	| 'nil'
-	| INTLIT
-	| STRINGLIT
-	| seqExp
-	| negation
-	| callExp
-	| infixExp
-	| arrCreate
-	| recCreate
-	| assignment
-	| ifThen
-	| whileExp
-	| forExp
-	| 'break'
-	| letExp
+
+exp
+	: lValue infixExp
+	| 'nil' infixExp
+	| INTLIT infixExp
+	| STRINGLIT infixExp
+	| seqExp infixExp
+	| negation infixExp
+	| callExp infixExp
+	| infixExp infixExp
+	| arrRecCreate infixExp
+	| assignment infixExp
+	| ifThen infixExp
+	| whileExp infixExp
+	| forExp infixExp
+	| 'break' infixExp
+	| letExp infixExp
 	;
 
 seqExp
@@ -98,15 +102,17 @@ callExp
 	;
 
 infixExp
-	: exp INFIXOP exp
+	: INFIXOP exp infixExp
+	|
 	;
 
-arrCreate
-	: TYID '[' exp ']' 'of' exp
+arrRecCreate
+	: TYID arrRec
 	;
 
-recCreate
-	: TYID '{' (fieldCreate(',' fieldCreate)*)? '}'
+arrRec
+	: '[' exp ']' 'of' exp
+	| '{' (fieldCreate(',' fieldCreate)*)? '}'
 	;
 
 fieldCreate
@@ -118,10 +124,10 @@ assignment
 	;
 
 ifThen
-	: 'if' exp 'then' exp else
+	: 'if' exp 'then' exp els
 	;
 
-else : 	else exp
+els : 	'else' exp
 		|
 	;
 
@@ -141,11 +147,11 @@ letExp
 fragment DIGIT  : '0'..'9' ;
 fragment UPPERCASE : 'A'..'Z' ;
 fragment LOWERCASE : 'a'..'z' ;
-fragment LETTRE 
+fragment LETTRE
 	: LOWERCASE
 	| UPPERCASE
 	;
-fragment ESC 
+fragment ESC
 	: '\\' 'n'
 	| '\\' 't'
 	| '\\' '^c'
@@ -168,9 +174,13 @@ ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
 TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
-INTLIT 	:	DIGIT+
+
+INTLIT
+	:	DIGIT+
 	;
-STRINGLIT :	'"' (PRINTABLE | ESC)* '"'
+
+STRINGLIT
+	:	'"' (PRINTABLE | ESC)* '"'
 	;
 
 INFIXOP : '+'
@@ -178,4 +188,3 @@ INFIXOP : '+'
 		|'*'
 		|'/'
 	;
-
