@@ -46,7 +46,7 @@ fieldDec
 	: ID ':' TYID
 	;
 
-funDec 
+funDec
 	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' a '=' exp
 	;
 
@@ -79,7 +79,7 @@ exp
 	| seqExp infixExp
 	| negation infixExp
 	| callExp infixExp
-	| infixExp
+	| infixExp infixExp
 	| arrRecCreate infixExp
 	| assignment infixExp
 	| ifThen infixExp
@@ -170,10 +170,8 @@ fragment PRINTABLE
 	| '+'|'-'|'*'|'/'|'='
 	;
 
-
 ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
-
 TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
 
