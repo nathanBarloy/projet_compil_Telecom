@@ -170,8 +170,10 @@ fragment PRINTABLE
 	| '+'|'-'|'*'|'/'|'='
 	;
 
+
 ID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
+	
 TYID 	:	 LETTRE (LETTRE | DIGIT | '_')*
 	;
 
