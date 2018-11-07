@@ -86,7 +86,7 @@ lValue
 	: ID v
 	;
 
-v 
+v
 	: '[' exp ']' v
 	| '.' ID v
 	|
@@ -94,7 +94,7 @@ v
 
 
 exp
-	//: masto infixExp
+	// : masto infixExp
 	: lValue infixExp
 	| 'nil' infixExp
 	| INTLIT infixExp
@@ -138,12 +138,12 @@ fieldCreate
 
 
 ifThen
-	: 'if' exp 'then' exp els
+	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)?
 	;
 
-els : 	'else' exp
+/*els : 'else' exp
 	|
-	;
+	;*/
 
 whileExp
 	: 'while' exp 'do' exp
@@ -161,6 +161,7 @@ letExp
 
 ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
+
 TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
 
@@ -172,7 +173,7 @@ STRINGLIT
 	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
 	;
 
-INFIXOP 
+INFIXOP
 	: '+'
 	| '-'
 	| '*'
