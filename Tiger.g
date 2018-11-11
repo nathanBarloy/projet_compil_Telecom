@@ -9,7 +9,6 @@ k=1 ;
 
 tokens {
 	ID ;
-	TYID ;
 	INTLIT ;
 	STRINGLIT ;
 	INFIXOP ;
@@ -25,17 +24,17 @@ dec
 	| funDec
 	;
 tyDec
-	: 'type' TYID '=' ty
+	: 'type' tyid '=' ty
 	;
 
 ty
-	: TYID
+	: tyid
 	| arrTy
 	| recTy
 	;
 
 arrTy
-	: 'array' 'of' TYID
+	: 'array' 'of' tyid
 	;
 
 recTy
@@ -43,7 +42,7 @@ recTy
 	;
 
 fieldDec
-	: ID ':' TYID
+	: ID ':' tyid
 	;
 
 funDec
@@ -51,7 +50,7 @@ funDec
 	;
 
 a
-	: ':' TYID
+	: ':' tyid
 	|
 	;
 
@@ -60,7 +59,7 @@ varDec
 	;
 
 vd
-	: ':' TYID
+	: ':' tyid
 	|
 	;
 
@@ -124,7 +123,7 @@ infixExp
 	;
 
 arrRecCreate
-	: TYID arrRec
+	: tyid arrRec
 	;
 
 arrRec
@@ -157,13 +156,16 @@ letExp
 	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end'
 	;
 
+tyid
+	: ID
+	;
 //definition des expressions regulieres reconnaissant les tokens
 
 ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
 
-TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
-	;
+//TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
+//	;
 
 INTLIT
 	:	('0'..'9')+
