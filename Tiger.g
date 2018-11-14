@@ -11,7 +11,9 @@ tokens {
 	ID ;
 	INTLIT ;
 	STRINGLIT ;
-	INFIXOP ;
+	ADDOP ;
+	MULTOP;
+	OPLOG;
 }
 
 program
@@ -46,10 +48,10 @@ fieldDec
 	;
 
 funDec
-	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' a '=' exp
+	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType '=' exp
 	;
 
-a
+returnType
 	: ':' tyid
 	|
 	;
@@ -94,18 +96,41 @@ lValue
 
 
 exp
-	// : masto infixExp
-	: 'nil' 
-	| INTLIT 
-	| STRINGLIT 
-	| seqExp 
-	| negation 
+	: e (OPLOG e)*
+	;
+/*	: 'nil'
+	| INTLIT
+	| STRINGLIT
+	| seqExp
+	| negation
 	| ID idBegin
-	| ifThen 
-	| whileExp 
-	| forExp 
-	| 'break' 
-	| letExp 
+	| ifThen
+	| whileExp
+	| forExp
+	| 'break'
+	| letExp		*/
+
+
+e
+	: multExp (ADDOP multExp)*
+	;
+
+multExp
+	: atom (MULTOP atom)*
+	;
+
+atom
+	: 'nil'
+	| INTLIT
+	| STRINGLIT
+	| seqExp
+	| negation
+	| ID idBegin
+	| ifThen
+	| whileExp
+	| forExp
+	| 'break'
+	| letExp
 	;
 
 seqExp
@@ -116,10 +141,11 @@ negation
 	: '-' exp
 	;
 
-
+/*
 infixExp
 	: exp INFIXOP exp
 	;
+	*/
 
 /*
 arrRecCreate
@@ -127,13 +153,13 @@ arrRecCreate
 	;
 */
 
-idBegin 
+idBegin
 	: '[' exp ']' bracBegin
 	| '.' ID lValue
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'
 	;
 
-bracBegin 
+bracBegin
 	:  'of' exp
 	| lValue
 	;
@@ -189,9 +215,23 @@ STRINGLIT
 	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
 	;
 
-INFIXOP
+ADDOP
 	: '+'
 	| '-'
-	| '*'
+	;
+
+MULTOP
+	: '*'
 	| '/'
+	;
+
+OPLOG
+	: '='
+	| '<>'
+	|	'>'
+	| '<'
+	| '>='
+	| '<='
+	| '&'
+	| '|'
 	;
