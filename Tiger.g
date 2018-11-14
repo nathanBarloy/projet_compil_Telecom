@@ -140,12 +140,8 @@ ifThen
 	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)?
 	;
 
-<<<<<<< HEAD
-els
-	: 'else' exp
-=======
+
 /*els : 'else' exp
->>>>>>> 58f3663e8957781772bd06d0e8266248c395fd10
 	|
 	;*/
 
