@@ -81,26 +81,26 @@ lValue : '[' exp ']' lValue
 	;
 */
 
-lValue
+/*lValue
 	: ID v
 	;
+	*/
 
-v
-	: '[' exp ']' v
-	| '.' ID v
+lValue
+	: '[' exp ']' lValue
+	| '.' ID lValue
 	|
 	;
 
 
 exp
 	// : masto infixExp
-	: lValue 
-	| 'nil' 
+	: 'nil' 
 	| INTLIT 
 	| STRINGLIT 
 	| seqExp 
 	| negation 
-	| arrRecCreate 
+	| ID idBegin
 	| ifThen 
 	| whileExp 
 	| forExp 
@@ -127,10 +127,22 @@ arrRecCreate
 	;
 */
 
-arrRec
+idBegin 
+	: '[' exp ']' bracBegin
+	| '.' ID lValue
+	| '{' (fieldCreate(',' fieldCreate)*)? '}'
+	;
+
+bracBegin 
+	:  'of' exp
+	| lValue
+	;
+
+/*arrRec
 	: '[' exp ']' 'of' exp
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'
 	;
+	*/
 
 fieldCreate
 	: ID '=' exp
