@@ -141,7 +141,8 @@ ifThen
 	: 'if' exp 'then' exp els
 	;
 
-els : 	'else' exp
+els
+	: 'else' exp
 	|
 	;
 
