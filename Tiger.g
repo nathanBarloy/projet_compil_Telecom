@@ -9,7 +9,6 @@ k=1 ;
 
 tokens {
 	ID ;
-	TYID ;
 	INTLIT ;
 	STRINGLIT ;
 	INFIXOP ;
@@ -25,17 +24,17 @@ dec
 	| funDec
 	;
 tyDec
-	: 'type' TYID '=' ty
+	: 'type' tyid '=' ty
 	;
 
 ty
-	: TYID
+	: tyid
 	| arrTy
 	| recTy
 	;
 
 arrTy
-	: 'array' 'of' TYID
+	: 'array' 'of' tyid
 	;
 
 recTy
@@ -43,7 +42,7 @@ recTy
 	;
 
 fieldDec
-	: ID ':' TYID
+	: ID ':' tyid
 	;
 
 funDec
@@ -51,7 +50,7 @@ funDec
 	;
 
 a
-	: ':' TYID
+	: ':' tyid
 	|
 	;
 
@@ -60,7 +59,7 @@ varDec
 	;
 
 vd
-	: ':' TYID
+	: ':' tyid
 	|
 	;
 
@@ -86,7 +85,7 @@ lValue
 	: ID v
 	;
 
-v 
+v
 	: '[' exp ']' v
 	| '.' ID v
 	|
@@ -94,7 +93,7 @@ v
 
 
 exp
-	//: masto infixExp
+	// : masto infixExp
 	: lValue infixExp
 	| 'nil' infixExp
 	| INTLIT infixExp
@@ -124,7 +123,7 @@ infixExp
 	;
 
 arrRecCreate
-	: TYID arrRec
+	: tyid arrRec
 	;
 
 arrRec
@@ -138,13 +137,17 @@ fieldCreate
 
 
 ifThen
-	: 'if' exp 'then' exp els
+	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)?
 	;
 
+<<<<<<< HEAD
 els
 	: 'else' exp
+=======
+/*els : 'else' exp
+>>>>>>> 58f3663e8957781772bd06d0e8266248c395fd10
 	|
-	;
+	;*/
 
 whileExp
 	: 'while' exp 'do' exp
@@ -158,12 +161,16 @@ letExp
 	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end'
 	;
 
+tyid
+	: ID
+	;
 //definition des expressions regulieres reconnaissant les tokens
 
 ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
-TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
-	;
+
+//TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
+//	;
 
 INTLIT
 	:	('0'..'9')+
@@ -173,7 +180,7 @@ STRINGLIT
 	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
 	;
 
-INFIXOP 
+INFIXOP
 	: '+'
 	| '-'
 	| '*'
