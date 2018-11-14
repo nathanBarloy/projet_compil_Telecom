@@ -13,7 +13,7 @@ tokens {
 	STRINGLIT ;
 	ADDOP ;
 	MULTOP;
-	OPLOG;
+	LOGOP;
 }
 
 program
@@ -96,7 +96,7 @@ lValue
 
 
 exp
-	: e (OPLOG e)*
+	: e (LOGOP e)*
 	;
 /*	: 'nil'
 	| INTLIT
@@ -225,7 +225,7 @@ MULTOP
 	| '/'
 	;
 
-OPLOG
+LOGOP
 	: '='
 	| '<>'
 	|	'>'
