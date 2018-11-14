@@ -94,18 +94,18 @@ v
 
 exp
 	// : masto infixExp
-	: lValue infixExp
-	| 'nil' infixExp
-	| INTLIT infixExp
-	| STRINGLIT infixExp
-	| seqExp infixExp
-	| negation infixExp
-	| arrRecCreate infixExp
-	| ifThen infixExp
-	| whileExp infixExp
-	| forExp infixExp
-	| 'break' infixExp
-	| letExp infixExp
+	: lValue 
+	| 'nil' 
+	| INTLIT 
+	| STRINGLIT 
+	| seqExp 
+	| negation 
+	| arrRecCreate 
+	| ifThen 
+	| whileExp 
+	| forExp 
+	| 'break' 
+	| letExp 
 	;
 
 seqExp
@@ -118,13 +118,14 @@ negation
 
 
 infixExp
-	: INFIXOP exp infixExp
-	|
+	: exp INFIXOP exp
 	;
 
+/*
 arrRecCreate
 	: tyid arrRec
 	;
+*/
 
 arrRec
 	: '[' exp ']' 'of' exp
