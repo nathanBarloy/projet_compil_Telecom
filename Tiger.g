@@ -96,7 +96,7 @@ lValue
 
 
 exp
-	: e (LOGOP e)*
+	: e (options{greedy=true;}: LOGOP e)*
 	;
 /*	: 'nil'
 	| INTLIT
@@ -112,11 +112,11 @@ exp
 
 
 e
-	: multExp (ADDOP multExp)*
+	: multExp (options{greedy=true;}: ADDOP multExp)*
 	;
 
 multExp
-	: atom (MULTOP atom)*
+	: atom (options{greedy=true;}: MULTOP atom)*
 	;
 
 atom
