@@ -8,6 +8,16 @@ k=1 ;
 }
 
 tokens {
+	//tokens des règles de réécriture
+	MULTEXP ;
+	LETEXP;
+	IFTHEN ;
+	RECTY ;
+	ROOT ;
+	WHILE ;
+	FOR ;
+	NEGATION ;
+	//
 	ID ;
 	INTLIT ;
 	STRINGLIT ;
@@ -17,7 +27,7 @@ tokens {
 }
 
 program
-	: exp
+	: exp -> ^(ROOT exp)
 	;
 
 dec
@@ -25,8 +35,9 @@ dec
 	| varDec
 	| funDec
 	;
+
 tyDec
-	: 'type' tyid '=' ty
+	: 'type' tyid '=' ty //-> ^('type' tyid ty)
 	;
 
 ty
@@ -36,11 +47,11 @@ ty
 	;
 
 arrTy
-	: 'array' 'of' tyid
+	: 'array' 'of' tyid //->^()
 	;
 
 recTy
-	: '{' (fieldDec (',' fieldDec)*)? '}'
+	: '{' (fieldDec (',' fieldDec)*)? '}' //->^(RECTY fieldDec+)
 	;
 
 fieldDec
@@ -48,20 +59,20 @@ fieldDec
 	;
 
 funDec
-	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType '=' exp
+	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType '=' exp //-> ^('function' ID fieldDec* returnType)
 	;
 
 returnType
-	: ':' tyid
+	: ':' tyid //-> ^(tyid)
 	|
 	;
 
 varDec
-	: 'var' ID vd ':=' exp
+	: 'var' ID vd ':=' exp //-> ^('var' ID vd exp)
 	;
 
 vd
-	: ':' tyid
+	: ':' tyid //->^('vd' tyid)
 	|
 	;
 
@@ -89,8 +100,8 @@ lValue : '[' exp ']' lValue
 	*/
 
 lValue
-	: '[' exp ']' lValue
-	| '.' ID lValue
+	: '[' exp ']' lValue //-> ^(lValue exp lValue)
+	| '.' ID lValue //-> ^()
 	|
 	;
 
@@ -112,11 +123,11 @@ exp
 
 
 e
-	: multExp (options{greedy=true;}: ADDOP multExp)*
+	: multExp (options{greedy=true;}: ADDOP multExp)*  //-> ^(e multExp (ADDOP multExp)*)
 	;
 
 multExp
-	: atom (options{greedy=true;}: MULTOP atom)*
+	: atom (options{greedy=true;}: MULTOP atom)*  //-> ^(multExp atom (MULTOP atom)*)
 	;
 
 atom
@@ -134,11 +145,11 @@ atom
 	;
 
 seqExp
-	: '(' (exp (';' exp)*)? ')'
+	: '(' (exp (';' exp)*)? ')' //-> ^(seqExp exp+)
 	;
 
 negation
-	: '-' exp
+	: '-' exp //-> ^(negation exp)
 	;
 
 /*
@@ -176,7 +187,7 @@ fieldCreate
 
 
 ifThen
-	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)?
+	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)? //-> ^('ifThen' exp exp exp)
 	;
 
 
@@ -185,15 +196,15 @@ ifThen
 	;*/
 
 whileExp
-	: 'while' exp 'do' exp
+	: 'while' exp 'do' exp //-> ^(WHILE exp exp)
 	;
 
 forExp
-	: 'for' ID ':=' exp 'to' exp 'do' exp
+	: 'for' ID ':=' exp 'to' exp 'do' exp //-> ^(FOR ID exp exp exp)
 	;
 
 letExp
-	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end'
+	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end' //-> ^('letExp' dec+ exp+)
 	;
 
 tyid
