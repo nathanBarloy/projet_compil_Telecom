@@ -23,7 +23,6 @@ public class Tests {
         try {
 			parser.program();
 		} catch (RecognitionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
