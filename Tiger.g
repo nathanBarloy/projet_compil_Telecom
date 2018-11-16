@@ -124,7 +124,7 @@ atom
 	| INTLIT
 	| STRINGLIT
 	| seqExp
-	| negation
+	//| negation
 	| ID idBegin
 	| ifThen
 	| whileExp
@@ -137,9 +137,9 @@ seqExp
 	: '(' (exp (';' exp)*)? ')'
 	;
 
-negation
+/*negation
 	: '-' exp
-	;
+	;*/
 
 /*
 infixExp
