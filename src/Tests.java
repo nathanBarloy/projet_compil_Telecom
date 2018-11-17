@@ -40,9 +40,9 @@ public class Tests {
 				e.printStackTrace();
 			}
 	      //on restaure out
-	        System.out.flush();
+	        String res=baos.toString();
+	        assertEquals("", baos.toString());
 		    System.setErr(err);
-		    assertEquals(0, baos.toString().length());
 		}
 	}
 	@Test
@@ -66,9 +66,9 @@ public class Tests {
 				e.printStackTrace();
 			}
 	      //on restaure out
-	        System.out.flush();
+	        String res=baos.toString();
+	        assertEquals("", baos.toString());
 		    System.setErr(err);
-		    assertEquals(0, baos.toString().length());
 		}
 	}
 	@Test
@@ -92,9 +92,10 @@ public class Tests {
 				e.printStackTrace();
 			}
 	      //on restaure out
-	        System.out.flush();
+	        String res=baos.toString();
+		    assertEquals("", baos.toString());
 		    System.setErr(err);
-		    assertEquals(0, baos.toString().length());
+		    System.err.println(res);
 		}
 		
 		
@@ -121,6 +122,4 @@ public class Tests {
 	{
 		return new File(path).listFiles().length;
 	}
-	
-
 }
