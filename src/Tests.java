@@ -16,7 +16,7 @@ public class Tests {
 	public void setUp() throws Exception {
 	}*/
 
-	/*@Test
+	@Test
 	public void testCommentaires() throws IOException{
 		System.out.println("testCommentaires");
 		String rep="testCommentaires/";
@@ -29,7 +29,7 @@ public class Tests {
 		} catch (RecognitionException e) {
 			e.printStackTrace();
 		}
-	}*/
+	}
 	@Test
 	public void testCorrectsExp() throws IOException{
 		String rep="testExp/corrects/";
