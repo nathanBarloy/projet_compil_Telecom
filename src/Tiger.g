@@ -102,9 +102,13 @@ lValue : '[' exp ']' lValue
 lValue
 	: '[' exp ']' lValue //-> ^(lValue exp lValue)
 	| '.' ID lValue //-> ^()
+	| assignment
 	|
 	;
 
+assignment
+	: ':=' exp
+	;
 
 exp
 	: e (options{greedy=true;}: LOGOP e)*
@@ -168,6 +172,7 @@ idBegin
 	: '[' exp ']' bracBegin
 	| '.' ID lValue
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'
+	| assignment
 	;
 
 bracBegin
@@ -248,4 +253,3 @@ LOGOP	: '='
 
 WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.* ('\r'|'\n'))+ {$channel = HIDDEN; }
    ;
-
