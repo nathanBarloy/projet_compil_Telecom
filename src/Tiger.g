@@ -139,7 +139,7 @@ atom
 	| INTLIT
 	| STRINGLIT
 	| seqExp
-	//| negation
+	| negation
 	| ID idBegin
 	| ifThen
 	| whileExp
@@ -173,6 +173,7 @@ idBegin
 	| '.' ID lValue
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'
 	| assignment
+	|
 	;
 
 bracBegin
