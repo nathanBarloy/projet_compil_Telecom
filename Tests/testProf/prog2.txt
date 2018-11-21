@@ -31,7 +31,7 @@ let
 			while i <= n do
 			(
 				resultat := resultat * i ;
-				i = i + 1
+				i := i + 1
 			)
 		)
 	end
