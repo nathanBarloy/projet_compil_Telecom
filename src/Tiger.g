@@ -173,7 +173,7 @@ idBegin
 	| '.' ID lValue
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'
 	| assignment
-	| seqExp 			// call exp
+	| '(' (exp(',' exp)*)? ')' 			// call exp
 	|
 	;
 
