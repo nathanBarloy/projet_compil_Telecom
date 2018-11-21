@@ -21,9 +21,6 @@ tokens {
 	ID ;
 	INTLIT ;
 	STRINGLIT ;
-	ADDOP ;
-	MULTOP;
-	LOGOP;
 }
 
 program
@@ -111,7 +108,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: LOGOP e)*
+	: e (options{greedy=true;}: logop e )*
 	;
 /*	: 'nil'
 	| INTLIT
@@ -127,11 +124,11 @@ exp
 
 
 e
-	: multExp (options{greedy=true;}: ADDOP multExp)*  //-> ^(e multExp (ADDOP multExp)*)
+	: multExp (options{greedy=true;}: addop multExp)*  //-> ^(e multExp (addop multExp)*)
 	;
 
 multExp
-	: atom (options{greedy=true;}: MULTOP atom)*  //-> ^(multExp atom (MULTOP atom)*)
+	: atom (options{greedy=true;}: multop atom)*  //-> ^(multExp atom (MULTOP atom)*)
 	;
 
 atom
@@ -217,6 +214,27 @@ letExp
 tyid
 	: ID
 	;
+
+addop
+	: '+'
+	| '-'
+	;
+
+multop
+	: '*'
+	| '/'
+	;
+
+logop	: '='
+	| '<>'
+	|	'>'
+	| '<'
+	| '>='
+	| '<='
+	| '&'
+	| '|'
+	;
+
 //definition des expressions regulieres reconnaissant les tokens
 
 ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
@@ -233,25 +251,7 @@ STRINGLIT
 	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
 	;
 
-ADDOP
-	: '+'
-	| '-'
-	;
 
-MULTOP
-	: '*'
-	| '/'
-	;
-
-LOGOP	: '='
-	| '<>'
-	|	'>'
-	| '<'
-	| '>='
-	| '<='
-	| '&'
-	| '|'
-	;
 
 WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.* ('\r'|'\n'))+ {$channel = HIDDEN; }
    ;
