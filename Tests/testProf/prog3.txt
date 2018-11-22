@@ -13,7 +13,7 @@ let
             computation ( generations - 2 , 1 , 0)
     end
     
-    function factorielle_ recursive ( n : int ) : int =
+    function factorielle_recursive ( n : int ) : int =
     let
         function computation ( n : int , acc : int ) : int =
             if n = 0 then
