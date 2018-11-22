@@ -37,7 +37,7 @@ dec
 	;
 
 tyDec
-	: 'type' tyid '=' ty //-> ^('type' tyid ty)
+	: 'type' tyid '=' ty -> ^(TYDEC tyid ty)
 	;
 
 ty
@@ -47,32 +47,32 @@ ty
 	;
 
 arrTy
-	: 'array' 'of' tyid //->^()
+	: 'array' 'of' tyid -> ^(ARRTY tyid)
 	;
 
 recTy
-	: '{' (fieldDec (',' fieldDec)*)? '}' //->^(RECTY fieldDec+)
+	: '{' (fieldDec (',' fieldDec)*)? '}'  ->^(RECTY fieldDec*)
 	;
 
 fieldDec
-	: ID ':' tyid
+	: ID ':' tyid -> ^(FIELDDEC ID tyid)
 	;
 
 funDec
-	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType '=' exp //-> ^('function' ID fieldDec* returnType)
+	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType '=' exp -> ^(ID fieldDec* returnType exp)
 	;
 
 returnType
-	: ':' tyid //-> ^(tyid)
+	: ':' tyid -> ^(RETURNTYPE tyid)
 	|
 	;
 
 varDec
-	: 'var' ID vd ':=' exp //-> ^('var' ID vd exp)
+	: 'var' ID vd ':=' exp -> ^(VARDEC ID vd exp)
 	;
 
 vd
-	: ':' tyid //->^('vd' tyid)
+	: ':' tyid ->^(VD tyid)
 	|
 	;
 
@@ -100,18 +100,18 @@ lValue : '[' exp ']' lValue
 	*/
 
 lValue
-	: '[' exp ']' lValue //-> ^(lValue exp lValue)
-	| '.' ID lValue //-> ^()
+	: '[' exp ']' lValue -> ^(EXPSTRO exp lValue)
+	| '.' ID lValue -> ^(IDSTOR ID lValue)
 	| assignment
 	|
 	;
 
 assignment
-	: ':=' exp
+	: ':=' exp -> ^(ASSIGNMENT exp)
 	;
 
 exp
-	: e (options{greedy=true;}: LOGOP e)*
+	: e (options{greedy=true;}: LOGOP e)* //-> ^(e)
 	;
 /*	: 'nil'
 	| INTLIT
