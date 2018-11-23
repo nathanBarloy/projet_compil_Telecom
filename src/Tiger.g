@@ -13,10 +13,14 @@ tokens {
 	LETEXP;
 	IFTHEN ;
 	RECTY ;
+	ARRTY ;
+	TYDEC ;
+	ASSIGNMENT ;
 	ROOT ;
 	WHILE ;
 	FOR ;
 	NEGATION ;
+	LOGOP ;
 	RETURNTYPE ;
 	VARDEC ;
 	VD ;
@@ -164,7 +168,7 @@ seqExp
 	;
 
 negation
-	: '-' exp -> ^(NEG exp)
+	: '-' exp -> ^(NEGATION exp)
 	;
 
 /*
