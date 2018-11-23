@@ -17,7 +17,21 @@ tokens {
 	WHILE ;
 	FOR ;
 	NEGATION ;
-	//
+	RETURNTYPE ;
+	VARDEC ;
+	VD ;
+	EXPSTOR ;
+	IDSTOR ;
+	STRINGLIT ;
+	NIL ;
+	BREAK ;
+	IDBEG ;
+	EXPBEG ;
+	FIELDDEC ;
+	BRACBEG ;
+	FIELDCREATE ;
+	IFTHEN ;
+	LET ;
 	ID ;
 	INTLIT ;
 	STRINGLIT ;
@@ -97,7 +111,7 @@ lValue : '[' exp ']' lValue
 	*/
 
 lValue
-	: '[' exp ']' lValue -> ^(EXPSTRO exp lValue)
+	: '[' exp ']' lValue -> ^(EXPSTOR exp lValue)
 	| '.' ID lValue -> ^(IDSTOR ID lValue)
 	| assignment
 	|
@@ -108,7 +122,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: LOGOP e)* -> ^(e l(ogop e)*)
+	: e (options{greedy=true;}: LOGOP e)* -> ^(e (LOGOP e)*)
 	;
 /*	: 'nil'
 	| INTLIT
@@ -132,9 +146,9 @@ multExp
 	;
 
 atom
-	: 'nil'
-	| INTLIT 		-> INTLIT
-	| STRINGLIT 	-> STRINGLIT
+	: 'nil'			-> ^(NIL)
+	| INTLIT 		-> ^(INTLIT)
+	| STRINGLIT 	-> ^(STRINGLIT)
 	| seqExp 		-> ^(seqExp)
 	| negation 		-> ^(negation)
 	| ID idBegin 	-> ^(IDBEG)
