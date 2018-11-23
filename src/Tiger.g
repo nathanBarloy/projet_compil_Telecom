@@ -108,7 +108,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: LOGOP e)* //-> ^(e)
+	: e (options{greedy=true;}: LOGOP e)* -> ^(e l(ogop e)*)
 	;
 /*	: 'nil'
 	| INTLIT
@@ -124,33 +124,33 @@ exp
 
 
 e
-	: multExp (options{greedy=true;}: addop multExp)*  //-> ^(e multExp (addop multExp)*)
+	: multExp (options{greedy=true;}: addop multExp)*  -> ^(multExp (addop multExp)*)
 	;
 
 multExp
-	: atom (options{greedy=true;}: multop atom)*  //-> ^(multExp atom (MULTOP atom)*)
+	: atom (options{greedy=true;}: multop atom)*  -> ^(atom (multop atom)*)
 	;
 
 atom
 	: 'nil'
-	| INTLIT
-	| STRINGLIT
-	| seqExp
-	| negation
-	| ID idBegin
-	| ifThen
-	| whileExp
-	| forExp
-	| 'break'
-	| letExp
+	| INTLIT 		-> INTLIT
+	| STRINGLIT 	-> STRINGLIT
+	| seqExp 		-> ^(seqExp)
+	| negation 		-> ^(negation)
+	| ID idBegin 	-> ^(IDBEG)
+	| ifThen 		-> ^(ifThen)
+	| whileExp 		-> ^(whileExp)
+	| forExp 		-> ^(forExp)
+	| 'break' 		-> ^(BREAK)
+	| letExp 		-> ^(letExp)
 	;
 
 seqExp
-	: '(' (exp (';' exp)*)? ')' //-> ^(seqExp exp+)
+	: '(' (exp (';' exp)*)? ')' -> ^(exp*)
 	;
 
 negation
-	: '-' exp //-> ^(negation exp)
+	: '-' exp -> ^(NEG exp)
 	;
 
 /*
@@ -166,17 +166,17 @@ arrRecCreate
 */
 
 idBegin
-	: '[' exp ']' bracBegin
-	| '.' ID lValue
-	| '{' (fieldCreate(',' fieldCreate)*)? '}'
-	| assignment
-	| '(' (exp(',' exp)*)? ')' 			// call exp
+	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
+	| '.' ID lValue								-> ^(IDBEG ID lValue)
+	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
+	| assignment 								-> ^(assignment)
+	| '(' (exp(',' exp)*)? ')' 					-> ^(exp*)
 	|
 	;
 
 bracBegin
-	:  'of' exp
-	| lValue
+	:  'of' exp 	-> ^(BRACBEG exp)
+	| lValue		-> ^(lValue)
 	;
 
 /*arrRec
@@ -186,12 +186,12 @@ bracBegin
 	*/
 
 fieldCreate
-	: ID '=' exp
+	: ID '=' exp 	-> ^(FIELDCREATE ID exp)
 	;
 
 
 ifThen
-	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)? //-> ^('ifThen' exp exp exp)
+	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)? 	-> ^(IFTHEN exp exp+)
 	;
 
 
@@ -200,15 +200,15 @@ ifThen
 	;*/
 
 whileExp
-	: 'while' exp 'do' exp //-> ^(WHILE exp exp)
+	: 'while' exp 'do' exp 	-> ^(WHILE exp exp)
 	;
 
 forExp
-	: 'for' ID ':=' exp 'to' exp 'do' exp //-> ^(FOR ID exp exp exp)
+	: 'for' ID ':=' exp 'to' exp 'do' exp -> ^(FOR ID exp exp exp)
 	;
 
 letExp
-	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end' //-> ^('letExp' dec+ exp+)
+	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end' -> ^(LET dec+ exp*)
 	;
 
 tyid
