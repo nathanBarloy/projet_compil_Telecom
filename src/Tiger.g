@@ -20,7 +20,6 @@ tokens {
 	WHILE ;
 	FOR ;
 	NEGATION ;
-	LOGOP ;
 	RETURNTYPE ;
 	VARDEC ;
 	VD ;
@@ -39,6 +38,8 @@ tokens {
 	ID ;
 	INTLIT ;
 	STRINGLIT ;
+	SEQEXP ;
+	CALLEXP ;
 }
 
 program
@@ -126,7 +127,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: LOGOP e)* -> ^(e (LOGOP e)*)
+	: e (options{greedy=true;}: logop e)* -> ^(e (logop e)*)
 	;
 /*	: 'nil'
 	| INTLIT
@@ -164,7 +165,7 @@ atom
 	;
 
 seqExp
-	: '(' (exp (';' exp)*)? ')' -> ^(exp*)
+	: '(' (exp (';' exp)*)? ')' -> ^(SEQEXP exp*)
 	;
 
 negation
@@ -188,7 +189,7 @@ idBegin
 	| '.' ID lValue								-> ^(IDBEG ID lValue)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
 	| assignment 								-> ^(assignment)
-	| '(' (exp(',' exp)*)? ')' 					-> ^(exp*)
+	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
 	|
 	;
 
