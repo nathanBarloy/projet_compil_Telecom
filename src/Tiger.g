@@ -15,7 +15,9 @@ tokens {
 	RECTY ;
 	ROOT ;
 	WHILE ;
+	VAR;
 	FOR ;
+	LET;
 	NEGATION ;
 	//
 	ID ;
@@ -68,11 +70,11 @@ returnType
 	;
 
 varDec
-	: 'var' ID vd ':=' exp //-> ^('var' ID vd exp)
+	: 'var' ID vd ':=' exp //-> ID vd exp
 	;
 
 vd
-	: ':' tyid //->^('vd' tyid)
+	: ':' tyid -> tyid
 	|
 	;
 
@@ -107,7 +109,7 @@ lValue
 
 
 exp
-	: e (options{greedy=true;}: LOGOP e)*
+	: e (options{greedy=true;}: LOGOP e)* ->
 	;
 /*	: 'nil'
 	| INTLIT
@@ -204,7 +206,7 @@ forExp
 	;
 
 letExp
-	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end' //-> ^('letExp' dec+ exp+)
+	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end' -> //^(LET dec+ exp+)
 	;
 
 tyid
