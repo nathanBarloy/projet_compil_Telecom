@@ -1,5 +1,5 @@
 let
-
+	var total := 0
 in
 
 end
