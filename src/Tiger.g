@@ -70,7 +70,7 @@ arrTy
 	;
 
 recTy
-	: '{' (fieldDec (',' fieldDec)*)? '}'  ->^(RECTY fieldDec*)
+	: '{' (fieldDec (',' fieldDec)*)? '}'  -> ^(RECTY fieldDec*)
 	;
 
 fieldDec
@@ -82,7 +82,7 @@ funDec
 	;
 
 returnType
-	: ':' tyid -> tyid
+	: ':' tyid
 	;
 
 varDec
@@ -90,7 +90,7 @@ varDec
 	;
 
 vd
-	: ':' tyid -> tyid
+	: ':' tyid
 	;
 
 //v : ID v
@@ -152,17 +152,17 @@ multExp
 	;
 
 atom
-	: 'nil'			-> ^(NIL)
+	: 'nil'		-> ^(NIL)
 	| INTLIT 		-> ^(INTLIT)
 	| STRINGLIT 	-> ^(STRINGLIT)
-	| seqExp 		-> ^(seqExp)
-	| negation 		-> ^(negation)
-	| ID idBegin 		-> ^(IDBEG)
-	| ifThen 		-> ^(ifThen)
-	| whileExp 		-> ^(whileExp)
-	| forExp 		-> ^(forExp)
+	| seqExp
+	| negation
+	| ID idBegin  	-> ^(IDBEG)
+	| ifThen
+	| whileExp
+	| forExp
 	| 'break' 		-> ^(BREAK)
-	| letExp 		-> ^(letExp)
+	| letExp
 	;
 
 seqExp
@@ -189,14 +189,14 @@ idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
 	| '.' ID lValue								-> ^(IDBEG ID lValue)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
-	| assignment 								-> ^(assignment)
+	| assignment
 	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
 	|
 	;
 
 bracBegin
 	:  'of' exp 	-> ^(BRACBEG exp)
-	| lValue		-> ^(lValue)
+	| lValue
 	;
 
 /*arrRec
