@@ -128,7 +128,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: logop e)* -> ^(e (logop e)*)
+	: e (options{greedy=true;}: logop^ e)* 
 	;
 /*	: 'nil'
 	| INTLIT
@@ -144,24 +144,24 @@ exp
 
 
 e
-	: multExp (options{greedy=true;}: addop multExp)*  -> ^(multExp (addop multExp)*)
+	: multExp (options{greedy=true;}: addop^ multExp)*  //-> ^(multExp (addop multExp)*)
 	;
 
 multExp
-	: atom (options{greedy=true;}: multop atom)*  -> ^(atom (multop atom)*)
+	: atom (options{greedy=true;}: multop^ atom)*  //-> ^(atom (multop atom)*)
 	;
 
 atom
-	: 'nil'		-> ^(NIL)
-	| INTLIT 		-> ^(INTLIT)
-	| STRINGLIT 	-> ^(STRINGLIT)
+	: 'nil'		
+	| INTLIT 		
+	| STRINGLIT 
 	| seqExp
 	| negation
-	| ID idBegin  	-> ^(IDBEG)
+	| ID idBegin  	//-> ^(IDBEG ID idBegin)
 	| ifThen
 	| whileExp
 	| forExp
-	| 'break' 		-> ^(BREAK)
+	| 'break' 		
 	| letExp
 	;
 
@@ -187,7 +187,7 @@ arrRecCreate
 
 idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
-	| '.' ID lValue								-> ^(IDBEG ID lValue)
+	| '.' ID lValue								-> ^(ID lValue)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
 	| assignment
 	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
@@ -236,7 +236,7 @@ tyid
 	;
 
 addop
-	: '+'
+	: '+' 
 	| '-'
 	;
 
