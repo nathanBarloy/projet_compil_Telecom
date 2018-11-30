@@ -110,6 +110,8 @@ assignment
 exp
 	: e (options{greedy=true;}: logop e )*
 	;
+
+	
 /*	: 'nil'
 	| INTLIT
 	| STRINGLIT
@@ -248,10 +250,10 @@ INTLIT
 	;
 
 STRINGLIT
-	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
+	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'#'..'@')* '"'
 	;
 
 
 
-WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.* ('\r'|'\n'))+ {$channel = HIDDEN; }
+WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.*('\r'|'\n'))+ {$channel = HIDDEN; }
    ;
