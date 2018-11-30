@@ -82,7 +82,7 @@ funDec
 	;
 
 returnType
-	: ':' tyid
+	: ':' tyid -> tyid
 	;
 
 varDec
@@ -90,7 +90,7 @@ varDec
 	;
 
 vd
-	: ':' tyid
+	: ':' tyid -> tyid
 	;
 
 lValue
@@ -189,7 +189,7 @@ multop
 
 logop	: '='
 	| '<>'
-	|'>'
+	| '>'
 	| '<'
 	| '>='
 	| '<='
