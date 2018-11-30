@@ -40,6 +40,13 @@ public class Tests {
 		System.out.println("Test sur les expressions correctes:");
 		executeOnDir(REPERTOIRETEST+rep);		
 	}
+	@Test
+	public void testDec() throws IOException
+	{
+		String rep="testDec/";
+		System.out.println("Tests sur les déclarations");
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
 	/*@Test
 	public void testIncorrectsExp() throws IOException{
 		System.out.println("testExp/incorrects");
