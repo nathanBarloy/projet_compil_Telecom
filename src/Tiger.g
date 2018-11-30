@@ -157,7 +157,7 @@ atom
 	| STRINGLIT 
 	| seqExp
 	| negation
-	| ID idBegin  	//-> ^(IDBEG ID idBegin)
+	| ID idBegin  	-> ^(IDBEG ID idBegin?)
 	| ifThen
 	| whileExp
 	| forExp
@@ -187,7 +187,7 @@ arrRecCreate
 
 idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
-	| '.' ID lValue								-> ^(ID lValue)
+	| '.' ID lValue								-> ^(IDBEG ID lValue)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
 	| assignment
 	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
