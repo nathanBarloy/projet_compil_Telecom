@@ -105,7 +105,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: logop^ e)* 
+	: e (options{greedy=true;}: logop^ e)*
 	;
 /*	: 'nil'
 	| INTLIT
@@ -128,16 +128,16 @@ multExp
 	;
 
 atom
-	: 'nil'		
-	| INTLIT 		
-	| STRINGLIT 
+	: 'nil'
+	| INTLIT
+	| STRINGLIT
 	| seqExp
 	| negation
 	| ID idBegin  	-> ^(IDBEG ID idBegin?)
 	| ifThen
 	| whileExp
 	| forExp
-	| 'break' 		
+	| 'break'
 	| letExp
 	;
 
@@ -189,7 +189,7 @@ tyid
 	;
 
 addop
-	: '+' 
+	: '+'
 	| '-'
 	;
 
@@ -218,7 +218,7 @@ INTLIT
 	;
 
 STRINGLIT
-	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'#'..'@')* '"'
+	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'#'..'@'|' ')* '"'
 	;
 
 
