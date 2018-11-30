@@ -107,6 +107,17 @@ assignment
 exp
 	: e (options{greedy=true;}: logop^ e)* 
 	;
+/*	: 'nil'
+	| INTLIT
+	| STRINGLIT
+	| seqExp
+	| negation
+	| ID idBegin
+	| ifThen
+	| whileExp
+	| forExp
+	| 'break'
+	| letExp		*/
 
 e
 	: multExp (options{greedy=true;}: addop^ multExp)*  //-> ^(multExp (addop multExp)*)
@@ -207,10 +218,10 @@ INTLIT
 	;
 
 STRINGLIT
-	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
+	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'#'..'@')* '"'
 	;
 
 
 
-WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.* ('\r'|'\n'))+ {$channel = HIDDEN; }
+WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.*('\r'|'\n'))+ {$channel = HIDDEN; }
    ;
