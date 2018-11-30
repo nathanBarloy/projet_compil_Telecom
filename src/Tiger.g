@@ -13,17 +13,36 @@ tokens {
 	LETEXP;
 	IFTHEN ;
 	RECTY ;
+	ARRTY ;
+	TYDEC ;
+	ASSIGNMENT ;
 	ROOT ;
 	WHILE ;
+	VAR;
 	FOR ;
+	LET;
 	NEGATION ;
-	//
+	RETURNTYPE ;
+	VARDEC ;
+	VD ;
+	EXPSTOR ;
+	IDSTOR ;
+	STRINGLIT ;
+	NIL ;
+	BREAK ;
+	IDBEG ;
+	EXPBEG ;
+	FIELDDEC ;
+	BRACBEG ;
+	FIELDCREATE ;
+	IFTHEN ;
+	LET ;
 	ID ;
 	INTLIT ;
 	STRINGLIT ;
-	ADDOP ;
-	MULTOP;
-	LOGOP;
+	SEQEXP ;
+	CALLEXP ;
+	FUNDEC;
 }
 
 program
@@ -37,7 +56,7 @@ dec
 	;
 
 tyDec
-	: 'type' tyid '=' ty //-> ^('type' tyid ty)
+	: 'type' tyid '=' ty -> ^(TYDEC tyid ty)
 	;
 
 ty
@@ -47,33 +66,31 @@ ty
 	;
 
 arrTy
-	: 'array' 'of' tyid //->^()
+	: 'array' 'of' tyid -> ^(ARRTY tyid)
 	;
 
 recTy
-	: '{' (fieldDec (',' fieldDec)*)? '}' //->^(RECTY fieldDec+)
+	: '{' (fieldDec (',' fieldDec)*)? '}'  -> ^(RECTY fieldDec*)
 	;
 
 fieldDec
-	: ID ':' tyid
+	: ID ':' tyid -> ^(FIELDDEC ID tyid)
 	;
 
 funDec
-	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType '=' exp //-> ^('function' ID fieldDec* returnType)
+	: 'function' ID '(' (fieldDec(',' fieldDec)*)? ')' returnType? '=' exp -> ^(FUNDEC ID fieldDec* returnType? exp)
 	;
 
 returnType
-	: ':' tyid //-> ^(tyid)
-	|
+	: ':' tyid
 	;
 
 varDec
-	: 'var' ID vd ':=' exp //-> ^('var' ID vd exp)
+	: 'var' ID vd? ':=' exp -> ^(VARDEC ID vd? exp)
 	;
 
 vd
-	: ':' tyid //->^('vd' tyid)
-	|
+	: ':' tyid
 	;
 
 //v : ID v
@@ -100,18 +117,18 @@ lValue : '[' exp ']' lValue
 	*/
 
 lValue
-	: '[' exp ']' lValue //-> ^(lValue exp lValue)
-	| '.' ID lValue //-> ^()
+	: '[' exp ']' lValue -> ^(EXPSTOR exp lValue)
+	| '.' ID lValue -> ^(IDSTOR ID lValue)
 	| assignment
 	|
 	;
 
 assignment
-	: ':=' exp
+	: ':=' exp -> ^(ASSIGNMENT exp)
 	;
 
 exp
-	: e (options{greedy=true;}: LOGOP e)*
+	: e (options{greedy=true;}: logop e)* -> ^(e (logop e)*)
 	;
 /*	: 'nil'
 	| INTLIT
@@ -127,33 +144,33 @@ exp
 
 
 e
-	: multExp (options{greedy=true;}: ADDOP multExp)*  //-> ^(e multExp (ADDOP multExp)*)
+	: multExp (options{greedy=true;}: addop multExp)*  -> ^(multExp (addop multExp)*)
 	;
 
 multExp
-	: atom (options{greedy=true;}: MULTOP atom)*  //-> ^(multExp atom (MULTOP atom)*)
+	: atom (options{greedy=true;}: multop atom)*  -> ^(atom (multop atom)*)
 	;
 
 atom
-	: 'nil'
-	| INTLIT
-	| STRINGLIT
+	: 'nil'		-> ^(NIL)
+	| INTLIT 		-> ^(INTLIT)
+	| STRINGLIT 	-> ^(STRINGLIT)
 	| seqExp
 	| negation
-	| ID idBegin
+	| ID idBegin  	-> ^(IDBEG)
 	| ifThen
 	| whileExp
 	| forExp
-	| 'break'
+	| 'break' 		-> ^(BREAK)
 	| letExp
 	;
 
 seqExp
-	: '(' (exp (';' exp)*)? ')' //-> ^(seqExp exp+)
+	: '(' (exp (';' exp)*)? ')' -> ^(SEQEXP exp*)
 	;
 
 negation
-	: '-' exp //-> ^(negation exp)
+	: '-' exp -> ^(NEGATION exp)
 	;
 
 /*
@@ -169,16 +186,16 @@ arrRecCreate
 */
 
 idBegin
-	: '[' exp ']' bracBegin
-	| '.' ID lValue
-	| '{' (fieldCreate(',' fieldCreate)*)? '}'
+	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
+	| '.' ID lValue								-> ^(IDBEG ID lValue)
+	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
 	| assignment
-	| '(' (exp(',' exp)*)? ')' 			// call exp
+	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
 	|
 	;
 
 bracBegin
-	:  'of' exp
+	:  'of' exp 	-> ^(BRACBEG exp)
 	| lValue
 	;
 
@@ -189,12 +206,12 @@ bracBegin
 	*/
 
 fieldCreate
-	: ID '=' exp
+	: ID '=' exp 	-> ^(FIELDCREATE ID exp)
 	;
 
 
 ifThen
-	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)? //-> ^('ifThen' exp exp exp)
+	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)? 	-> ^(IFTHEN exp exp+)
 	;
 
 
@@ -203,20 +220,41 @@ ifThen
 	;*/
 
 whileExp
-	: 'while' exp 'do' exp //-> ^(WHILE exp exp)
+	: 'while' exp 'do' exp 	-> ^(WHILE exp exp)
 	;
 
 forExp
-	: 'for' ID ':=' exp 'to' exp 'do' exp //-> ^(FOR ID exp exp exp)
+	: 'for' ID ':=' exp 'to' exp 'do' exp -> ^(FOR ID exp exp exp)
 	;
 
 letExp
-	: 'let' (dec)+ 'in' (exp(';' exp)*)? 'end' //-> ^('letExp' dec+ exp+)
+	: 'let' dec+ 'in' (exp(';' exp)*)? 'end' -> ^(LET dec+ exp*)
 	;
 
 tyid
 	: ID
 	;
+
+addop
+	: '+'
+	| '-'
+	;
+
+multop
+	: '*'
+	| '/'
+	;
+
+logop	: '='
+	| '<>'
+	|'>'
+	| '<'
+	| '>='
+	| '<='
+	| '&'
+	| '|'
+	;
+
 //definition des expressions regulieres reconnaissant les tokens
 
 ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
@@ -230,28 +268,9 @@ INTLIT
 	;
 
 STRINGLIT
-	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'..'@')* '"'
+	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'\"'|'#'..'@')* '"'
 	;
 
-ADDOP
-	: '+'
-	| '-'
-	;
-
-MULTOP
-	: '*'
-	| '/'
-	;
-
-LOGOP	: '<>'
-	| '='
-	| '>'
-	| '<'
-	| '>='
-	| '<='
-	| '&'
-	| '|'
-	;
 
 WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.* ('\r'|'\n'))+ {$channel = HIDDEN; }
    ;
