@@ -93,8 +93,8 @@ vd
 	;
 
 lValue
-	: '[' exp ']' lValue -> ^(EXPSTOR exp lValue)
-	| '.' ID lValue -> ^(IDSTOR ID lValue)
+	: '[' exp ']' lValue -> ^(EXPSTOR exp lValue?)
+	| '.' ID lValue -> ^(IDSTOR ID lValue?)
 	| assignment
 	|
 	;
@@ -150,7 +150,7 @@ negation
 
 idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
-	| '.' ID lValue								-> ^(IDBEG ID lValue)
+	| '.' ID lValue								-> ^(IDBEG ID lValue?)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
 	| assignment
 	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
