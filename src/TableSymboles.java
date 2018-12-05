@@ -3,19 +3,23 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class TableSymboles {
+	
   private TableSymboles parent; // TDS parent
-  private TableSymboles fils;
-  private ArrayList<TableSymboles> freres;
+  private ArrayList<TableSymboles> fils; //liste des TDS fils
   private HashMap<String,String> map; // stocke les entrés dans la table
 
   public TableSymboles(TableSymboles parent) {
     this.parent = parent;
     map = new HashMap<String, String>();
-    freres = new ArrayList<TableSymboles>();
+    fils = new ArrayList<TableSymboles>();
+  }
+  
+  public TableSymboles() {
+	  this(null);
   }
 
-  public void ajouterSymbole(String name, String info) {
-    map.put(name, info);
+  public void ajouterSymbole(String name, String type) {
+    map.put(name, type);
   }
 
   public String regarderNoeudSup(String name) {
@@ -27,15 +31,11 @@ public class TableSymboles {
   }
 
   public void addFils(TableSymboles fils){
-    this.fils = fils;
+    this.fils.add(fils);
   }
 
-  public TableSymboles getFils(){
-    return this.fils;
-  }
-
-  public void addFrere(TableSymboles frere){
-    this.freres.add(frere);
+  public TableSymboles getFils(int i){
+    return fils.get(i);
   }
 
   public String toString(){
