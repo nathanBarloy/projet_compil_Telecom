@@ -82,7 +82,7 @@ funDec
 	;
 
 returnType
-	: ':' tyid
+	: ':' tyid -> tyid
 	;
 
 varDec
@@ -90,31 +90,8 @@ varDec
 	;
 
 vd
-	: ':' tyid
+	: ':' tyid -> tyid
 	;
-
-//v : ID v
-		//;
-
-/*masto	: ID v
-		;
-
-v 		: lValue
-		| '(' (exp(';' exp)*)? ')'
-		| ID lValue
-		|
-		;
-
-lValue : '[' exp ']' lValue
-	| '.' ID lValue
-	|
-	;
-*/
-
-/*lValue
-	: ID v
-	;
-	*/
 
 lValue
 	: '[' exp ']' lValue -> ^(EXPSTOR exp lValue)
@@ -128,7 +105,7 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: logop e)* -> ^(e (logop e)*)
+	: e (options{greedy=true;}: logop^ e)*
 	;
 /*	: 'nil'
 	| INTLIT
@@ -142,26 +119,25 @@ exp
 	| 'break'
 	| letExp		*/
 
-
 e
-	: multExp (options{greedy=true;}: addop multExp)*  -> ^(multExp (addop multExp)*)
+	: multExp (options{greedy=true;}: addop^ multExp)*  //-> ^(multExp (addop multExp)*)
 	;
 
 multExp
-	: atom (options{greedy=true;}: multop atom)*  -> ^(atom (multop atom)*)
+	: atom (options{greedy=true;}: multop^ atom)*  //-> ^(atom (multop atom)*)
 	;
 
 atom
-	: 'nil'		-> ^(NIL)
-	| INTLIT 		-> ^(INTLIT)
-	| STRINGLIT 	-> ^(STRINGLIT)
+	: 'nil'
+	| INTLIT
+	| STRINGLIT
 	| seqExp
 	| negation
-	| ID idBegin  	-> ^(IDBEG)
+	| ID idBegin  -> ^(IDBEG ID idBegin?)
 	| ifThen
 	| whileExp
 	| forExp
-	| 'break' 		-> ^(BREAK)
+	| 'break'
 	| letExp
 	;
 
@@ -172,18 +148,6 @@ seqExp
 negation
 	: '-' exp -> ^(NEGATION exp)
 	;
-
-/*
-infixExp
-	: exp INFIXOP exp
-	;
-	*/
-
-/*
-arrRecCreate
-	: tyid arrRec
-	;
-*/
 
 idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
@@ -199,12 +163,6 @@ bracBegin
 	| lValue
 	;
 
-/*arrRec
-	: '[' exp ']' 'of' exp
-	| '{' (fieldCreate(',' fieldCreate)*)? '}'
-	;
-	*/
-
 fieldCreate
 	: ID '=' exp 	-> ^(FIELDCREATE ID exp)
 	;
@@ -213,11 +171,6 @@ fieldCreate
 ifThen
 	: 'if' exp 'then' exp (options{greedy=true;}: 'else' exp)? 	-> ^(IFTHEN exp exp+)
 	;
-
-
-/*els : 'else' exp
-	|
-	;*/
 
 whileExp
 	: 'while' exp 'do' exp 	-> ^(WHILE exp exp)
@@ -247,7 +200,7 @@ multop
 
 logop	: '='
 	| '<>'
-	|'>'
+	| '>'
 	| '<'
 	| '>='
 	| '<='
@@ -260,17 +213,14 @@ logop	: '='
 ID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
 	;
 
-//TYID 	:	 ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | ('0'..'9') | '_')*
-//	;
-
 INTLIT
 	:	('0'..'9')+
 	;
 
 STRINGLIT
-	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'\"'|'#'..'@')* '"'
+	:	'"' ('a'..'z' | 'A'..'Z' | '0'..'9' |'!'|'#'..'@'|' ')* '"'
 	;
 
 
-WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.* ('\r'|'\n'))+ {$channel = HIDDEN; }
+WS : (' ' | '\t' | '\n' | '\r' | '/*'.*'*/' | '//'.*('\r'|'\n'))+ {$channel = HIDDEN; }
    ;
