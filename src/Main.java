@@ -11,26 +11,43 @@ import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
 public class Main {
+	
+	
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
 	    TableSymboles blocOrig = new TableSymboles(null);
 	    
-	    ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(args[0]));
+	    ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/prog1.txt"));
         TigerLexer lexer = new TigerLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TigerParser parser = new TigerParser(tokens);
         CommonTree tree=(CommonTree)parser.program().getTree();
-        parcoursArbre(tree);
+        parcoursArbre(tree,blocOrig);
         /*DOTTreeGenerator gen = new DOTTreeGenerator();
         StringTemplate st = gen.toDOT(tree);
         System.out.println(st);*/
 	}
 	
-	public static void parcoursArbre(Tree tree)
+	public static void parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
 		System.out.println(tree.getText());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-			parcoursArbre(tree.getChild(i));
+			switch(tree.getText())
+			{
+			//case "ROOT":
+			case "FUNDEC":
+			case "LET":
+			case "WHILE":
+			case "FOR":
+				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
+				TableSymboles nouvelle=new TableSymboles(tableParent);
+				parcoursArbre(tree.getChild(i),nouvelle);
+				break;
+			default:
+				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table 
+				break;
+			}
+			
 		}
 		
 	}

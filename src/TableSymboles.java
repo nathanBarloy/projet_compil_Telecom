@@ -2,6 +2,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.antlr.runtime.tree.Tree;
+
 public class TableSymboles {
 	
   private TableSymboles parent; // TDS parent
@@ -14,15 +16,15 @@ public class TableSymboles {
     fils = new ArrayList<TableSymboles>();
   }
   
-  public TableSymboles() {
+  public TableSymboles() { // table des symboles sans pere
 	  this(null);
   }
 
-  public void ajouterSymbole(String name, String type) {
+  public void ajouterSymbole(String name, String type) { // nouvelle variable
     map.put(name, type);
   }
 
-  public String regarderNoeudSup(String name) {
+  public String regarderNoeudSup(String name) { // renvoie type de name (regarde les pères)
     String res = map.get(name);
     if(res == null && parent != null) {
       res = parent.regarderNoeudSup(name);
@@ -30,11 +32,11 @@ public class TableSymboles {
     return res;
   }
 
-  public void addFils(TableSymboles fils){
+  public void addFils(TableSymboles fils){ // ajoute une tds fils
     this.fils.add(fils);
   }
 
-  public TableSymboles getFils(int i){
+  public TableSymboles getFils(int i){ // récupère le ième fils tds
     return fils.get(i);
   }
 
@@ -46,5 +48,6 @@ public class TableSymboles {
     }
     return s.toString();
   }
+ 
 
 }
