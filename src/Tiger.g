@@ -10,6 +10,7 @@ k=1 ;
 tokens {
 	//tokens des règles de réécriture
 	MULTEXP ;
+	FIELDEXP ;
 	LETEXP;
 	IFTHEN ;
 	RECTY ;
@@ -150,8 +151,8 @@ negation
 
 idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
-	| '.' ID lValue								-> ^(IDBEG ID lValue)
-	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
+	| '.' ID lValue								-> ^(FIELDEXP ID lValue)
+	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDCREATE fieldCreate*)
 	| assignment
 	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
 	|
@@ -217,9 +218,9 @@ INTLIT
 	;
 
 STRINGLIT
-	:	'"' ('a'..'z' 
-	| 'A'..'Z' 
-	| '0'..'9' 
+	:	'"' ('a'..'z'
+	| 'A'..'Z'
+	| '0'..'9'
 	|'!'
 	|'#'..'@'
 	|' '
