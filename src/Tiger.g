@@ -151,13 +151,8 @@ negation
 
 idBegin
 	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
-<<<<<<< HEAD
-	| '.' ID lValue								-> ^(FIELDEXP ID lValue)
-	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDCREATE fieldCreate*)
-=======
 	| '.' ID lValue								-> ^(IDBEG ID lValue?)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(FIELDDEC fieldCreate*)
->>>>>>> 6fe4f993f0d092a76f57eb4768318d1d9e4c3c83
 	| assignment
 	| '(' (exp(',' exp)*)? ')' 					-> ^(CALLEXP exp*)
 	|

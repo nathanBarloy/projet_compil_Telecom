@@ -47,6 +47,56 @@ public class Tests {
 		System.out.println("Tests sur les déclarations");
 		executeOnDir(REPERTOIRETEST+rep);		
 	}
+	@Test
+	public void forExp() throws IOException
+	{
+		String rep="forExp/";
+		System.out.println("Test sur une boucle for");		
+		executeOnDir(REPERTOIRETEST+rep);		
+
+	}
+	@Test
+	public void idBegin() throws IOException
+	{
+		String rep="idBegin/";
+		System.out.println("Tests sur les règles de idBegin");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
+	@Test
+	public void ifThen() throws IOException
+	{
+		String rep="ifThen/";
+		System.out.println("Tests sur les blocs conditionnels");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
+	@Test
+	public void letExp() throws IOException
+	{
+		String rep="letExp/";
+		System.out.println("Tests sur les blocs LET");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
+	@Test
+	public void testAssignement() throws IOException
+	{
+		String rep="testAssignement/";
+		System.out.println("Tests sur les assignements");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
+	@Test
+	public void testNegation() throws IOException
+	{
+		String rep="testNegation/";
+		System.out.println("Tests sur la negation");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
+	@Test
+	public void whileExp() throws IOException
+	{
+		String rep="letExp/";
+		System.out.println("Tests sur le blocs while");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
 	/*@Test
 	public void testIncorrectsExp() throws IOException{
 		System.out.println("testExp/incorrects");

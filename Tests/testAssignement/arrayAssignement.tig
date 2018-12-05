@@ -1,0 +1,5 @@
+let
+	type grosTableauType = array of entier
+in
+	grosTableauType[2] := 5
+end
