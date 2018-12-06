@@ -97,6 +97,20 @@ public class Tests {
 		System.out.println("Tests sur le blocs while");		
 		executeOnDir(REPERTOIRETEST+rep);		
 	}
+	@Test
+	public void comparaison() throws IOException
+	{
+		String rep="comparaison/";
+		System.out.println("Tests sur des opérateur de comparaison");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
+	@Test
+	public void operations() throws IOException
+	{
+		String rep="operations/";
+		System.out.println("Tests sur des opérateur d'operation");		
+		executeOnDir(REPERTOIRETEST+rep);		
+	}
 	/*@Test
 	public void testIncorrectsExp() throws IOException{
 		System.out.println("testExp/incorrects");
