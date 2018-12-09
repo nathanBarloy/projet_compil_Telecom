@@ -35,8 +35,8 @@ public class Tests {
 		executeOnDir(REPERTOIRETEST+rep);
 	}
 	@Test
-	public void testCorrectsExp() throws IOException{
-		String rep="testExp/corrects/";
+	public void testExp() throws IOException{
+		String rep="testExp/";
 		System.out.println("Test sur les expressions correctes:");
 		executeOnDir(REPERTOIRETEST+rep);		
 	}
@@ -111,6 +111,7 @@ public class Tests {
 		System.out.println("Tests sur des opérateur d'operation");		
 		executeOnDir(REPERTOIRETEST+rep);		
 	}
+	
 	/*@Test
 	public void testIncorrectsExp() throws IOException{
 		System.out.println("testExp/incorrects");
@@ -157,14 +158,19 @@ public class Tests {
 	public void executeOnDir(String path) throws FileNotFoundException, IOException
 	{
 		System.out.println("Répertoire de test:"+path+"\tNombre de fichiers:"+numberOfFiles(path));
-		ArrayList<File> fichiers=filesInPath(path);
-		for(File fichier:fichiers)
+		ArrayList<File> fichiersFonctionnels=filesInPath(path+"fonctionnels");
+		for(File fichier:fichiersFonctionnels)
 		{
-			executeTest(fichier);
+			executeTestFonctionnel(fichier);
+		}
+		ArrayList<File> fichiersNonFonctionnels=filesInPath(path+"nonFonctionnels");
+		for(File fichier:fichiersNonFonctionnels)
+		{
+			executeTestNonFonctionnel(fichier);
 		}
 	}
 	
-	public void executeTest(File fichier) throws FileNotFoundException, IOException
+	public void executeTestFonctionnel(File fichier) throws FileNotFoundException, IOException
 	{
 		System.out.println("\tFichier du chemin en test:"+fichier.getAbsolutePath());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -183,6 +189,29 @@ public class Tests {
       //on restaure out
         String res=baos.toString();
 	    assertEquals("", baos.toString());
+	    System.setErr(err);
+	    System.err.println(res);
+	}
+	
+	public void executeTestNonFonctionnel(File fichier) throws FileNotFoundException, IOException
+	{
+		System.out.println("\tFichier du chemin en test:"+fichier.getAbsolutePath());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    PrintStream ps = new PrintStream(baos);
+	    PrintStream err = System.err;
+	    System.setErr(ps);
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichier));
+        TigerLexer lexer = new TigerLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        TigerParser parser = new TigerParser(tokens);
+        try {
+			parser.program();
+		} catch (RecognitionException e) {
+			e.printStackTrace();
+		}
+      //on restaure out
+        String res=baos.toString();
+	    assertNotEquals("", baos.toString());
 	    System.setErr(err);
 	    System.err.println(res);
 	}

@@ -1,0 +1,3 @@
+for to 10
+do
+  print("hello world")
