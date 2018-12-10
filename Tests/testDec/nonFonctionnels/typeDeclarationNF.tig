@@ -1,0 +1,8 @@
+let
+	type megaType : entier
+	type grosTableauType = array of entier
+	type megaGrosType = { num1 : entier,num2:string,num3:char}
+
+in
+
+end

@@ -1,0 +1,11 @@
+let
+  var x:= 12
+  var y:= 42
+  var z : int := 0
+in
+  print("Hello World");
+  let
+    var z:= "String"
+  in
+    z := x+y
+  end

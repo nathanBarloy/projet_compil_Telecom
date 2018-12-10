@@ -1,0 +1,21 @@
+let
+	function hello() = print("Hello")
+	function avecUnParametreSansRetour(param1 : entier) = print(param1)
+	function avecUnParametreEtRetour(param1 : entier) : entier = param1
+	function avecPlusieursParametresSansRetour(param1 : entier, param2:string, param3:char) =
+	(print(param1)
+	print(param2)
+	print(param3))
+	function avecPlusieursParametresAvecRetour(param1 : entier, param2:string, param3:char) : entier =
+	(print(param2);
+	print(param3);
+	param1)
+
+	function not (i : int) : int =
+    if i = 0 then
+      1
+    else
+      0
+in
+
+end
