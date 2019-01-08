@@ -11,12 +11,12 @@ import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
 public class Main {
-	
-	
+
+
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
 	    TableSymboles blocOrig = new TableSymboles(null);
-	    
-	    ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/prog1.txt"));
+
+	    ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/fonctionnels/prog1.txt"));
         TigerLexer lexer = new TigerLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TigerParser parser = new TigerParser(tokens);
@@ -26,7 +26,7 @@ public class Main {
         StringTemplate st = gen.toDOT(tree);
         System.out.println(st);*/
 	}
-	
+
 	public static void parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
 		System.out.println(tree.getText());
@@ -44,11 +44,11 @@ public class Main {
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 			default:
-				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table 
+				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
 			}
-			
+
 		}
-		
+
 	}
 }
