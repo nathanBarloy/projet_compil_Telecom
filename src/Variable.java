@@ -13,4 +13,5 @@ public class Variable {
 	public Variable(String name, String type) {
 		this(name,type,0);
 	}
+	
 }
