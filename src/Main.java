@@ -10,6 +10,8 @@ import org.antlr.runtime.tree.DOTTreeGenerator;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
+import tableSymbole.TableSymboles;
+
 public class Main {
 
 
@@ -39,7 +41,8 @@ public class Main {
 			case "FUNDEC":
 				nouvelle = new TableSymboles(tableParent);
 				String nom = tree.getChild(i).getChild(0).getText();
-				if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") { // on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
+				if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
+					// on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
 					String retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText();
 					tableParent.ajouterFonction(nom, retour, nouvelle);
 				}
@@ -60,10 +63,10 @@ public class Main {
 				// TODO : verifier que le nom de la variable n'existe pas deja
 				// verifier que le type existe
 				if (tree.getChildCount()==3) {
-					tableParent.ajouterSymbole(tree.getChild(i).getChild(0).getText(),tree.getChild(i).getChild(1).getText());
+					tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(),tree.getChild(i).getChild(1).getText());
 				}
 				else {
-					tableParent.ajouterSymbole(tree.getChild(i).getChild(0).getText(), null);
+					tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), null);
 				}
 				break;
 			case "IDBEG":
