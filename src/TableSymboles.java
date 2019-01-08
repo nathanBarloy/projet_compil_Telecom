@@ -29,7 +29,7 @@ public class TableSymboles {
   public TableSymboles getTDSFonction(Fonction f) {
 	  return fonctionMap.get(f);
   }
-  
+
   public void ajouterSymbole(String name, String type) { // nouvelle variable
     variableMap.put(name, new Variable(name,type));
   }
@@ -50,6 +50,8 @@ public class TableSymboles {
     return fils.get(i);
   }
 
+
+  @Override
   public String toString(){
     StringBuilder s =new StringBuilder();
     Set<String> cles = variableMap.keySet();
