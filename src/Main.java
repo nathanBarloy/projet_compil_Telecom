@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
 	    TableSymboles blocOrig = new TableSymboles(null);
 	    
-	    ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/prog1.txt"));
+	    ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/fonctionnels/prog1.txt"));
         TigerLexer lexer = new TigerLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TigerParser parser = new TigerParser(tokens);

@@ -8,7 +8,7 @@ public class TableSymboles {
 	
   private TableSymboles parent; // TDS parent
   private ArrayList<TableSymboles> fils; //liste des TDS fils
-  private HashMap<String,Variable> map; // stocke les entrés dans la table
+  private HashMap<String,Variable> map; // stocke les entrées dans la table
 
   public TableSymboles(TableSymboles parent) {
     this.parent = parent;
@@ -39,12 +39,14 @@ public class TableSymboles {
   public TableSymboles getFils(int i){ // récupère le ième fils tds
     return fils.get(i);
   }
-
+  
+  
+  @Override
   public String toString(){
     StringBuilder s =new StringBuilder();
     Set<String> cles = map.keySet();
     for(String string : cles){
-      s.append("\n" + string+ ":" +map.get(string));
+      s.append("\n" + map.get(string));
     }
     return s.toString();
   }
