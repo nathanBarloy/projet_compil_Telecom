@@ -31,21 +31,40 @@ public class TableSymboles {
 		this(null);
 	}
 
+	public void ajouterType(String name)
+	{
+		if(getType(name)==null)
+		{
+			ajouterIdentificateur(name, new Type(name));
+		}
+		else
+		{
+			System.err.println("Tentative de déclaration d'un type existant : "+name);
+		}
+	}
 	public void ajouterFonction(String name, String retour, TableSymboles tds) {
 		//fonctionMap.put(new Fonction(name,retour),tds);
-		//TODO on récupère le type dans la TDS (s'il n'existe pas dans cette tds ou une tds parent, alors il y'a une erreur)
-		ajouterIdentificateur(name,new Fonction(name, new Type(retour),tds));
+		Type t=getType(retour);
+		if(t!=null)
+		{
+			ajouterIdentificateur(name,new Fonction(name, t,tds));
+		}
+		else
+		{
+			System.err.println("Type de retour non défini '"+retour+"' lors de la déclaration de la fonction "+name);
+		}
 	}
 
 	private void ajouterIdentificateur(String name,Identificateur identificateur)
 	{
 		if(!identificateurs.containsKey(name))
 		{
+			System.out.println("Ajout de l'identificateur : "+name);
 			identificateurs.put(name,identificateur);
 		}
 		else
 		{
-			System.err.println("Identificateur déjà présent");
+			System.err.println("Identificateur déjà présent : "+name);
 		}
 
 	}
@@ -56,14 +75,35 @@ public class TableSymboles {
 
 	public void ajouterVariable(String name, String type) { // nouvelle variable
 		//variableMap.put(name, new Variable(name,type));
-		//TODO on récupère le type dans la TDS (s'il n'existe pas dans cette tds ou une tds parent, alors il y'a une erreur)
-		ajouterIdentificateur(name, new Variable(name, new Type(type)));
+		Type t=getType(type);
+		if(t!=null)
+		{
+			ajouterIdentificateur(name, new Variable(name, t));
+		}
+		else
+		{
+			System.err.println("Type non défini '"+type+"' lors de la déclaration de la variable "+name);
+		}
 	}
-
-	public Variable regarderNoeudSup(String name) { // renvoie type de name (regarde les pères)
+	
+	/**
+	 * Cette méthode retourne le type s'il existe dans cette tds ou dans les parents, null sinon
+	 * @param type : identificateur en chaine de caractère du type
+	 * @return objet Type déjà défini
+	 */
+	public Type getType(String type)
+	{
+		Type res = (Type)(identificateurs.get(type));
+		if(res == null && parent != null) {
+			res = parent.getType(type);
+		}
+		return res;
+	}
+	
+	public Variable isAlreadyDefined(String name) { // renvoie type de name (regarde les pères)
 		Variable res = (Variable)(identificateurs.get(name));
 		if(res == null && parent != null) {
-			res = parent.regarderNoeudSup(name);
+			res = parent.isAlreadyDefined(name);
 		}
 		return res;
 	}
