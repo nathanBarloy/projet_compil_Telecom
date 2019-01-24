@@ -36,7 +36,7 @@ public class Main {
 		tds.ajouterType("int");
 		tds.ajouterType("string");
 	}
-	
+
 	private static void ajouterFonctionBase(TableSymboles tds)
 	{
 		System.out.println("Ajout des fonctions de bases");
@@ -78,10 +78,10 @@ public class Main {
 				if (tree.getChildCount()==3)//cas où le type est précisé
 				{
 					tableParent.ajouterVariable(tree.getChild(0).getText(),tree.getChild(1).getText());
+					i = i+3;
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
-					//TODO detecter le type
 					String valeur=tree.getChild(1).getText();//valeur
 					if(valeur.matches("-?(0|[1-9]\\d*)"))//si c'est un entier
 					{
@@ -95,7 +95,8 @@ public class Main {
 					{
 						System.err.println("Impossible de détecter le type");
 					}
-					
+					i = i +2;
+
 				}
 				break;
 			case "IDBEG":
