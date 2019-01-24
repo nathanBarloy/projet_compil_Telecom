@@ -1,0 +1,6 @@
+let
+    var total : int := 0
+    var texte : string := total
+in
+
+end

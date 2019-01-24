@@ -1,0 +1,6 @@
+let
+    var total : string := "total"
+    var taille := size(total)
+in
+    
+end

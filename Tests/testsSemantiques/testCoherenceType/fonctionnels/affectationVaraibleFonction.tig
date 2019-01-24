@@ -1,0 +1,6 @@
+let
+    var texte := "On est là"
+    var tailleTexte := size(texte)
+in
+
+end

@@ -74,11 +74,17 @@ public class TableSymboles {
 	}
 
 	public void ajouterVariable(String name, String type) { // nouvelle variable
-		//variableMap.put(name, new Variable(name,type));
 		Type t=getType(type);
 		if(t!=null)
 		{
-			ajouterIdentificateur(name, new Variable(name, t));
+			if(!identificateurs.containsKey(name))
+			{
+				ajouterIdentificateur(name, new Variable(name, t));
+			}
+			else
+			{
+				System.err.println("Identificateur déjà utilisé : "+name);
+			}
 		}
 		else
 		{

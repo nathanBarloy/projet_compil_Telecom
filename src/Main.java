@@ -19,7 +19,9 @@ public class Main {
 		TableSymboles blocOrig = new TableSymboles(null);
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/fonctionnels/prog1.txt"));
+		System.out.println("///////////////////////////////////////");
+		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/fonctionnels/prog1.txt"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -32,17 +34,35 @@ public class Main {
         System.out.println(st);*/
 	}
 
+	/**
+	 * Cette fonction ajoute les types de bases du langage à la TDS passée en paramètre
+	 * @param tds Table des symboles dans laquelle ajouter les types de bases du langage
+	 */
 	private static void ajouterTypesBase(TableSymboles tds)
 	{
 		System.out.println("Ajout des types de bases à la TDS d'origine");
 		tds.ajouterType("int");
 		tds.ajouterType("string");
+		tds.ajouterType("void");
 	}
 
+	/**
+	 * Cette fonction ajoute les fonctions de base du langage à la TDS passée en paramètre
+	 * @param tds Table des symboles dans laquelle ajouter les fonctions de bases du langage
+	 */
 	private static void ajouterFonctionBase(TableSymboles tds)
 	{
-		System.out.println("Ajout des fonctions de bases");
+		System.out.println("Ajout des fonctions intrinsèques");
 		tds.ajouterFonction("print", "void", null);
+		tds.ajouterFonction("flush","void", null);
+		tds.ajouterFonction("getchar", "string", null);
+		tds.ajouterFonction("ord", "int", null);
+		tds.ajouterFonction("chr", "string", null);
+		tds.ajouterFonction("size", "int", null);
+		tds.ajouterFonction("substring", "string", null);
+		tds.ajouterFonction("concat", "string", null);
+		tds.ajouterFonction("not", "int", null);
+		tds.ajouterFonction("exit", "int", null);
 	}
 	public static TableSymboles parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
@@ -53,17 +73,17 @@ public class Main {
 		{
 			System.out.println("tree : "+tree.getText());
 			System.out.println("i (boucle): "+i);
-			
+
 			Tree newTree = tree.getChild(i);
 			System.out.println("newTree : "+newTree.getText());
 
 			switch(newTree.getText())
 			{
-			/* LE PARCOURS N'EST PAS BON 
+			/* LE PARCOURS N'EST PAS BON
 			 * TODO : Corriger les appels parcoursArbre(tree,...) -> changer le tree pour que ça marche
-			 * 
+			 *
 			 * */
-			
+
 			//case "ROOT":
 			//cas creant un nouveau bloc
 			case "FUNDEC":
@@ -97,7 +117,6 @@ public class Main {
 				break;
 				// cas ne creant pas de nouveau blocOrig
 			case "VARDEC":
-				// TODO : verifier que le nom de la variable n'existe pas deja
 				if (tree.getChildCount()==3)//cas où le type est précisé
 				{
 					tableParent.ajouterVariable(tree.getChild(0).getText(),tree.getChild(1).getText());
@@ -110,7 +129,7 @@ public class Main {
 					{
 						tableParent.ajouterVariable(tree.getChild(0).getText(), "int");
 					}
-					else if(valeur.matches("[^\"]*"))//sinon si c'est une chaîne de caractère
+					else if(valeur.matches("\\br\\w*r\\b"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
 					{
 						tableParent.ajouterVariable(tree.getChild(0).getText(), "string");
 					}
@@ -153,7 +172,7 @@ public class Main {
 		return tableParent;
 
 	}
-	
+
 	public static void afficherTDS(TableSymboles tds)
 	{
 		System.out.println(tds.toString());
