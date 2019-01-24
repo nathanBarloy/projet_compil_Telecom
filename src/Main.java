@@ -24,7 +24,9 @@ public class Main {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
 		CommonTree tree=(CommonTree)parser.program().getTree();
-		parcoursArbre(tree,blocOrig);
+		blocOrig = parcoursArbre(tree,blocOrig);
+		// Affichage des tables de symboles pour vérification
+		afficherTDS(blocOrig);
 		/*DOTTreeGenerator gen = new DOTTreeGenerator();
         StringTemplate st = gen.toDOT(tree);
         System.out.println(st);*/
@@ -42,18 +44,32 @@ public class Main {
 		System.out.println("Ajout des fonctions de bases");
 		tds.ajouterFonction("print", "void", null);
 	}
-	public static void parcoursArbre(Tree tree,TableSymboles tableParent)
+	public static TableSymboles parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
 		TableSymboles nouvelle;
-		System.out.println(tree.getText());
+		afficherTDS(tableParent);
+		System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-			switch(tree.getText())
+			System.out.println("tree : "+tree.getText());
+			System.out.println("i (boucle): "+i);
+			
+			Tree newTree = tree.getChild(i);
+			System.out.println("newTree : "+newTree.getText());
+
+			switch(newTree.getText())
 			{
+			/* LE PARCOURS N'EST PAS BON 
+			 * TODO : Corriger les appels parcoursArbre(tree,...) -> changer le tree pour que ça marche
+			 * 
+			 * */
+			
 			//case "ROOT":
 			//cas creant un nouveau bloc
 			case "FUNDEC":
 				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				System.out.println("Création de table des symboles 1");
 				String nom = tree.getChild(i).getChild(0).getText();
 				if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
 					// on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
@@ -66,10 +82,17 @@ public class Main {
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 			case "LET":
+				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				System.out.println("Création de table des symboles 2");
+				parcoursArbre(tree.getChild(i),nouvelle);
+				break;
 			case "WHILE":
 			case "FOR":
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
 				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				System.out.println("Création de table des symboles 3");
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 				// cas ne creant pas de nouveau blocOrig
@@ -95,9 +118,12 @@ public class Main {
 					{
 						System.err.println("Impossible de détecter le type");
 					}
+					System.out.println("i dans VARDEC (avant): "+i);
 					i = i +2;
+					System.out.println("i dans VARDEC (après): "+i);
 
 				}
+				System.out.println("break");
 				break;
 			case "IDBEG":
 				// que des controle semantique dans IDBEGIN ?
@@ -124,6 +150,16 @@ public class Main {
 			}
 
 		}
+		return tableParent;
 
+	}
+	
+	public static void afficherTDS(TableSymboles tds)
+	{
+		System.out.println(tds.toString());
+		for(int i = 0;i<tds.getFils().size();i++)
+		{
+			afficherTDS(tds.getFils(i));
+		}
 	}
 }

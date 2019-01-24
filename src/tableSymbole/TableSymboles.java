@@ -115,10 +115,20 @@ public class TableSymboles {
 	public TableSymboles getFils(int i){ // récupère le ième fils tds
 		return fils.get(i);
 	}
+	
+	public ArrayList<TableSymboles> getFils() {
+		return fils;
+	}
 
 	@Override
 	public String toString() {
-		return "TableSymboles [identificateurs=" + identificateurs + "]";
+		StringBuilder s = new StringBuilder();
+		s.append("Table des symbole : [");
+		for (Identificateur id : identificateurs.values()) {
+			s.append("Identificateur : "+id.getName()+",");
+		}
+		s.append("]");
+		return s.toString();
 	}
 
 	/*@Override
