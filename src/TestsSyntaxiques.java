@@ -14,9 +14,9 @@ import org.antlr.runtime.*;
 
 import org.junit.Test;
 
-public class Tests {
+public class TestsSyntaxiques {
 
-	private final String REPERTOIRETEST="Tests/";
+	private final String REPERTOIRETEST="Tests/testsSyntaxiques/";
 	/*@Before
 	public void setUp() throws Exception {
 	}*/

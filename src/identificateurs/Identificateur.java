@@ -10,7 +10,7 @@ public abstract class Identificateur {
 		this.nom = nom;
 	}
 	
-	public String getNom() {
+	public String getName() {
 		return nom;
 	}
 	

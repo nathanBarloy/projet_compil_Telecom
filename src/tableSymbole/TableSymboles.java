@@ -74,11 +74,17 @@ public class TableSymboles {
 	}
 
 	public void ajouterVariable(String name, String type) { // nouvelle variable
-		//variableMap.put(name, new Variable(name,type));
 		Type t=getType(type);
 		if(t!=null)
 		{
-			ajouterIdentificateur(name, new Variable(name, t));
+			if(!identificateurs.containsKey(name))
+			{
+				ajouterIdentificateur(name, new Variable(name, t));
+			}
+			else
+			{
+				System.err.println("Identificateur déjà utilisé : "+name);
+			}
 		}
 		else
 		{
@@ -115,10 +121,20 @@ public class TableSymboles {
 	public TableSymboles getFils(int i){ // récupère le ième fils tds
 		return fils.get(i);
 	}
+	
+	public ArrayList<TableSymboles> getFils() {
+		return fils;
+	}
 
 	@Override
 	public String toString() {
-		return "TableSymboles [identificateurs=" + identificateurs + "]";
+		StringBuilder s = new StringBuilder();
+		s.append("Table des symbole : [");
+		for (Identificateur id : identificateurs.values()) {
+			s.append("Identificateur : "+id.getName()+",");
+		}
+		s.append("]");
+		return s.toString();
 	}
 
 	/*@Override

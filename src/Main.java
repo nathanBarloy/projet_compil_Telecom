@@ -20,43 +20,79 @@ public class Main {
 		TableSymboles blocOrig = new TableSymboles(null);
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testProf/fonctionnels/prog1.txt"));
+		System.out.println("///////////////////////////////////////");
+		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/fonctionnels/prog1.txt"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
 		CommonTree tree=(CommonTree)parser.program().getTree();
-		parcoursArbre(tree,blocOrig);
+		blocOrig = parcoursArbre(tree,blocOrig);
+		// Affichage des tables de symboles pour vérification
+		afficherTDS(blocOrig);
 		/*DOTTreeGenerator gen = new DOTTreeGenerator();
         StringTemplate st = gen.toDOT(tree);
         System.out.println(st);*/
 	}
 
+	/**
+	 * Cette fonction ajoute les types de bases du langage à la TDS passée en paramètre
+	 * @param tds Table des symboles dans laquelle ajouter les types de bases du langage
+	 */
 	private static void ajouterTypesBase(TableSymboles tds)
 	{
 		System.out.println("Ajout des types de bases à la TDS d'origine");
 		tds.ajouterType("int");
 		tds.ajouterType("string");
+		tds.ajouterType("void");
 	}
-	
+
+	/**
+	 * Cette fonction ajoute les fonctions de base du langage à la TDS passée en paramètre
+	 * @param tds Table des symboles dans laquelle ajouter les fonctions de bases du langage
+	 */
 	private static void ajouterFonctionBase(TableSymboles tds)
 	{
-		System.out.println("Ajout des fonctions de bases");
+		System.out.println("Ajout des fonctions intrinsèques");
 		tds.ajouterFonction("print", "void", null);
+		tds.ajouterFonction("flush","void", null);
+		tds.ajouterFonction("getchar", "string", null);
+		tds.ajouterFonction("ord", "int", null);
+		tds.ajouterFonction("chr", "string", null);
+		tds.ajouterFonction("size", "int", null);
+		tds.ajouterFonction("substring", "string", null);
+		tds.ajouterFonction("concat", "string", null);
+		tds.ajouterFonction("not", "int", null);
+		tds.ajouterFonction("exit", "int", null);
 	}
-	
-	public static void parcoursArbre(Tree tree,TableSymboles tableParent)
+
+	public static TableSymboles parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
 		TableSymboles nouvelle;
-		System.out.println(tree.getText());
+		afficherTDS(tableParent);
+		System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-			switch(tree.getText())
+			System.out.println("tree : "+tree.getText());
+			System.out.println("i (boucle): "+i);
+
+			Tree newTree = tree.getChild(i);
+			System.out.println("newTree : "+newTree.getText());
+
+			switch(newTree.getText())
 			{
+			/* LE PARCOURS N'EST PAS BON
+			 * TODO : Corriger les appels parcoursArbre(tree,...) -> changer le tree pour que ça marche
+			 *
+			 * */
+
 			//case "ROOT":
 			//cas creant un nouveau bloc
 			
 			case "FUNDEC":
 				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				System.out.println("Création de table des symboles 1");
 				String nom = tree.getChild(i).getChild(0).getText();
 				if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
 					// on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
@@ -70,31 +106,37 @@ public class Main {
 				break;
 				
 			case "LET":
+				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				System.out.println("Création de table des symboles 2");
+				parcoursArbre(tree.getChild(i),nouvelle);
+				break;
 				
 			case "WHILE":
 				
 			case "FOR":
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
 				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				System.out.println("Création de table des symboles 3");
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 				// cas ne creant pas de nouveau blocOrig
 				
 			case "VARDEC":
-				// TODO : verifier que le nom de la variable n'existe pas deja
 				if (tree.getChildCount()==3)//cas où le type est précisé
 				{
 					tableParent.ajouterVariable(tree.getChild(0).getText(),tree.getChild(1).getText());
+					i = i+3;
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
-					//TODO detecter le type
 					String valeur=tree.getChild(1).getText();//valeur
 					if(valeur.matches("-?(0|[1-9]\\d*)"))//si c'est un entier
 					{
 						tableParent.ajouterVariable(tree.getChild(0).getText(), "int");
 					}
-					else if(valeur.matches("[^\"]*"))//sinon si c'est une chaîne de caractère
+					else if(valeur.matches("\\br\\w*r\\b"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
 					{
 						tableParent.ajouterVariable(tree.getChild(0).getText(), "string");
 					}
@@ -102,8 +144,12 @@ public class Main {
 					{
 						System.err.println("Impossible de détecter le type");
 					}
-					
+					System.out.println("i dans VARDEC (avant): "+i);
+					i = i +2;
+					System.out.println("i dans VARDEC (après): "+i);
+
 				}
+				System.out.println("break");
 				break;
 				
 			case "TYDEC" :
@@ -158,7 +204,17 @@ public class Main {
 			}
 
 		}
+		return tableParent;
 
+	}
+
+	public static void afficherTDS(TableSymboles tds)
+	{
+		System.out.println(tds.toString());
+		for(int i = 0;i<tds.getFils().size();i++)
+		{
+			afficherTDS(tds.getFils(i));
+		}
 	}
 	
 }
