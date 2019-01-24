@@ -1,3 +1,5 @@
 /bin/
 /src/output/
 *.class
+/src/TigerLexer*
+/src/TigerParser*
