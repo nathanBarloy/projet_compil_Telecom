@@ -100,10 +100,10 @@ public class TableSymboles {
 		return res;
 	}
 	
-	public Variable isAlreadyDefined(String name) { // renvoie type de name (regarde les pères)
-		Variable res = (Variable)(identificateurs.get(name));
+	public Identificateur get(String name) { // renvoie l'identificateur de nom name
+		Identificateur res = (Identificateur)(identificateurs.get(name));
 		if(res == null && parent != null) {
-			res = parent.isAlreadyDefined(name);
+			res = parent.get(name);
 		}
 		return res;
 	}

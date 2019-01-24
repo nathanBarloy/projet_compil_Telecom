@@ -11,6 +11,7 @@ import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
 import tableSymbole.TableSymboles;
+import identificateurs.Type;
 
 public class Main {
 
@@ -42,6 +43,7 @@ public class Main {
 		System.out.println("Ajout des fonctions de bases");
 		tds.ajouterFonction("print", "void", null);
 	}
+	
 	public static void parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
 		TableSymboles nouvelle;
@@ -52,6 +54,7 @@ public class Main {
 			{
 			//case "ROOT":
 			//cas creant un nouveau bloc
+			
 			case "FUNDEC":
 				nouvelle = new TableSymboles(tableParent);
 				String nom = tree.getChild(i).getChild(0).getText();
@@ -65,14 +68,18 @@ public class Main {
 				}
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
+				
 			case "LET":
+				
 			case "WHILE":
+				
 			case "FOR":
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
 				nouvelle = new TableSymboles(tableParent);
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 				// cas ne creant pas de nouveau blocOrig
+				
 			case "VARDEC":
 				// TODO : verifier que le nom de la variable n'existe pas deja
 				if (tree.getChildCount()==3)//cas où le type est précisé
@@ -98,6 +105,33 @@ public class Main {
 					
 				}
 				break;
+				
+			case "TYDEC" :
+				String nomType = tree.getChild(0).getText();
+				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
+					System.err.println("Le nom "+nomType+" à déjà été pris, impossible de créer le type");
+				} else { // si le nom est valable
+					switch(tree.getChild(1).getText()) {
+					case "RECTY" : // on défini un ensemble
+						//TODO verifier que les types utilisés existent bien
+						break;
+					case "ARRTY" : // on défini une liste
+						//TODO vérifier que le type de la liste existe bien
+						break;
+					default : // on défini un alias
+						String aliased = tree.getChild(1).getText();
+						if (tableParent.get(aliased)==null || !(tableParent.get(aliased) instanceof Type)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+							System.err.println("Le nom "+ aliased+" n'existe pas ou ne représente pas un type");
+						} else { // si le nom entré est valable
+							tableParent.ajouterType(nomType);
+						}
+						break;
+					}
+				}
+				
+				//TODO ajouter le nouveau type à la TDS
+				break;
+				
 			case "IDBEG":
 				// que des controle semantique dans IDBEGIN ?
 				if (tree.getChildCount()==2) {
@@ -117,6 +151,7 @@ public class Main {
 
 				}
 				break;
+				
 			default:
 				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
@@ -125,4 +160,5 @@ public class Main {
 		}
 
 	}
+	
 }
