@@ -35,6 +35,7 @@ public class Main {
 		System.out.println("Ajout des types de bases à la TDS d'origine");
 		tds.ajouterType("int");
 		tds.ajouterType("string");
+		tds.ajouterType("void");
 	}
 	
 	private static void ajouterFonctionBase(TableSymboles tds)
@@ -87,7 +88,7 @@ public class Main {
 					{
 						tableParent.ajouterVariable(tree.getChild(0).getText(), "int");
 					}
-					else if(valeur.matches("[^\"]*"))//sinon si c'est une chaîne de caractère
+					else if(valeur.matches("\\br\\w*r\\b"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
 					{
 						tableParent.ajouterVariable(tree.getChild(0).getText(), "string");
 					}
@@ -95,7 +96,7 @@ public class Main {
 					{
 						System.err.println("Impossible de détecter le type");
 					}
-					
+
 				}
 				break;
 			case "IDBEG":
