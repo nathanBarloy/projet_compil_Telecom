@@ -21,8 +21,8 @@ public class Main {
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/fonctionnels/prog1.txt"));
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("/home/lucas/Documents/Cours/2A/PCL/project/Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/fonctionnels/test1.tig"));
+		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -76,10 +76,10 @@ public class Main {
 			System.out.println("tree : "+tree.getText());
 			System.out.println("i (boucle): "+i);
 
-			Tree newTree = tree.getChild(i);
-			System.out.println("newTree : "+newTree.getText());
-
-			switch(newTree.getText())
+			//Tree newTree = tree.getChild(i);
+			//	System.out.println("newTree : "+newTree.getText());
+			System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+			switch(tree.getChild(i).getText())
 			{
 			/* LE PARCOURS N'EST PAS BON
 			 * TODO : Corriger les appels parcoursArbre(tree,...) -> changer le tree pour que ça marche
@@ -113,6 +113,8 @@ public class Main {
 				break;
 				
 			case "WHILE":
+				System.err.println("Not yet implemented");
+				break;
 				
 			case "FOR":
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
@@ -127,26 +129,27 @@ public class Main {
 				if (tree.getChildCount()==3)//cas où le type est précisé
 				{
 					tableParent.ajouterVariable(tree.getChild(0).getText(),tree.getChild(1).getText());
-					i = i+3;
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
-					String valeur=tree.getChild(1).getText();//valeur
-					if(valeur.matches("-?(0|[1-9]\\d*)"))//si c'est un entier
+					String valeur=tree.getChild(i).getChild(1).getText();//valeur
+					System.out.println("valeur : "+valeur);
+					if(valeur.matches("-?(0|[1-9]\\d*)")) //si c'est un entier
 					{
-						tableParent.ajouterVariable(tree.getChild(0).getText(), "int");
+						System.out.println("ajoute entier");
+						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int");
 					}
+					// Enlever les expressions regulieres
 					else if(valeur.matches("\\br\\w*r\\b"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
 					{
-						tableParent.ajouterVariable(tree.getChild(0).getText(), "string");
+						System.out.println("ajoute string");
+						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "string");
 					}
 					else
 					{
 						System.err.println("Impossible de détecter le type");
 					}
-					System.out.println("i dans VARDEC (avant): "+i);
-					i = i +2;
-					System.out.println("i dans VARDEC (après): "+i);
+
 
 				}
 				System.out.println("break");
