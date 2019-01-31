@@ -21,7 +21,7 @@ public class Main {
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("/home/lucas/Documents/Cours/2A/PCL/project/Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/fonctionnels/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/fonctionnels/test1.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -134,13 +134,14 @@ public class Main {
 				{
 					String valeur=tree.getChild(i).getChild(1).getText();//valeur
 					System.out.println("valeur : "+valeur);
-					if(valeur.matches("-?(0|[1-9]\\d*)")) //si c'est un entier
+					if(valeur.matches("(\\d*)")) //si c'est un entier
+
 					{
 						System.out.println("ajoute entier");
 						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int");
 					}
 					// Enlever les expressions regulieres
-					else if(valeur.matches("\\br\\w*r\\b"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
+					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
 					{
 						System.out.println("ajoute string");
 						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "string");
