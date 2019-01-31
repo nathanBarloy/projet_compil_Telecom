@@ -21,7 +21,7 @@ public class Main {
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-		
+
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/forExp/fonctionnels/forExp.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
@@ -80,7 +80,7 @@ public class Main {
 
 			//case "ROOT":
 			//cas creant un nouveau bloc
-			
+
 			case "FUNDEC":
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
@@ -95,17 +95,17 @@ public class Main {
 				}
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-				
+
 			case "LET":
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-				
+
 			case "WHILE":
 				System.err.println("Not yet implemented");
 				break;
-				
+
 			case "FOR":
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
 				nouvelle = new TableSymboles(tableParent);
@@ -121,7 +121,7 @@ public class Main {
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 				// cas ne creant pas de nouveau blocOrig
-				
+
 			case "VARDEC":
 				if (tree.getChildCount()==3)//cas où le type est précisé
 				{
@@ -137,7 +137,8 @@ public class Main {
 						System.out.println("ajoute entier");
 						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int"); // TODO : gerer le cas d'une addition
 					}
-					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
+
+					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère commencant et terminant pas "
 					{
 						System.out.println("ajoute string");
 						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "string");
@@ -151,7 +152,7 @@ public class Main {
 				}
 				System.out.println("break");
 				break;
-				
+
 			case "TYDEC" :
 				String nomType = tree.getChild(0).getText();
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
@@ -174,10 +175,10 @@ public class Main {
 						break;
 					}
 				}
-				
+
 				//TODO ajouter le nouveau type à la TDS
 				break;
-				
+
 			case "IDBEG":
 				// que des controle semantique dans IDBEGIN ?
 				if (tree.getChildCount()==2) {
@@ -197,7 +198,7 @@ public class Main {
 
 				}
 				break;
-				
+
 			default:
 				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
@@ -216,5 +217,5 @@ public class Main {
 			afficherTDS(tds.getFils(i));
 		}
 	}
-	
+
 }
