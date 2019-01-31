@@ -140,8 +140,8 @@ public class Main {
 						System.out.println("ajoute entier");
 						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int");
 					}
-					// Enlever les expressions regulieres
-					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
+
+					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère commencant et terminant pas "
 					{
 						System.out.println("ajoute string");
 						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "string");
