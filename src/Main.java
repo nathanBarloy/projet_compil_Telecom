@@ -21,7 +21,8 @@ public class Main {
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/fonctionnels/test1.tig"));
+		
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/forExp/fonctionnels/forExp.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -73,18 +74,9 @@ public class Main {
 		System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-			System.out.println("tree : "+tree.getText());
-			System.out.println("i (boucle): "+i);
-
-			//Tree newTree = tree.getChild(i);
-			//	System.out.println("newTree : "+newTree.getText());
 			System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			switch(tree.getChild(i).getText())
 			{
-			/* LE PARCOURS N'EST PAS BON
-			 * TODO : Corriger les appels parcoursArbre(tree,...) -> changer le tree pour que ça marche
-			 *
-			 * */
 
 			//case "ROOT":
 			//cas creant un nouveau bloc
@@ -92,7 +84,6 @@ public class Main {
 			case "FUNDEC":
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
-				System.out.println("Création de table des symboles 1");
 				String nom = tree.getChild(i).getChild(0).getText();
 				if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
 					// on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
@@ -108,7 +99,6 @@ public class Main {
 			case "LET":
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
-				System.out.println("Création de table des symboles 2");
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 				
@@ -120,7 +110,14 @@ public class Main {
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
-				System.out.println("Création de table des symboles 3");
+				String start=tree.getChild(i).getChild(1).getText();//valeur
+				String end=tree.getChild(i).getChild(2).getText();//valeur
+				if(start.matches("(\\d*)") && end.matches("(\\d*)")) { 		//si le debut et la fin du for sont des entiers
+					nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int"); // TODO : gerer le cas d'une addition
+				}
+				else {
+					System.err.println("Le début et la fin de l'index doit être de type : int");
+				}
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 				// cas ne creant pas de nouveau blocOrig
@@ -138,9 +135,8 @@ public class Main {
 
 					{
 						System.out.println("ajoute entier");
-						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int");
+						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int"); // TODO : gerer le cas d'une addition
 					}
-					// Enlever les expressions regulieres
 					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère  !!!!--- test nimporte quelles mots commençant et terminant par le car 'r' ---!!!!
 					{
 						System.out.println("ajoute string");
