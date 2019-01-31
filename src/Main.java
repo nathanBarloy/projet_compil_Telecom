@@ -17,7 +17,7 @@ public class Main {
 
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
-		TableSymboles blocOrig = new TableSymboles(null);
+		TableSymboles blocOrig = new TableSymboles();
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
@@ -169,7 +169,7 @@ public class Main {
 						break;
 					default : // on défini un alias
 						String aliased = tree.getChild(1).getText();
-						if (tableParent.get(aliased)==null || !(tableParent.get(aliased) instanceof Type)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+						if (tableParent.getType(aliased)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							System.err.println("Le nom "+ aliased+" n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
 							tableParent.ajouterType(nomType);

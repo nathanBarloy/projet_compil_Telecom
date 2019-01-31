@@ -17,18 +17,25 @@ public class TableSymboles {
 	//private HashMap<String,Variable> variableMap; // stocke les entrés dans la table
 	//private HashMap<Fonction,TableSymboles> fonctionMap;	// stocke les fonctions et leur tds associee
 	private HashMap<String,Identificateur> identificateurs;
+	private int niveau ; //niveau d'imbrication
 
 	public TableSymboles(TableSymboles parent) {
 		this.parent = parent;
+		niveau = parent.getNiveau()+1;
 
 		fils = new ArrayList<TableSymboles>();
 		identificateurs=new HashMap<>();
+		
 		/*variableMap = new HashMap<String, Variable>();
-    fonctionMap = new HashMap<Fonction, TableSymboles>();*/
+    	fonctionMap = new HashMap<Fonction, TableSymboles>();*/
 	}
 
 	public TableSymboles() { // table des symboles sans pere
-		this(null);
+		this.parent = null;
+		niveau = 0;
+
+		fils = new ArrayList<TableSymboles>();
+		identificateurs=new HashMap<>();
 	}
 
 	public void ajouterType(String name)
@@ -124,6 +131,10 @@ public class TableSymboles {
 	
 	public ArrayList<TableSymboles> getFils() {
 		return fils;
+	}
+	
+	public int getNiveau() {
+		return niveau;
 	}
 
 	@Override
