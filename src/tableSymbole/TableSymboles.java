@@ -113,6 +113,19 @@ public class TableSymboles {
 		return res;
 	}
 	
+	/**
+	 * Cette méthode retourne le type de la variable dont le nom est passé en paramètre
+	 * @param variable nom de la variable dont on cherche le type
+	 * @return Objet Type qui représente le type de la variable
+	 */
+	public Type getVariableType(String variable)
+	{
+		Type res = ((Variable)identificateurs.get(variable)).getType();
+		if(res == null && parent != null) {
+			res = parent.getVariableType(variable);
+		}
+		return res;
+	}
 	public Identificateur get(String name) { // renvoie l'identificateur de nom name
 		Identificateur res = (Identificateur)(identificateurs.get(name));
 		if(res == null && parent != null) {

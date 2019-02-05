@@ -22,7 +22,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testOperations/nonFonctionnel/test2.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testCoherenceType/fonctionnels/affectationVariableAAutreVaraible.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -126,34 +126,38 @@ public class Main {
 				// cas ne creant pas de nouveau blocOrig
 
 			case "VARDEC":
-				if (tree.getChildCount()==3)//cas où le type est précisé
+				if (tree.getChild(i).getChildCount()==3)//cas où le type est précisé
 				{
-					tableParent.ajouterVariable(tree.getChild(0).getText(),tree.getChild(1).getText());
+					Type typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText());
+					String dernierNoeud = tree.getChild(i).getChild(2).getText();
+					Type typeDetecte;
+					if(dernierNoeud.compareTo("IDBEG")==0)//il faut récupérer le type de cet identificateur dans la TDS
+					{
+						//System.out.println("cas IDBEG");
+						typeDetecte = tableParent.getVariableType(tree.getChild(i).getChild(2).getChild(0).getText());
+					}
+					else
+					{
+						//System.out.println("Cas pas IDBEG");
+						typeDetecte = tableParent.getType(detecterType(dernierNoeud));
+					}
+
+					if (typeDeclare != typeDetecte || typeDetecte == null)
+					{
+						System.out.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
+					}
+					else
+					{
+						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(),tree.getChild(i).getChild(1).getText());
+					}
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
 					String valeur=tree.getChild(i).getChild(1).getText();//valeur
-					System.out.println("valeur : "+valeur);
-					if(valeur.matches("(\\d*)")) //si c'est un entier
-
-					{
-						System.out.println("ajoute entier");
-						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "int"); // TODO : gerer le cas d'une addition
-					}
-
-					else if(valeur.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère commencant et terminant pas "
-					{
-						System.out.println("ajoute string");
-						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), "string");
-					}
-					else
-					{
-						System.err.println("Impossible de détecter le type");
-					}
-
-
+					//System.out.println("valeur : "+valeur);
+					String type=detecterType(valeur);
+					tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), type);
 				}
-				System.out.println("break");
 				break;
 
 			case "TYDEC" :
@@ -211,12 +215,12 @@ public class Main {
 		return tableParent;
 
 	}
-	
+
 	public static void controleOp(Tree tree) {		// controle semantique sur les operateurs ayant pour operandes des type int
 		String root = tree.getText();
 		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") || root.equals("=") || root.equals("<>") || root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
 			// cas ou le fils gauche n'est pas un entier ou seqexp
-			if (!tree.getChild(0).getText().matches("(\\d*)") && tree.getChild(0).getText() != "SEQEXP"){ 
+			if (!tree.getChild(0).getText().matches("(\\d*)") && tree.getChild(0).getText() != "SEQEXP"){
 				// cas ou le fils gauche n'est pas une operation
 				if(!(tree.getChild(0).getText().equals("+") || tree.getChild(0).getText().equals("-") || tree.getChild(0).getText().equals("*") || tree.getChild(0).getText().equals("/") || tree.getChild(0).getText().equals("=") || tree.getChild(0).getText().equals("<>") || tree.getChild(0).getText().equals("&") || tree.getChild(0).getText().equals("|"))) {
 					System.err.println("L'opérande "+tree.getChild(0).getText()+" n'est pas un int");
@@ -249,6 +253,28 @@ public class Main {
 		for(int i = 0;i<tds.getFils().size();i++)
 		{
 			afficherTDS(tds.getFils(i));
+		}
+	}
+
+	public static String detecterType(String texteNoeud)
+	{
+		if(texteNoeud.matches("(\\d*)")) //si c'est un entier
+
+		{
+			//System.out.println("ajoute entier");
+			return "int";
+			// TODO : gerer le cas d'une operation
+		}
+
+		else if(texteNoeud.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère commencant et terminant pas "
+		{
+			//System.out.println("ajoute string");
+			return "string";
+		}
+		else
+		{
+			System.err.println("Impossible de détecter le type");
+			return "";
 		}
 	}
 

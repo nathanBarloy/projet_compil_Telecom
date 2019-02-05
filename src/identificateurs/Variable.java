@@ -14,6 +14,11 @@ public class Variable extends Identificateur{
 		this(name,type,0);
 	}
 	
+	
+	public Type getType() {
+		return type;
+	}
+
 	@Override
 	public String toString() {
 		String res = "";
