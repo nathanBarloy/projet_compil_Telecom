@@ -12,6 +12,7 @@ import org.antlr.stringtemplate.StringTemplate;
 
 import tableSymbole.TableSymboles;
 import identificateurs.Type;
+import identificateurs.Variable;
 
 public class Main {
 
@@ -22,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testCoherenceType/fonctionnels/affectationVariableAAutreVaraible.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testOperations/nonFonctionnel/test3.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -75,7 +76,7 @@ public class Main {
 		for(int i=0;i<tree.getChildCount();i++)
 		{
 		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
-			controleOp(tree.getChild(i));
+			controleOp(tree.getChild(i), tableParent);
 			switch(tree.getChild(i).getText())
 			{
 
@@ -216,30 +217,62 @@ public class Main {
 
 	}
 
-	public static void controleOp(Tree tree) {		// controle semantique sur les operateurs ayant pour operandes des type int
+	public static void controleOp(Tree tree, TableSymboles tds) {		// controle semantique sur les operateurs ayant pour operandes des type int	
 		String root = tree.getText();
-		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") || root.equals("=") || root.equals("<>") || root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
+		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") ||	 root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
 			// cas ou le fils gauche n'est pas un entier ou seqexp
-			if (!tree.getChild(0).getText().matches("(\\d*)") && tree.getChild(0).getText() != "SEQEXP"){
+			String fg = tree.getChild(0).getText();
+			String fd = tree.getChild(1).getText();
+			if (!fg.matches("(\\d*)") && fg != "SEQEXP"){
+				// cas d'une variable
+				if(fg == "IDBEG"){
+					if (tree.getChild(0).getChildCount() == 1) {
+						Variable v = (Variable)tds.get(tree.getChild(0).getChild(0).getText());
+						if(v==null) {
+							System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas déclarée");
+						}
+						else {
+							Type t = tds.getVariableType(tree.getChild(0).getChild(0).getText());
+							if(t.getName() != "int") {
+								System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int");
+							}
+						}
+					}
+				}
 				// cas ou le fils gauche n'est pas une operation
-				if(!(tree.getChild(0).getText().equals("+") || tree.getChild(0).getText().equals("-") || tree.getChild(0).getText().equals("*") || tree.getChild(0).getText().equals("/") || tree.getChild(0).getText().equals("=") || tree.getChild(0).getText().equals("<>") || tree.getChild(0).getText().equals("&") || tree.getChild(0).getText().equals("|"))) {
-					System.err.println("L'opérande "+tree.getChild(0).getText()+" n'est pas un int");
+				else if(!(fg.equals("+") || fg.equals("-") || fg.equals("*") || fg.equals("/") || fg.equals("=") || fg.equals("<>") || fg.equals("&") || fg.equals("|"))) {
+					System.err.println("L'opérande "+fg+" n'est pas un int");
 				}
 			}
 			// cas ou le fils droit n'est pas un entier ou seqexp
-			if (!tree.getChild(1).getText().matches("(\\d*)") && tree.getChild(1).getText() != "SEQEXP"){
+			if (!fd.matches("(\\d*)") && fd != "SEQEXP"){
+				// cas d'une variable
+				if(fd == "IDBEG"){
+					if (tree.getChild(1).getChildCount() == 1) {
+						Variable v = (Variable)tds.get(tree.getChild(1).getChild(0).getText());
+						if(v==null) {
+							System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas déclarée");
+						}
+						else {
+							Type t = tds.getVariableType(tree.getChild(1).getChild(0).getText());
+							if(t.getName() != "int") {
+								System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
+							}
+						}
+					}
+				}
 				// cas ou le fils droit n'est pas une operation
-				if(!(tree.getChild(1).getText().equals("+") || tree.getChild(1).getText().equals("-") || tree.getChild(1).getText().equals("*") || tree.getChild(1).getText().equals("/") || tree.getChild(1).getText().equals("=") || tree.getChild(1).getText().equals("<>") || tree.getChild(1).getText().equals("&") || tree.getChild(1).getText().equals("|"))) {
-					System.err.println("L'opérande "+tree.getChild(1).getText()+" n'est pas de type int");
+				else if(!(fd.equals("+") || fd.equals("-") || fd.equals("*") || fd.equals("/") || fd.equals("=") || fd.equals("<>") || fd.equals("&") || fd.equals("|"))) {
+					System.err.println("L'opérande "+fd+" n'est pas de type int");
 					// TODO : gerer le cas de variable ou appel de fonction
 				}
 			}
-			if(tree.getChild(0).getText() == "SEQEXP") {
+			if(fg == "SEQEXP") {
 				if(tree.getChild(0).getChildCount() == 0) { // cas ou SEQEXP est de type void
 					System.err.println("La sequence d'expressions est vide");
 				}
 			}
-			if(tree.getChild(1).getText() == "SEQEXP") {
+			if(fd == "SEQEXP") {
 				if(tree.getChild(1).getChildCount() == 0) { // cas ou SEQEXP est de type void
 					System.err.println("La sequence d'expressions est vide");
 				}

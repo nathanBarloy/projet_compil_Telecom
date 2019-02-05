@@ -1,0 +1,8 @@
+let 
+	var texte := "On est là"
+   	var entier := 3
+in
+	4 + entier;
+	texte + 42 
+end
+
