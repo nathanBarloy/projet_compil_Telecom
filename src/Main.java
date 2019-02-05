@@ -22,7 +22,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/forExp/fonctionnels/forExp.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testOperations/nonFonctionnel/test2.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -70,13 +70,16 @@ public class Main {
 	public static TableSymboles parcoursArbre(Tree tree,TableSymboles tableParent)
 	{
 		TableSymboles nouvelle;
-		afficherTDS(tableParent);
-		System.out.println("Nb de fils : "+tree.getChildCount());
+	//	afficherTDS(tableParent);
+	//	System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-			System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+			controleOp(tree.getChild(i));
 			switch(tree.getChild(i).getText())
 			{
+
+				
 
 			//case "ROOT":
 			//cas creant un nouveau bloc
@@ -207,6 +210,37 @@ public class Main {
 		}
 		return tableParent;
 
+	}
+	
+	public static void controleOp(Tree tree) {		// controle semantique sur les operateurs ayant pour operandes des type int
+		String root = tree.getText();
+		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") || root.equals("=") || root.equals("<>") || root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
+			// cas ou le fils gauche n'est pas un entier ou seqexp
+			if (!tree.getChild(0).getText().matches("(\\d*)") && tree.getChild(0).getText() != "SEQEXP"){ 
+				// cas ou le fils gauche n'est pas une operation
+				if(!(tree.getChild(0).getText().equals("+") || tree.getChild(0).getText().equals("-") || tree.getChild(0).getText().equals("*") || tree.getChild(0).getText().equals("/") || tree.getChild(0).getText().equals("=") || tree.getChild(0).getText().equals("<>") || tree.getChild(0).getText().equals("&") || tree.getChild(0).getText().equals("|"))) {
+					System.err.println("L'opérande "+tree.getChild(0).getText()+" n'est pas un int");
+				}
+			}
+			// cas ou le fils droit n'est pas un entier ou seqexp
+			if (!tree.getChild(1).getText().matches("(\\d*)") && tree.getChild(1).getText() != "SEQEXP"){
+				// cas ou le fils droit n'est pas une operation
+				if(!(tree.getChild(1).getText().equals("+") || tree.getChild(1).getText().equals("-") || tree.getChild(1).getText().equals("*") || tree.getChild(1).getText().equals("/") || tree.getChild(1).getText().equals("=") || tree.getChild(1).getText().equals("<>") || tree.getChild(1).getText().equals("&") || tree.getChild(1).getText().equals("|"))) {
+					System.err.println("L'opérande "+tree.getChild(1).getText()+" n'est pas de type int");
+					// TODO : gerer le cas de variable ou appel de fonction
+				}
+			}
+			if(tree.getChild(0).getText() == "SEQEXP") {
+				if(tree.getChild(0).getChildCount() == 0) { // cas ou SEQEXP est de type void
+					System.err.println("La sequence d'expressions est vide");
+				}
+			}
+			if(tree.getChild(1).getText() == "SEQEXP") {
+				if(tree.getChild(1).getChildCount() == 0) { // cas ou SEQEXP est de type void
+					System.err.println("La sequence d'expressions est vide");
+				}
+			}
+		}
 	}
 
 	public static void afficherTDS(TableSymboles tds)
