@@ -2,5 +2,5 @@ let
     var total : int := 0
     var total2 : int := total
 in
-
+	
 end
