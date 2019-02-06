@@ -77,6 +77,7 @@ public class Main {
 		{
 		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			controleOp(tree.getChild(i), tableParent);
+			controleComparateurEgEq(tree.getChild(i));
 			switch(tree.getChild(i).getText())
 			{
 
@@ -116,7 +117,7 @@ public class Main {
 				tableParent.addFils(nouvelle);
 				String start=tree.getChild(i).getChild(1).getText();//valeur
 				String end=tree.getChild(i).getChild(2).getText();//valeur
-				if(start.matches("(\\d*)") && end.matches("(\\d*)")) { 		//si le debut et la fin du for sont des entiers
+				if(start.matches("INT") && end.matches("INT")) { 		//si le debut et la fin du for sont des entiers
 					nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int"); // TODO : gerer le cas d'une addition
 				}
 				else {
@@ -223,20 +224,11 @@ public class Main {
 			// cas ou le fils gauche n'est pas un entier ou seqexp
 			String fg = tree.getChild(0).getText();
 			String fd = tree.getChild(1).getText();
-			if (!fg.matches("(\\d*)") && fg != "SEQEXP"){
-				// cas d'une variable
-				if(fg == "IDBEG"){
-					if (tree.getChild(0).getChildCount() == 1) {
-						Variable v = (Variable)tds.get(tree.getChild(0).getChild(0).getText());
-						if(v==null) {
-							System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas déclarée");
-						}
-						else {
-							Type t = tds.getVariableType(tree.getChild(0).getChild(0).getText());
-							if(t.getName() != "int") {
-								System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int");
-							}
-						}
+			if (!fg.matches("INT") && fg != "SEQEXP"){
+				Type typeFg = detectionTypeExp(tree.getChild(0), tds);
+				if(typeFg != null) {
+					if(typeFg.getName() != "int") {
+						System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int");
 					}
 				}
 				// cas ou le fils gauche n'est pas une operation
@@ -245,22 +237,15 @@ public class Main {
 				}
 			}
 			// cas ou le fils droit n'est pas un entier ou seqexp
-			if (!fd.matches("(\\d*)") && fd != "SEQEXP"){
-				// cas d'une variable
-				if(fd == "IDBEG"){
-					if (tree.getChild(1).getChildCount() == 1) {
-						Variable v = (Variable)tds.get(tree.getChild(1).getChild(0).getText());
-						if(v==null) {
-							System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas déclarée");
-						}
-						else {
-							Type t = tds.getVariableType(tree.getChild(1).getChild(0).getText());
-							if(t.getName() != "int") {
-								System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
-							}
-						}
+			if (!fd.matches("INT") && fd != "SEQEXP"){
+				Type typeFd = detectionTypeExp(tree.getChild(1), tds);
+				if(typeFd != null) {
+					if(typeFd.getName() != "int") {
+						System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
 					}
 				}
+				// TODO : rajouter tous les cas ou une exp retourne un int
+				
 				// cas ou le fils droit n'est pas une operation
 				else if(!(fd.equals("+") || fd.equals("-") || fd.equals("*") || fd.equals("/") || fd.equals("=") || fd.equals("<>") || fd.equals("&") || fd.equals("|"))) {
 					System.err.println("L'opérande "+fd+" n'est pas de type int");
@@ -279,6 +264,47 @@ public class Main {
 			}
 		}
 	}
+	
+	public static void controleComparateurEgEq(Tree tree) { 	// vérifie que les deux operandes des comparateurs = et <> sont de meme type
+		String root = tree.getText();
+		if(root.equals("=") || root.equals("<>")) {	// si le noeud est l'un des deux operateurs
+			String fg = tree.getChild(0).getText();
+			String fd = tree.getChild(1).getText();
+			String typeDetecteFg = detecterType(fg);
+			String typeDetecteFd = detecterType(fd);
+			if (typeDetecteFg == null) { // si le fg n'est ni un int ni une string
+				// gestion de tout les type possible d'une exp
+				switch (fg) {
+				case "IDBEG" :
+					
+					break;
+				}
+			}
+		}
+		
+	}
+	
+	public static Type detectionTypeExp(Tree noeud, TableSymboles tds) {
+		String texteNoeud = noeud.getText();
+		Type typeRes = null;
+		switch(texteNoeud) {
+		case "IDBEG":
+			// cas d'une variable
+			if (noeud.getChildCount() == 1) {
+				Variable v = (Variable)tds.get(noeud.getChild(0).getText());
+				if(v==null) {
+					System.err.println("La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
+				}
+				else {
+					typeRes = tds.getVariableType(noeud.getChild(0).getText());
+				}
+			}
+			// TODO : faire les autres cas possible du IDBEG
+			break;
+		// TODO : faire les autre cas possible de exp
+		}
+		return typeRes;
+	}
 
 	public static void afficherTDS(TableSymboles tds)
 	{
@@ -291,7 +317,7 @@ public class Main {
 
 	public static String detecterType(String texteNoeud)
 	{
-		if(texteNoeud.matches("(\\d*)")) //si c'est un entier
+		if(texteNoeud.matches("INT")) //si c'est un entier
 
 		{
 			//System.out.println("ajoute entier");
@@ -299,7 +325,7 @@ public class Main {
 			// TODO : gerer le cas d'une operation
 		}
 
-		else if(texteNoeud.matches("(^\".*\"$)"))//sinon si c'est une chaîne de caractère commencant et terminant pas "
+		else if(texteNoeud.matches("STRING"))//sinon si c'est une chaîne de caractère commencant et terminant pas "
 		{
 			//System.out.println("ajoute string");
 			return "string";

@@ -44,6 +44,8 @@ tokens {
 	SEQEXP ;
 	CALLEXP ;
 	FUNDEC;
+	INT;
+	STRING;
 }
 
 program
@@ -130,8 +132,8 @@ multExp
 
 atom
 	: 'nil'
-	| INTLIT
-	| STRINGLIT
+	| INTLIT -> ^(INT INTLIT)
+	| STRINGLIT -> ^(STRING STRINGLIT)
 	| seqExp
 	| negation
 	| ID idBegin  -> ^(IDBEG ID idBegin?)
