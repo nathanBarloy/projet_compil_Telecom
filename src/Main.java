@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testOperations/nonFonctionnel/test3.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testCoherenceType/nonFonctionnels/affectationVariableAAutreVaraible.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -77,7 +77,7 @@ public class Main {
 		{
 		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			controleOp(tree.getChild(i), tableParent);
-			controleComparateurEgEq(tree.getChild(i));
+			controleComparateurEgEq(tree.getChild(i),tableParent);
 			switch(tree.getChild(i).getText())
 			{
 
@@ -130,10 +130,10 @@ public class Main {
 			case "VARDEC":
 				if (tree.getChild(i).getChildCount()==3)//cas où le type est précisé
 				{
-					Type typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText());
+					String typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText()).getName();
 					String dernierNoeud = tree.getChild(i).getChild(2).getText();
-					Type typeDetecte;
-					if(dernierNoeud.compareTo("IDBEG")==0)//il faut récupérer le type de cet identificateur dans la TDS
+					String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
+				/*	if(dernierNoeud.compareTo("IDBEG")==0)//il faut récupérer le type de cet identificateur dans la TDS
 					{
 						//System.out.println("cas IDBEG");
 						typeDetecte = tableParent.getVariableType(tree.getChild(i).getChild(2).getChild(0).getText());
@@ -142,11 +142,11 @@ public class Main {
 					{
 						//System.out.println("Cas pas IDBEG");
 						typeDetecte = tableParent.getType(detecterType(dernierNoeud));
-					}
+					}*/
 
 					if (typeDeclare != typeDetecte || typeDetecte == null)
 					{
-						System.out.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
+						System.err.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
 					}
 					else
 					{
@@ -225,9 +225,9 @@ public class Main {
 			String fg = tree.getChild(0).getText();
 			String fd = tree.getChild(1).getText();
 			if (!fg.matches("INT") && fg != "SEQEXP"){
-				Type typeFg = detectionTypeExp(tree.getChild(0), tds);
+				String typeFg = detectionTypeExp(tree.getChild(0), tds);
 				if(typeFg != null) {
-					if(typeFg.getName() != "int") {
+					if(typeFg != "int") {
 						System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int");
 					}
 				}
@@ -238,9 +238,9 @@ public class Main {
 			}
 			// cas ou le fils droit n'est pas un entier ou seqexp
 			if (!fd.matches("INT") && fd != "SEQEXP"){
-				Type typeFd = detectionTypeExp(tree.getChild(1), tds);
+				String typeFd = detectionTypeExp(tree.getChild(1), tds);
 				if(typeFd != null) {
-					if(typeFd.getName() != "int") {
+					if(typeFd != "int") {
 						System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
 					}
 				}
@@ -265,7 +265,7 @@ public class Main {
 		}
 	}
 	
-	public static void controleComparateurEgEq(Tree tree) { 	// vérifie que les deux operandes des comparateurs = et <> sont de meme type
+	public static void controleComparateurEgEq(Tree tree, TableSymboles tds) { 	// vérifie que les deux operandes des comparateurs = et <> sont de meme type
 		String root = tree.getText();
 		if(root.equals("=") || root.equals("<>")) {	// si le noeud est l'un des deux operateurs
 			String fg = tree.getChild(0).getText();
@@ -273,20 +273,26 @@ public class Main {
 			String typeDetecteFg = detecterType(fg);
 			String typeDetecteFd = detecterType(fd);
 			if (typeDetecteFg == null) { // si le fg n'est ni un int ni une string
-				// gestion de tout les type possible d'une exp
-				switch (fg) {
-				case "IDBEG" :
-					
-					break;
+				typeDetecteFg = detectionTypeExp(tree.getChild(0), tds);
+			}
+			if (typeDetecteFd == null) {
+				typeDetecteFd = detectionTypeExp(tree.getChild(1),tds);
+			}
+			if (typeDetecteFd != null && typeDetecteFg != null) {
+				if (!typeDetecteFg.equals(typeDetecteFd)) {
+					System.err.println("L'identificateur '"+tree.getChild(0).getChild(0)+"' n'est pas de même type que '"+tree.getChild(1).getChild(0)+"'");
 				}
+			}
+			else {
+				System.err.println("Aucun type détecté");
 			}
 		}
 		
 	}
 	
-	public static Type detectionTypeExp(Tree noeud, TableSymboles tds) {
+	public static String detectionTypeExp(Tree noeud, TableSymboles tds) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
 		String texteNoeud = noeud.getText();
-		Type typeRes = null;
+		String typeRes = null;
 		switch(texteNoeud) {
 		case "IDBEG":
 			// cas d'une variable
@@ -296,11 +302,18 @@ public class Main {
 					System.err.println("La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
 				}
 				else {
-					typeRes = tds.getVariableType(noeud.getChild(0).getText());
+					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
 				}
 			}
 			// TODO : faire les autres cas possible du IDBEG
 			break;
+		case "INT":
+			typeRes = "int";
+			break;
+		case "STRING":
+			typeRes = "string";
+			break;
+			
 		// TODO : faire les autre cas possible de exp
 		}
 		return typeRes;
@@ -315,7 +328,7 @@ public class Main {
 		}
 	}
 
-	public static String detecterType(String texteNoeud)
+	public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?
 	{
 		if(texteNoeud.matches("INT")) //si c'est un entier
 

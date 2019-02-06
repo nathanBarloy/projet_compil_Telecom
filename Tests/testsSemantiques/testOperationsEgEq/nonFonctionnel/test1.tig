@@ -1,0 +1,7 @@
+let
+	var x := 2
+in
+	4 = "oeoe";
+	"ok super" <> 42;
+	x = "une string"
+end
