@@ -1,0 +1,9 @@
+let 
+	var x : int := 42
+	var mot : string := "coucou"
+in 
+	3 < "ok";
+	5 >= x;
+	mot <= x;
+	x > mot
+end

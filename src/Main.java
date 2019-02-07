@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testCoherenceType/nonFonctionnels/affectationVariableAAutreVaraible.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testComparateurInfSup/nonFonctionnel/test1.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -78,6 +78,7 @@ public class Main {
 		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			controleOp(tree.getChild(i), tableParent);
 			controleComparateurEgEq(tree.getChild(i),tableParent);
+			controleComparateurInfSup(tree.getChild(i), tableParent);
 			switch(tree.getChild(i).getText())
 			{
 
@@ -155,9 +156,9 @@ public class Main {
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
-					String valeur=tree.getChild(i).getChild(1).getText();//valeur
+					Tree valeur=tree.getChild(i).getChild(1);//valeur
 					//System.out.println("valeur : "+valeur);
-					String type=detecterType(valeur);
+					String type=detectionTypeExp(valeur,tableParent);
 					tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), type);
 				}
 				break;
@@ -265,22 +266,16 @@ public class Main {
 		}
 	}
 	
-	public static void controleComparateurEgEq(Tree tree, TableSymboles tds) { 	// vérifie que les deux operandes des comparateurs = et <> sont de meme type
+	public static void controleComparateurEgEq(Tree tree, TableSymboles tds) { 	// verifie que les deux operandes des comparateurs = et <> sont de meme type
 		String root = tree.getText();
 		if(root.equals("=") || root.equals("<>")) {	// si le noeud est l'un des deux operateurs
-			String fg = tree.getChild(0).getText();
-			String fd = tree.getChild(1).getText();
-			String typeDetecteFg = detecterType(fg);
-			String typeDetecteFd = detecterType(fd);
-			if (typeDetecteFg == null) { // si le fg n'est ni un int ni une string
-				typeDetecteFg = detectionTypeExp(tree.getChild(0), tds);
-			}
-			if (typeDetecteFd == null) {
-				typeDetecteFd = detectionTypeExp(tree.getChild(1),tds);
-			}
+			Tree fg = tree.getChild(0);
+			Tree fd = tree.getChild(1);
+			String typeDetecteFg = detectionTypeExp(fg, tds);
+			String typeDetecteFd = detectionTypeExp(fd, tds);
 			if (typeDetecteFd != null && typeDetecteFg != null) {
 				if (!typeDetecteFg.equals(typeDetecteFd)) {
-					System.err.println("L'identificateur '"+tree.getChild(0).getChild(0)+"' n'est pas de même type que '"+tree.getChild(1).getChild(0)+"'");
+					System.err.println("L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')");
 				}
 			}
 			else {
@@ -288,6 +283,30 @@ public class Main {
 			}
 		}
 		
+	}
+	
+	public static void controleComparateurInfSup(Tree tree, TableSymboles tds) { // verifie que les deux operandes des comparateurs < <= > >= sont de même type et de type int ou string
+		String root = tree.getText();
+		if (root.equals("<") || root.equals("<=") || root.equals(">") || root.equals(">=")) {
+			Tree fg = tree.getChild(0);
+			Tree fd = tree.getChild(1);
+			String typeDetecteFg = detectionTypeExp(fg, tds);
+			String typeDetecteFd = detectionTypeExp(fd, tds);
+			if (typeDetecteFd != null && typeDetecteFg != null) {
+				if(typeDetecteFg == "int" && typeDetecteFd != "int") {
+					System.err.println("Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'int' alors qu'il est de type '"+typeDetecteFd+"'");
+				}
+				else if(typeDetecteFg == "string" && typeDetecteFd != "string") {	
+					System.err.println("Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'string' alors qu'il est de type '"+typeDetecteFd+"'");
+				}
+				else if (typeDetecteFg != "int" && typeDetecteFg != "string"){
+					System.err.println("L'identificateur '"+fg.getChild(0).getText()+"' (type '"+typeDetecteFd+"') n'est ni de type 'int' ni de type 'string'");
+				}
+			}
+			else {
+				System.err.println("Aucun type détecté");
+			}
+		}
 	}
 	
 	public static String detectionTypeExp(Tree noeud, TableSymboles tds) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
@@ -328,7 +347,7 @@ public class Main {
 		}
 	}
 
-	public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?
+	/*public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?
 	{
 		if(texteNoeud.matches("INT")) //si c'est un entier
 
@@ -349,5 +368,5 @@ public class Main {
 			return "";
 		}
 	}
-
+*/
 }

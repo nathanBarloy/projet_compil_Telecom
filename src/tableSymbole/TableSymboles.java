@@ -153,7 +153,7 @@ public class TableSymboles {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("Table des symbole : [");
+		s.append("Table des symboles : [");
 		for (Identificateur id : identificateurs.values()) {
 			s.append("Identificateur : "+id.getName()+",");
 		}
