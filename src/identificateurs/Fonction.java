@@ -1,18 +1,18 @@
 package identificateurs;
 
-import tableSymbole.TableSymboles;
+import tableSymbole.TableSymbolesAbs;
 
 public class Fonction extends Identificateur {
 	private Type typeRetour;
-	private TableSymboles tdsFonction;
+	private TableSymbolesAbs tdsFonction;
 
-	public Fonction(String name, Type retour,TableSymboles tds) {
+	public Fonction(String name, Type retour,TableSymbolesAbs tds) {
 		super(name);
 		this.typeRetour=retour;
 		this.tdsFonction=tds;
 	}
 
-	public TableSymboles getTdsFonction() {
+	public TableSymbolesAbs getTdsFonction() {
 		return tdsFonction;
 	}
 
