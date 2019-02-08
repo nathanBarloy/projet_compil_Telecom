@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Type extends Identificateur{
+public abstract class Type extends Identificateur{
+	
 	//private List<Type> composants;
 
 	public Type(String nom) {

@@ -44,9 +44,9 @@ public class Main {
 	private static void ajouterTypesBase(TableSymboles tds)
 	{
 		System.out.println("Ajout des types de bases à la TDS d'origine");
-		tds.ajouterType("int");
-		tds.ajouterType("string");
-		tds.ajouterType("void");
+		tds.ajouterTypePrimitif("int");
+		tds.ajouterTypePrimitif("string");
+		tds.ajouterTypePrimitif("void");
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class Main {
 						if (tableParent.getType(aliased)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							System.err.println("Le nom "+ aliased+" n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
-							tableParent.ajouterType(nomType);
+							tableParent.ajouterTypeAlias(nomType, aliased);
 						}
 						break;
 					}

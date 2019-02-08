@@ -5,9 +5,11 @@ import java.util.Set;
 
 import org.antlr.runtime.tree.Tree;
 
+import identificateurs.AliasType;
 import identificateurs.Fonction;
 import identificateurs.Identificateur;
 import identificateurs.Type;
+import identificateurs.TypePrimitif;
 import identificateurs.Variable;
 
 public class TableSymboles {
@@ -38,17 +40,30 @@ public class TableSymboles {
 		identificateurs=new HashMap<>();
 	}
 
-	public void ajouterType(String name)
+	public void ajouterTypePrimitif(String name)
 	{
 		if(getType(name)==null)
 		{
-			ajouterIdentificateur(name, new Type(name));
+			ajouterIdentificateur(name, new TypePrimitif(name));
 		}
 		else
 		{
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
+	
+	public void ajouterTypeAlias(String name, String aliasedType)
+	{
+		if(getType(name)==null && getType(aliasedType)!=null)
+		{
+			ajouterIdentificateur(name, new AliasType(name,getType(aliasedType)));
+		}
+		else
+		{
+			System.err.println("Tentative de déclaration d'un type existant : "+name);
+		}
+	}
+	
 	public void ajouterFonction(String name, String retour, TableSymboles tds) {
 		//fonctionMap.put(new Fonction(name,retour),tds);
 		Type t=getType(retour);
