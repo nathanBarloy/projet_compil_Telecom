@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testComparateurInfSup/nonFonctionnel/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/aliasTypeInexistant.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -164,7 +164,8 @@ public class Main {
 				break;
 
 			case "TYDEC" :
-				String nomType = tree.getChild(0).getText();
+				Tree tydecTree = tree.getChild(i);
+				String nomType = tydecTree.getChild(0).getText();
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
 					System.err.println("Le nom "+nomType+" à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
@@ -176,7 +177,7 @@ public class Main {
 						//TODO vérifier que le type de la liste existe bien
 						break;
 					default : // on défini un alias
-						String aliased = tree.getChild(1).getText();
+						String aliased = tydecTree.getChild(1).getText();
 						if (tableParent.getType(aliased)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							System.err.println("Le nom "+ aliased+" n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
