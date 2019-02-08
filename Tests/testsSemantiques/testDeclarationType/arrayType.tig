@@ -1,0 +1,11 @@
+let
+    
+    var variable := 2  
+    
+    type type1 = array of int
+    type type2 = array of inexistant
+    type type3 = array of variable
+    
+in
+
+end

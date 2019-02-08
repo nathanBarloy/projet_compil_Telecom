@@ -6,6 +6,7 @@ import java.util.Set;
 import org.antlr.runtime.tree.Tree;
 
 import identificateurs.AliasType;
+import identificateurs.ArrayType;
 import identificateurs.Fonction;
 import identificateurs.Identificateur;
 import identificateurs.Type;
@@ -57,6 +58,18 @@ public class TableSymboles {
 		if(getType(name)==null && getType(aliasedType)!=null)
 		{
 			ajouterIdentificateur(name, new AliasType(name,getType(aliasedType)));
+		}
+		else
+		{
+			System.err.println("Tentative de déclaration d'un type existant : "+name);
+		}
+	}
+	
+	public void ajouterTypeArray(String name, String sousType)
+	{
+		if(getType(name)==null && getType(sousType)!=null)
+		{
+			ajouterIdentificateur(name, new ArrayType(name,getType(sousType)));
 		}
 		else
 		{

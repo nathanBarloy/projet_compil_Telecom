@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/aliasTypeInexistant.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/arrayType.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -169,12 +169,17 @@ public class Main {
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
 					System.err.println("Le nom "+nomType+" à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
-					switch(tree.getChild(1).getText()) {
+					switch(tydecTree.getChild(1).getText()) {
 					case "RECTY" : // on défini un ensemble
 						//TODO verifier que les types utilisés existent bien
 						break;
 					case "ARRTY" : // on défini une liste
-						//TODO vérifier que le type de la liste existe bien
+						String sousType = tydecTree.getChild(1).getChild(0).getText();
+						if (tableParent.getType(sousType)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+							System.err.println("Le nom "+ sousType+" n'existe pas ou ne représente pas un type");
+						} else { // si le nom entré est valable
+							tableParent.ajouterTypeArray(nomType, sousType);
+						}
 						break;
 					default : // on défini un alias
 						String aliased = tydecTree.getChild(1).getText();
