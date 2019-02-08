@@ -106,7 +106,14 @@ public class TableSymboles {
 	 */
 	public Type getType(String type)
 	{
-		Type res = (Type)(identificateurs.get(type));
+		Type res;
+		Identificateur resInt = identificateurs.get(type);
+		if (!(resInt instanceof Type)) {
+			res = null;
+		} else {
+			res = (Type) resInt;
+		}
+		
 		if(res == null && parent != null) {
 			res = parent.getType(type);
 		}
