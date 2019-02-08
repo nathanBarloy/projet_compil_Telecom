@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testIfThen/nonFonctionnel/typeThenElseDifferent.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -44,9 +44,9 @@ public class Main {
 	private static void ajouterTypesBase(TableSymboles tds)
 	{
 		System.out.println("Ajout des types de bases à la TDS d'origine");
-		tds.ajouterType("int");
-		tds.ajouterType("string");
-		tds.ajouterType("void");
+		tds.ajouterTypePrimitif("int");
+		tds.ajouterTypePrimitif("string");
+		tds.ajouterTypePrimitif("void");
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class Main {
 			switch(tree.getChild(i).getText())
 			{
 
-				
+
 
 			//case "ROOT":
 			//cas creant un nouveau bloc
@@ -109,8 +109,19 @@ public class Main {
 				break;
 
 			case "WHILE":
-				// TODO
-				System.err.println("Not yet implemented");
+				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				String testParam = tree.getChild(i).getChild(0).getText();
+				String typeDetecteParam = detectionTypeExp(tree.getChild(i).getChild(0), tableParent);
+				if( typeDetecteParam != "int") {
+					System.err.println("Le type de "+testParam+" doit être un INT. Type detecte : "+typeDetecteParam);
+				}
+				String testReturn = tree.getChild(i).getChild(1).getText();
+				String typeDetecteReturn = detectionTypeExp(tree.getChild(i).getChild(1), tableParent);
+				if ( typeDetecteReturn != "void") {
+					System.err.println("Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
+				}
+				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 
 			case "FOR":
@@ -165,7 +176,8 @@ public class Main {
 				break;
 
 			case "TYDEC" :
-				String nomType = tree.getChild(0).getText();
+				Tree tydecTree = tree.getChild(i);
+				String nomType = tydecTree.getChild(0).getText();
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
 					System.err.println("Le nom "+nomType+" à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
@@ -177,11 +189,11 @@ public class Main {
 						//TODO vérifier que le type de la liste existe bien
 						break;
 					default : // on défini un alias
-						String aliased = tree.getChild(1).getText();
+						String aliased = tydecTree.getChild(1).getText();
 						if (tableParent.getType(aliased)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							System.err.println("Le nom "+ aliased+" n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
-							tableParent.ajouterType(nomType);
+							tableParent.ajouterTypeAlias(nomType, aliased);
 						}
 						break;
 					}
@@ -237,7 +249,7 @@ public class Main {
 				tableParent.addFils(nouvelle);
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-				
+
 
 			default:
 				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
@@ -249,7 +261,7 @@ public class Main {
 
 	}
 
-	public static void controleOp(Tree tree, TableSymboles tds) {		// controle semantique sur les operateurs ayant pour operandes des type int	
+	public static void controleOp(Tree tree, TableSymboles tds) {		// controle semantique sur les operateurs ayant pour operandes des type int
 		String root = tree.getText();
 		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") ||	 root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
 			// cas ou le fils gauche n'est pas un entier ou seqexp
@@ -275,12 +287,10 @@ public class Main {
 						System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
 					}
 				}
-				// TODO : rajouter tous les cas ou une exp retourne un int
-				
+
 				// cas ou le fils droit n'est pas une operation
 				else if(!(fd.equals("+") || fd.equals("-") || fd.equals("*") || fd.equals("/") || fd.equals("=") || fd.equals("<>") || fd.equals("&") || fd.equals("|"))) {
 					System.err.println("L'opérande "+fd+" n'est pas de type int");
-					// TODO : gerer le cas de variable ou appel de fonction
 				}
 			}
 			if(fg == "SEQEXP") {
@@ -295,7 +305,7 @@ public class Main {
 			}
 		}
 	}
-	
+
 	public static void controleComparateurEgEq(Tree tree, TableSymboles tds) { 	// verifie que les deux operandes des comparateurs = et <> sont de meme type
 		String root = tree.getText();
 		if(root.equals("=") || root.equals("<>")) {	// si le noeud est l'un des deux operateurs
@@ -312,9 +322,9 @@ public class Main {
 				System.err.println("Aucun type détecté");
 			}
 		}
-		
+
 	}
-	
+
 	public static void controleComparateurInfSup(Tree tree, TableSymboles tds) { // verifie que les deux operandes des comparateurs < <= > >= sont de même type et de type int ou string
 		String root = tree.getText();
 		if (root.equals("<") || root.equals("<=") || root.equals(">") || root.equals(">=")) {
@@ -326,7 +336,7 @@ public class Main {
 				if(typeDetecteFg == "int" && typeDetecteFd != "int") {
 					System.err.println("Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'int' alors qu'il est de type '"+typeDetecteFd+"'");
 				}
-				else if(typeDetecteFg == "string" && typeDetecteFd != "string") {	
+				else if(typeDetecteFg == "string" && typeDetecteFd != "string") {
 					System.err.println("Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'string' alors qu'il est de type '"+typeDetecteFd+"'");
 				}
 				else if (typeDetecteFg != "int" && typeDetecteFg != "string"){
@@ -338,7 +348,7 @@ public class Main {
 			}
 		}
 	}
-	
+
 	public static String detectionTypeExp(Tree noeud, TableSymboles tds) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
 		String texteNoeud = noeud.getText();
 		String typeRes = null;
@@ -356,13 +366,31 @@ public class Main {
 			}
 			// TODO : faire les autres cas possible du IDBEG
 			break;
+
 		case "INT":
 			typeRes = "int";
 			break;
+
 		case "STRING":
 			typeRes = "string";
 			break;
-			
+
+		case "SEQEXP":
+			//Si vide alors typeRes = void
+			int nbChild = noeud.getChildCount();
+			if(nbChild == 0) {
+				typeRes = "void";
+			}
+			//Sinon typeRes = typeDerniereExp
+			else {
+				typeRes = detectionTypeExp(noeud.getChild(nbChild-1), tds);
+			}
+			break;
+
+		case "WHILE":
+			typeRes = "void";
+			break;
+
 		// TODO : faire les autre cas possible de exp
 		}
 		return typeRes;
