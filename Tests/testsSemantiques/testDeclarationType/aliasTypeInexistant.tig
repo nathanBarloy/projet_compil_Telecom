@@ -1,0 +1,11 @@
+let
+    
+    var variable := 2    
+    
+    type type1 = int
+    type type2 = typeInexistant
+    type type3 = variable
+    
+in
+
+end
