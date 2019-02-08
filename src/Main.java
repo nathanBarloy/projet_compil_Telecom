@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testComparateurInfSup/nonFonctionnel/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -109,7 +109,19 @@ public class Main {
 				break;
 
 			case "WHILE":
-				System.err.println("Not yet implemented");
+				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				String testParam = tree.getChild(i).getChild(0).getText();
+				String typeDetecteParam = detectionTypeExp(tree.getChild(i).getChild(0), tableParent);
+				if( typeDetecteParam != "int") {
+					System.err.println("Le type de "+testParam+" doit être un INT. Type detecte : "+typeDetecteParam);
+				}
+				String testReturn = tree.getChild(i).getChild(1).getText();
+				String typeDetecteReturn = detectionTypeExp(tree.getChild(i).getChild(1), tableParent);
+				if ( typeDetecteReturn != "void") {
+					System.err.println("Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
+				}
+				parcoursArbre(tree.getChild(i),nouvelle);				
 				break;
 
 			case "FOR":
@@ -245,12 +257,10 @@ public class Main {
 						System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
 					}
 				}
-				// TODO : rajouter tous les cas ou une exp retourne un int
 				
 				// cas ou le fils droit n'est pas une operation
 				else if(!(fd.equals("+") || fd.equals("-") || fd.equals("*") || fd.equals("/") || fd.equals("=") || fd.equals("<>") || fd.equals("&") || fd.equals("|"))) {
 					System.err.println("L'opérande "+fd+" n'est pas de type int");
-					// TODO : gerer le cas de variable ou appel de fonction
 				}
 			}
 			if(fg == "SEQEXP") {
@@ -326,11 +336,29 @@ public class Main {
 			}
 			// TODO : faire les autres cas possible du IDBEG
 			break;
+			
 		case "INT":
 			typeRes = "int";
 			break;
+			
 		case "STRING":
 			typeRes = "string";
+			break;
+			
+		case "SEQEXP":
+			//Si vide alors typeRes = void
+			int nbChild = noeud.getChildCount();
+			if(nbChild == 0) {
+				typeRes = "void";
+			}
+			//Sinon typeRes = typeDerniereExp
+			else {
+				typeRes = detectionTypeExp(noeud.getChild(nbChild-1), tds);
+			}
+			break;
+			
+		case "WHILE": 
+			typeRes = "void";
 			break;
 			
 		// TODO : faire les autre cas possible de exp
