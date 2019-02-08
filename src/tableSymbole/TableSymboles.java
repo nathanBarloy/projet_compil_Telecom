@@ -77,6 +77,18 @@ public class TableSymboles {
 		}
 	}
 	
+	public void ajouterTypeRecord(String name, Type newType)
+	{
+		if(getType(name)==null && newType!=null)
+		{
+			ajouterIdentificateur(name, newType);
+		}
+		else
+		{
+			System.err.println("Tentative de déclaration d'un type existant : "+name);
+		}
+	}
+	
 	public void ajouterFonction(String name, String retour, TableSymboles tds) {
 		//fonctionMap.put(new Fonction(name,retour),tds);
 		Type t=getType(retour);

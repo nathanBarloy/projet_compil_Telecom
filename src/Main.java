@@ -11,6 +11,7 @@ import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
 import tableSymbole.TableSymboles;
+import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.Variable;
 
@@ -24,7 +25,7 @@ public class Main {
 		System.out.println("///////////////////////////////////////");
 
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/arrayType.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/recordType.tig"));
 
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
@@ -181,16 +182,29 @@ public class Main {
 				Tree tydecTree = tree.getChild(i);
 				String nomType = tydecTree.getChild(0).getText();
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
-					System.err.println("Le nom "+nomType+" à déjà été pris, impossible de créer le type");
+					System.err.println("Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
 					switch(tydecTree.getChild(1).getText()) {
 					case "RECTY" : // on défini un ensemble
-						//TODO verifier que les types utilisés existent bien
+						RecordType newType = new RecordType(nomType);
+						for (int j=0; j<tydecTree.getChildCount(); j++) {
+							Tree decTree = tydecTree.getChild(1).getChild(j);
+							String nomComponent = decTree.getChild(0).getText();
+							String nomSousType = decTree.getChild(1).getText();
+							
+							Type sousType = tableParent.getType(nomSousType);
+							if (sousType==null) {
+								System.err.println("Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
+							} else {
+								newType.addComponent(nomComponent, sousType);
+							}
+						}
+						tableParent.ajouterTypeRecord(nomType, newType);
 						break;
 					case "ARRTY" : // on défini une liste
 						String sousType = tydecTree.getChild(1).getChild(0).getText();
 						if (tableParent.getType(sousType)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
-							System.err.println("Le nom "+ sousType+" n'existe pas ou ne représente pas un type");
+							System.err.println("Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
 							tableParent.ajouterTypeArray(nomType, sousType);
 						}
@@ -198,7 +212,7 @@ public class Main {
 					default : // on défini un alias
 						String aliased = tydecTree.getChild(1).getText();
 						if (tableParent.getType(aliased)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
-							System.err.println("Le nom "+ aliased+" n'existe pas ou ne représente pas un type");
+							System.err.println("Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
 							tableParent.ajouterTypeAlias(nomType, aliased);
 						}
