@@ -24,9 +24,9 @@ public class Main {
 		System.out.println("///////////////////////////////////////");
 
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/arrayType.tig"));
+		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testIDBEG/fonctionnel/verificationDeclaree.tig"));
 
-		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/fonctionnels/prog1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -211,21 +211,33 @@ public class Main {
 
 			case "IDBEG":
 				// que des controle semantique dans IDBEGIN ?
-				if (tree.getChildCount()==2) {
-					switch(tree.getChild(1).getText()) {
-					case "EXPBEG":
-						break;
-					case "FIELDEXP":
-						break;
-					case "RECCREATE":
-						break;
-					case "CALLEXP" :
-						break;
-					case "ASSIGNMENT":
-						break;
+				System.out.println("Cas idbeg : "+tree.getChild(i).getChildCount());
+				if (tree.getChild(i).getChildCount()==2)
+				{
+					switch(tree.getChild(i).getChild(1).getText())
+					{
+						case "EXPBEG":
+							break;
+						case "FIELDEXP":
+							break;
+						case "RECCREATE":
+							break;
+						case "CALLEXP" :
+							break;
+						case "ASSIGNMENT":
+							break;
 					}
 					// else -> controle semantique
-
+				}
+				else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
+				{
+					String texte = tree.getChild(i).getChild(0).getText();
+					System.out.println(texte);
+					if(tableParent.get(texte) == null)
+					{
+						System.err.println("Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
+					}
+						
 				}
 				break;
 			case "NEGATION" :
@@ -362,7 +374,8 @@ public class Main {
 		switch(texteNoeud) {
 		case "IDBEG":
 			// cas d'une variable
-			if (noeud.getChildCount() == 1) {
+			if (noeud.getChildCount() == 1)
+			{
 				Variable v = (Variable)tds.get(noeud.getChild(0).getText());
 				if(v==null) {
 					System.err.println("La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
