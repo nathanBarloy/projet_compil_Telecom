@@ -1,0 +1,8 @@
+let
+	var oeoe : int := 5
+	var mot : string := "Coucou"
+in 
+	- 4;
+	- "String";
+	- mot
+end

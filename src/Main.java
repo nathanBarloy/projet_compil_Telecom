@@ -23,7 +23,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testComparateurInfSup/nonFonctionnel/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testIfThen/nonFonctionnel/typeThenElseDifferent.tig"));
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -109,6 +109,7 @@ public class Main {
 				break;
 
 			case "WHILE":
+				// TODO
 				System.err.println("Not yet implemented");
 				break;
 
@@ -208,6 +209,35 @@ public class Main {
 
 				}
 				break;
+			case "NEGATION" :
+				String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(0),tableParent);
+				if (typeDetecte != "int") {
+					System.err.println("Le type attendu de '"+tree.getChild(i).getChild(0).getChild(0).getText()+"' est 'int' (actuellement de type '"+typeDetecte+"')");
+				}
+				break;
+			case "IFTHEN" :
+				String typeCondition = detectionTypeExp(tree.getChild(i).getChild(0),tableParent);
+				String typeThen = detectionTypeExp(tree.getChild(i).getChild(1), tableParent);
+				int nbFils = tree.getChild(i).getChildCount();
+				if (typeCondition !="int") {		// controle semantique sur la condtion du if
+					System.err.println("La condition du IF doit être de type 'int' (actuellement : '"+typeCondition+"')");
+				}
+				if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
+					if(typeThen != "void") {
+						System.err.println("La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
+					}
+				}
+				else if (nbFils == 3) {		// si ELSE les types doivent correspondre
+					String typeElse = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
+					if (typeThen != typeElse) {
+						System.err.println("Les clauses THEN et ELSE doivent être de même type");
+					}
+				}
+				nouvelle = new TableSymboles(tableParent);
+				tableParent.addFils(nouvelle);
+				parcoursArbre(tree.getChild(i),nouvelle);
+				break;
+				
 
 			default:
 				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
