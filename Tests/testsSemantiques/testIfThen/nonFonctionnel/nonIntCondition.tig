@@ -1,0 +1,9 @@
+let 
+	var falseCond : string := "une string"
+in
+	if falseCond
+	then
+		print("coucou")
+end 
+	
+	
