@@ -10,24 +10,22 @@ import org.antlr.runtime.tree.DOTTreeGenerator;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
-import tableSymbole.TableSymboles;
 import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.Variable;
+import tableSymbole.*;
+
 
 public class Main {
 
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
-		TableSymboles blocOrig = new TableSymboles();
+		TableSymbolesAbs blocOrig = new TableSymboles();
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
-
-		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationIdentificateurDejaExistant/nonFonctionnels/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testBreak/nonFonctionnel/let.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -44,7 +42,7 @@ public class Main {
 	 * Cette fonction ajoute les types de bases du langage à la TDS passée en paramètre
 	 * @param tds Table des symboles dans laquelle ajouter les types de bases du langage
 	 */
-	private static void ajouterTypesBase(TableSymboles tds)
+	private static void ajouterTypesBase(TableSymbolesAbs tds)
 	{
 		System.out.println("Ajout des types de bases à la TDS d'origine");
 		tds.ajouterTypePrimitif("int");
@@ -56,7 +54,7 @@ public class Main {
 	 * Cette fonction ajoute les fonctions de base du langage à la TDS passée en paramètre
 	 * @param tds Table des symboles dans laquelle ajouter les fonctions de bases du langage
 	 */
-	private static void ajouterFonctionBase(TableSymboles tds)
+	private static void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
 		System.out.println("Ajout des fonctions intrinsèques");
 		tds.ajouterFonction("print", "void", null);
@@ -71,9 +69,9 @@ public class Main {
 		tds.ajouterFonction("exit", "int", null);
 	}
 
-	public static TableSymboles parcoursArbre(Tree tree,TableSymboles tableParent)
+	public static TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent)
 	{
-		TableSymboles nouvelle;
+		TableSymbolesAbs nouvelle;
 	//	afficherTDS(tableParent);
 	//	System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
@@ -112,7 +110,7 @@ public class Main {
 				break;
 
 			case "WHILE":
-				nouvelle = new TableSymboles(tableParent);
+				nouvelle = new TableSymbolesWhile(tableParent);
 				tableParent.addFils(nouvelle);
 				String testParam = tree.getChild(i).getChild(0).getText();
 				String typeDetecteParam = detectionTypeExp(tree.getChild(i).getChild(0), tableParent);
@@ -129,7 +127,7 @@ public class Main {
 
 			case "FOR":
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
-				nouvelle = new TableSymboles(tableParent);
+				nouvelle = new TableSymbolesFor(tableParent);
 				tableParent.addFils(nouvelle);
 				String start=tree.getChild(i).getChild(1).getText();//valeur
 				String end=tree.getChild(i).getChild(2).getText();//valeur
@@ -191,7 +189,7 @@ public class Main {
 							Tree decTree = tydecTree.getChild(1).getChild(j);
 							String nomComponent = decTree.getChild(0).getText();
 							String nomSousType = decTree.getChild(1).getText();
-							
+
 							Type sousType = tableParent.getType(nomSousType);
 							if (sousType==null) {
 								System.err.println("Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
@@ -225,20 +223,32 @@ public class Main {
 
 			case "IDBEG":
 				// que des controle semantique dans IDBEGIN ?
-				if (tree.getChildCount()==2) {
-					switch(tree.getChild(1).getText()) {
-					case "EXPBEG":
-						break;
-					case "FIELDEXP":
-						break;
-					case "RECCREATE":
-						break;
-					case "CALLEXP" :
-						break;
-					case "ASSIGNMENT":
-						break;
+				System.out.println("Cas idbeg : "+tree.getChild(i).getChildCount());
+				if (tree.getChild(i).getChildCount()==2)
+				{
+					switch(tree.getChild(i).getChild(1).getText())
+					{
+						case "EXPBEG":
+							break;
+						case "FIELDEXP":
+							break;
+						case "RECCREATE":
+							break;
+						case "CALLEXP" :
+							break;
+						case "ASSIGNMENT":
+							break;
 					}
 					// else -> controle semantique
+				}
+				else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
+				{
+					String texte = tree.getChild(i).getChild(0).getText();
+					System.out.println(texte);
+					if(tableParent.get(texte) == null)
+					{
+						System.err.println("Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
+					}
 
 				}
 				break;
@@ -270,7 +280,11 @@ public class Main {
 				tableParent.addFils(nouvelle);
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-
+			case "break" :
+				if(!(tableParent instanceof TableSymbolesFor) && !(tableParent instanceof TableSymbolesWhile)) {
+					System.err.println("Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
+				}
+				break;
 
 			default:
 				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
@@ -282,7 +296,7 @@ public class Main {
 
 	}
 
-	public static void controleOp(Tree tree, TableSymboles tds) {		// controle semantique sur les operateurs ayant pour operandes des type int
+	public static void controleOp(Tree tree, TableSymbolesAbs tds) {		// controle semantique sur les operateurs ayant pour operandes des type int
 		String root = tree.getText();
 		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") ||	 root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
 			// cas ou le fils gauche n'est pas un entier ou seqexp
@@ -327,7 +341,7 @@ public class Main {
 		}
 	}
 
-	public static void controleComparateurEgEq(Tree tree, TableSymboles tds) { 	// verifie que les deux operandes des comparateurs = et <> sont de meme type
+	public static void controleComparateurEgEq(Tree tree, TableSymbolesAbs tds) { 	// verifie que les deux operandes des comparateurs = et <> sont de meme type
 		String root = tree.getText();
 		if(root.equals("=") || root.equals("<>")) {	// si le noeud est l'un des deux operateurs
 			Tree fg = tree.getChild(0);
@@ -346,7 +360,7 @@ public class Main {
 
 	}
 
-	public static void controleComparateurInfSup(Tree tree, TableSymboles tds) { // verifie que les deux operandes des comparateurs < <= > >= sont de même type et de type int ou string
+	public static void controleComparateurInfSup(Tree tree, TableSymbolesAbs tds) { // verifie que les deux operandes des comparateurs < <= > >= sont de même type et de type int ou string
 		String root = tree.getText();
 		if (root.equals("<") || root.equals("<=") || root.equals(">") || root.equals(">=")) {
 			Tree fg = tree.getChild(0);
@@ -370,13 +384,14 @@ public class Main {
 		}
 	}
 
-	public static String detectionTypeExp(Tree noeud, TableSymboles tds) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
+	public static String detectionTypeExp(Tree noeud, TableSymbolesAbs tds) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
 		String texteNoeud = noeud.getText();
 		String typeRes = null;
 		switch(texteNoeud) {
 		case "IDBEG":
 			// cas d'une variable
-			if (noeud.getChildCount() == 1) {
+			if (noeud.getChildCount() == 1)
+			{
 				Variable v = (Variable)tds.get(noeud.getChild(0).getText());
 				if(v==null) {
 					System.err.println("La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
@@ -412,12 +427,15 @@ public class Main {
 			typeRes = "void";
 			break;
 
+		case "break":
+			typeRes = "void";
+			break;
 		// TODO : faire les autre cas possible de exp
 		}
 		return typeRes;
 	}
 
-	public static void afficherTDS(TableSymboles tds)
+	public static void afficherTDS(TableSymbolesAbs tds)
 	{
 		System.out.println(tds.toString());
 		for(int i = 0;i<tds.getFils().size();i++)
