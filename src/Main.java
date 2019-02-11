@@ -25,7 +25,11 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
+<<<<<<< HEAD
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
+=======
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testFor/nonFonctionnel/assignementIndexFor.tig"));
+>>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -137,9 +141,14 @@ public class Main {
 				else {
 					System.err.println("Le début et la fin de l'index doit être de type : int");
 				}
+				String typeCorps = detectionTypeExp(tree.getChild(i).getChild(3), tableParent);
+				if(typeCorps != "void") {
+					System.err.println("Le corps du FOR doit être de type 'void'");
+				}
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-				// cas ne creant pas de nouveau blocOrig
+				
+			// cas ne creant pas de nouveau blocOrig
 
 			case "VARDEC":
 				if (tree.getChild(i).getChildCount()==3)//cas où le type est précisé
@@ -430,15 +439,43 @@ public class Main {
 		case "WHILE":
 			typeRes = "void";
 			break;
-
+		case "NEGATION" :
+			typeRes = "int";
+			break;
+		case "IFTHEN":
+			if(noeud.getChildCount() == 2) {	// si pas de else le type de retour est void
+				typeRes = "void";
+			}
+			else {		// si else, le type de retour est le même que celui de les clauses then et else
+				typeRes = detectionTypeExp(noeud.getChild(1), tds);
+			}
+			break;
+		case "FOR" :
+			typeRes = "void";
+			break;
+		case "LET" :
+			typeRes = detectionTypeExp(noeud.getChild(noeud.getChildCount()-1), tds);		// let est de meme type que la derniere expression du corps
+			if (typeRes == null) {	// si typeRes est null alors le corps de let est vide
+				typeRes = "void";	// le type de let est donc void
+			}
+			break;
 		case "break":
 			typeRes = "void";
 			break;
+<<<<<<< HEAD
 			
 		case "ASSIGNMENT":
 			typeRes = "void";
 			break;
 		// TODO : faire les autre cas possible de exp
+=======
+		// TODO : 'nil' ? 
+		}
+		if(texteNoeud.equals("+") || texteNoeud.equals("-") || texteNoeud.equals("*") || texteNoeud.equals("/") || texteNoeud.equals("=") 
+				|| texteNoeud.equals("<>") || texteNoeud.equals(">") || texteNoeud.equals(">=") || texteNoeud.equals("<")
+				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
+			typeRes = "int";
+>>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		}
 		return typeRes;
 	}

@@ -1,0 +1,6 @@
+for i := 0 to "fin"
+do 
+	let
+		var x := 4
+	in
+	end
