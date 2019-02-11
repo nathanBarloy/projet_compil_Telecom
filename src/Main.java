@@ -25,7 +25,11 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
+<<<<<<< HEAD
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
+=======
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testFor/nonFonctionnel/assignementIndexFor.tig"));
+>>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -407,6 +411,10 @@ public class Main {
 				}
 			}
 			// TODO : faire les autres cas possible du IDBEG
+			// cas avec 2 fils
+			if (noeud.getChildCount() == 2) {
+				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+			}
 			break;
 
 		case "INT":
@@ -455,12 +463,20 @@ public class Main {
 		case "break":
 			typeRes = "void";
 			break;
+<<<<<<< HEAD
+			
+		case "ASSIGNMENT":
+			typeRes = "void";
+			break;
+		// TODO : faire les autre cas possible de exp
+=======
 		// TODO : 'nil' ? 
 		}
 		if(texteNoeud.equals("+") || texteNoeud.equals("-") || texteNoeud.equals("*") || texteNoeud.equals("/") || texteNoeud.equals("=") 
 				|| texteNoeud.equals("<>") || texteNoeud.equals(">") || texteNoeud.equals(">=") || texteNoeud.equals("<")
 				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
 			typeRes = "int";
+>>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		}
 		return typeRes;
 	}
