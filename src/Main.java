@@ -136,7 +136,7 @@ public class Main {
 				String start=tree.getChild(i).getChild(1).getText();//valeur
 				String end=tree.getChild(i).getChild(2).getText();//valeur
 				if(start.matches("INT") && end.matches("INT")) { 		//si le debut et la fin du for sont des entiers
-					nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int"); 
+					nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int");
 				}
 				else {
 					System.err.println("Le début et la fin de l'index doit être de type : int");
@@ -147,7 +147,7 @@ public class Main {
 				}
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-				
+
 			// cas ne creant pas de nouveau blocOrig
 
 			case "VARDEC":
@@ -463,20 +463,17 @@ public class Main {
 		case "break":
 			typeRes = "void";
 			break;
-<<<<<<< HEAD
-			
+
 		case "ASSIGNMENT":
 			typeRes = "void";
 			break;
 		// TODO : faire les autre cas possible de exp
-=======
-		// TODO : 'nil' ? 
+		// TODO : 'nil' ?
 		}
-		if(texteNoeud.equals("+") || texteNoeud.equals("-") || texteNoeud.equals("*") || texteNoeud.equals("/") || texteNoeud.equals("=") 
+		if(texteNoeud.equals("+") || texteNoeud.equals("-") || texteNoeud.equals("*") || texteNoeud.equals("/") || texteNoeud.equals("=")
 				|| texteNoeud.equals("<>") || texteNoeud.equals(">") || texteNoeud.equals(">=") || texteNoeud.equals("<")
 				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
 			typeRes = "int";
->>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		}
 		return typeRes;
 	}
