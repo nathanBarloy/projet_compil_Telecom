@@ -25,7 +25,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testBreak/nonFonctionnel/let.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -401,6 +401,10 @@ public class Main {
 				}
 			}
 			// TODO : faire les autres cas possible du IDBEG
+			// cas avec 2 fils
+			if (noeud.getChildCount() == 2) {
+				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+			}
 			break;
 
 		case "INT":
@@ -428,6 +432,10 @@ public class Main {
 			break;
 
 		case "break":
+			typeRes = "void";
+			break;
+			
+		case "ASSIGNMENT":
 			typeRes = "void";
 			break;
 		// TODO : faire les autre cas possible de exp
