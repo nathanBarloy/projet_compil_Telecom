@@ -197,6 +197,10 @@ public abstract class TableSymbolesAbs {
 	public int getNiveau() {
 		return niveau;
 	}
+	
+	public TableSymbolesAbs getParent() {
+		return parent;
+	}
 
 	@Override
 	public String toString() {

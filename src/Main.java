@@ -132,7 +132,7 @@ public class Main {
 				String start=tree.getChild(i).getChild(1).getText();//valeur
 				String end=tree.getChild(i).getChild(2).getText();//valeur
 				if(start.matches("INT") && end.matches("INT")) { 		//si le debut et la fin du for sont des entiers
-					nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int"); // TODO : gerer le cas d'une addition
+					nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int"); 
 				}
 				else {
 					System.err.println("Le début et la fin de l'index doit être de type : int");
@@ -242,6 +242,7 @@ public class Main {
 						case "CALLEXP" :
 							break;
 						case "ASSIGNMENT":
+							// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
 							break;
 					}
 					// else -> controle semantique
