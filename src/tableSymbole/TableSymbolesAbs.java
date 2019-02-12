@@ -58,7 +58,7 @@ public abstract class TableSymbolesAbs {
 	{
 		if(getType(name)==null && getType(aliasedType)!=null)
 		{
-			ajouterIdentificateur(name, new AliasType(name,getType(aliasedType)));
+			ajouterIdentificateur(name, new AliasType(name,getType(aliasedType), aliasedType));
 		}
 		else
 		{
@@ -70,7 +70,7 @@ public abstract class TableSymbolesAbs {
 	{
 		if(getType(name)==null)
 		{
-			ajouterIdentificateur(name, new ArrayType(name,getType(sousType)));
+			ajouterIdentificateur(name, new ArrayType(name,getType(sousType),sousType));
 		}
 		else
 		{

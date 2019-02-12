@@ -11,6 +11,8 @@ import org.antlr.runtime.tree.DOTTreeGenerator;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.stringtemplate.StringTemplate;
 
+import identificateurs.AliasType;
+import identificateurs.ArrayType;
 import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.Variable;
@@ -27,7 +29,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/fonctionnels/recursifSimple.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/fonctionnels/recursifArray.tig"));
 
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -216,14 +218,8 @@ public class Main {
 							}
 						}
 						tableParent.ajouterTypeRecord(nomType, newType);
-						
-						//en fin de bloc de déclaration
-						if (!tree.getChild(i+1).getText().equals("TYDEC")) {
-							
-							
-						}
-						
 						break;
+						
 					case "ARRTY" : // on défini une liste
 						String sousType = tydecTree.getChild(1).getChild(0).getText();
 						if (tableParent.getType(sousType)==null && !listeNomsType.contains(sousType)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
@@ -242,8 +238,31 @@ public class Main {
 						break;
 					}
 				}
-
-				//TODO ajouter le nouveau type à la TDS
+				
+				//en fin de bloc de déclaration
+				if (i+1<tree.getChildCount() && !tree.getChild(i+1).getText().equals("TYDEC")) {		
+					for (String nomSsType:listeNomsType) {
+						Type ssType = tableParent.getType(nomSsType);
+						if (ssType instanceof ArrayType) {
+							ArrayType ssArrayType = (ArrayType) ssType;
+							if ( ssArrayType.getSousType()==null) {
+								ssArrayType.setSousType(tableParent.getType(ssArrayType.getNomSousType()));
+							}
+						}
+						if (ssType instanceof RecordType) {
+							RecordType ssRecordType = (RecordType) ssType;
+							
+						}
+						if (ssType instanceof AliasType) {
+							AliasType ssAliasType = (AliasType) ssType;
+							if ( ssAliasType.getType()==null) {
+								ssAliasType.setType(tableParent.getType(ssAliasType.getNomAliasedType()));
+							}
+						}
+					}
+					//TODO vérifier les boucles dans les references de types
+				}
+				
 				break;
 
 			case "IDBEG":
