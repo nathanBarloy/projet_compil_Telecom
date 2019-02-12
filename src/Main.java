@@ -490,8 +490,10 @@ public class Main {
 							typeRes = "void";
 							break;
 						case "BRACBEG":
+							System.err.println("Not yet implemented");
 							break;
 						case "IDSTOCK":
+							System.err.println("Not yet implemented");
 							break;
 						case "EXPSTOR":
 							if (tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName() == "int") {
@@ -511,7 +513,7 @@ public class Main {
 					typeRes = "void";
 					break;
 				case "CALLEXP":
-					String typeRetour = tds.getFunctionType(noeud.getChild(1).getChild(0).getText()).getName();
+					String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
 					if(typeRetour != null) { // fils gauche est une fonction
 						typeRes =  typeRetour;
 					}
