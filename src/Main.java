@@ -24,12 +24,8 @@ public class Main {
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-
-<<<<<<< HEAD
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
-=======
+		
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testFor/nonFonctionnel/assignementIndexFor.tig"));
->>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -481,10 +477,10 @@ public class Main {
 	public static void afficherTDS(TableSymbolesAbs tds)
 	{
 		System.out.println(tds.toString());
-		for(int i = 0;i<tds.getFils().size();i++)
+		/*for(int i = 0;i<tds.getFils().size();i++)
 		{
 			afficherTDS(tds.getFils(i));
-		}
+		}*/
 	}
 
 	/*public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?

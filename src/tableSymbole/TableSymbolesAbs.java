@@ -1,5 +1,6 @@
 package tableSymbole;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -204,13 +205,33 @@ public abstract class TableSymbolesAbs {
 
 	@Override
 	public String toString() {
-		StringBuilder s = new StringBuilder();
-		s.append("Table des symboles : [");
-		for (Identificateur id : identificateurs.values()) {
-			s.append("Identificateur : "+id.getName()+",");
+		String s = "";
+		s+="Table des symboles (Imbrication "+niveau+") { \n";
+		for(int j=0;j<niveau;j++)
+		{
+			s+="\t";
+		};
+		s+="Identificateurs : [";
+		Iterator<Identificateur> iterateur = identificateurs.values().iterator();
+		while (iterateur.hasNext())
+		{
+			s += "Identificateur : "+iterateur.next().getName();
+			if(iterateur.hasNext())
+			{
+				s += ", ";
+			}
 		}
-		s.append("]");
-		return s.toString();
+		s+="]\n";
+		for (int i=0;i<fils.size();i++)
+		{
+			for(int j=0;j<=niveau;j++)
+			{
+				s+="\t";
+			}
+			s+= "Fils "+(i+1)+ " : "+fils.get(i).toString();
+		}
+		s+="}";
+		return s;
 	}
 
 	/*@Override
