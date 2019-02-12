@@ -1,5 +1,7 @@
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -29,13 +31,14 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 		
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/fonctionnels/recursifArray.tig"));
+		String path = "Tests/testsSemantiques/testNegation/nonFonctionnel/test1.tig";
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
 
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
 		CommonTree tree=(CommonTree)parser.program().getTree();
-		blocOrig = parcoursArbre(tree,blocOrig);
+		blocOrig = parcoursArbre(tree,blocOrig,path);
 		// Affichage des tables de symboles pour vérification
 		afficherTDS(blocOrig);
 		/*DOTTreeGenerator gen = new DOTTreeGenerator();
@@ -74,7 +77,14 @@ public class Main {
 		tds.ajouterFonction("exit", "int", null);
 	}
 
-	public static TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent)
+	/**
+	 * Parcours l'AST et réalise l'analyse et la construction de la TDS
+	 * @param tree AST à parcourir
+	 * @param tableParent table des symbole du bloc parent
+	 * @param path chemin du fichier sur lequel l'AST à été construit
+	 * @return
+	 */
+	public static TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent,String path)
 	{
 		TableSymbolesAbs nouvelle;
 	//	afficherTDS(tableParent);
@@ -82,9 +92,9 @@ public class Main {
 		for(int i=0;i<tree.getChildCount();i++)
 		{
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
-			controleOp(tree.getChild(i), tableParent);
-			controleComparateurEgEq(tree.getChild(i),tableParent);
-			controleComparateurInfSup(tree.getChild(i), tableParent);
+			controleOp(tree.getChild(i), tableParent,path);
+			controleComparateurEgEq(tree.getChild(i),tableParent,path);
+			controleComparateurInfSup(tree.getChild(i), tableParent,path);
 			switch(tree.getChild(i).getText())
 			{
 
@@ -105,31 +115,31 @@ public class Main {
 				else {
 					tableParent.ajouterFonction(nom, null, nouvelle);
 				}
-				parcoursArbre(tree.getChild(i),nouvelle);
+				parcoursArbre(tree.getChild(i),nouvelle,path);
 				break;
 
 			case "LET":
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
-				parcoursArbre(tree.getChild(i),nouvelle);
+				parcoursArbre(tree.getChild(i),nouvelle,path);
 				break;
 
 			case "WHILE":
 				nouvelle = new TableSymbolesWhile(tableParent);
 				tableParent.addFils(nouvelle);
 				String testParam = tree.getChild(i).getChild(0).getText();
-				String typeDetecteParam = detectionTypeExp(tree.getChild(i).getChild(0), tableParent);
+				String typeDetecteParam = detectionTypeExp(tree.getChild(i).getChild(0), tableParent,path);
 				if( typeDetecteParam != "int") {
 					//System.err.println("Le type de "+testParam+" doit être un INT. Type detecte : "+typeDetecteParam);
-					afficherErreurSemantique(tree.getChild(i).getChild(0),"Le type de "+testParam+" doit être un INT. Type detecte : "+typeDetecteParam);
+					afficherErreurSemantique(tree.getChild(i).getChild(0),"Le type de "+testParam+" doit être un INT. Type detecte : "+typeDetecteParam,path);
 				}
 				String testReturn = tree.getChild(i).getChild(1).getText();
-				String typeDetecteReturn = detectionTypeExp(tree.getChild(i).getChild(1), tableParent);
+				String typeDetecteReturn = detectionTypeExp(tree.getChild(i).getChild(1), tableParent,path);
 				if ( typeDetecteReturn != "void") {
 					//System.err.println("Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
-					afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
+					afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn,path);
 				}
-				parcoursArbre(tree.getChild(i),nouvelle);
+				parcoursArbre(tree.getChild(i),nouvelle,path);
 				break;
 
 			case "FOR":
@@ -143,14 +153,14 @@ public class Main {
 				}
 				else {
 					//System.err.println("Le début et la fin de l'index doit être de type : int");
-					afficherErreurSemantique(tree.getChild(i).getChild(0), "Le début et la fin de l'index doit être de type : int");
+					afficherErreurSemantique(tree.getChild(i).getChild(0), "Le début et la fin de l'index doit être de type : int",path);
 				}
-				String typeCorps = detectionTypeExp(tree.getChild(i).getChild(3), tableParent);
+				String typeCorps = detectionTypeExp(tree.getChild(i).getChild(3), tableParent,path);
 				if(typeCorps != "void") {
 					//System.err.println("Le corps du FOR doit être de type 'void'");
-					afficherErreurSemantique(tree.getChild(i).getChild(3), "Le corps du FOR doit être de type 'void'");
+					afficherErreurSemantique(tree.getChild(i).getChild(3), "Le corps du FOR doit être de type 'void'",path);
 				}
-				parcoursArbre(tree.getChild(i),nouvelle);
+				parcoursArbre(tree.getChild(i),nouvelle,path);
 				break;
 
 			// cas ne creant pas de nouveau blocOrig
@@ -160,7 +170,7 @@ public class Main {
 				{
 					String typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText()).getName();
 					String dernierNoeud = tree.getChild(i).getChild(2).getText();
-					String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
+					String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(2),tableParent,path);
 				/*	if(dernierNoeud.compareTo("IDBEG")==0)//il faut récupérer le type de cet identificateur dans la TDS
 					{
 						//System.out.println("cas IDBEG");
@@ -175,7 +185,7 @@ public class Main {
 					if (typeDeclare != typeDetecte || typeDetecte == null)
 					{
 						//System.err.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
-						afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
+						afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").",path);
 					}
 					else
 					{
@@ -186,7 +196,7 @@ public class Main {
 				{
 					Tree valeur=tree.getChild(i).getChild(1);//valeur
 					//System.out.println("valeur : "+valeur);
-					String type=detectionTypeExp(valeur,tableParent);
+					String type=detectionTypeExp(valeur,tableParent,path);
 					tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), type);
 				}
 				break;
@@ -206,7 +216,7 @@ public class Main {
 
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
 					//System.err.println("Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
-					afficherErreurSemantique(tydecTree.getChild(0), "Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
+					afficherErreurSemantique(tydecTree.getChild(0), "Le nom '"+nomType+"' à déjà été pris, impossible de créer le type",path);
 				} else { // si le nom est valable
 					switch(tydecTree.getChild(1).getText()) {
 					case "RECTY" : // on défini un ensemble
@@ -219,7 +229,7 @@ public class Main {
 							Type sousType = tableParent.getType(nomSousType);
 							if (sousType==null && !listeNomsType.contains(nomSousType)) {
 								//System.err.println("Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
-								afficherErreurSemantique(decTree.getChild(1), "Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
+								afficherErreurSemantique(decTree.getChild(1), "Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type",path);
 							} else {
 								newType.addComponent(nomComponent, sousType);
 							}
@@ -231,7 +241,7 @@ public class Main {
 						String sousType = tydecTree.getChild(1).getChild(0).getText();
 						if (tableParent.getType(sousType)==null && !listeNomsType.contains(sousType)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							//System.err.println("Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type");
-							afficherErreurSemantique(tydecTree.getChild(1).getChild(0), "Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type");
+							afficherErreurSemantique(tydecTree.getChild(1).getChild(0), "Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type",path);
 						} else { // si le nom entré est valable
 							tableParent.ajouterTypeArray(nomType, sousType);
 						}
@@ -240,7 +250,7 @@ public class Main {
 						String aliased = tydecTree.getChild(1).getText();
 						if (tableParent.getType(aliased)==null && !listeNomsType.contains(aliased)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							//System.err.println("Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
-							afficherErreurSemantique(tydecTree.getChild(1), "Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
+							afficherErreurSemantique(tydecTree.getChild(1), "Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type",path);
 						} else { // si le nom entré est valable
 							tableParent.ajouterTypeAlias(nomType, aliased);
 						}
@@ -301,52 +311,52 @@ public class Main {
 					if(tableParent.get(texte) == null)
 					{
 						//System.err.println("Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
-						afficherErreurSemantique(tree.getChild(i).getChild(0), "Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
+						afficherErreurSemantique(tree.getChild(i).getChild(0), "Tentative d'affectation avec une variable non déclarée : '"+texte+"'.",path);
 					}
 
 				}
 				break;
 			case "NEGATION" :
-				String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(0),tableParent);
+				String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(0),tableParent,path);
 				if (typeDetecte != "int") {
 					//System.err.println("Le type attendu de '"+tree.getChild(i).getChild(0).getChild(0).getText()+"' est 'int' (actuellement de type '"+typeDetecte+"')");
-					afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getChild(0).getText()+"' est 'int' (actuellement de type '"+typeDetecte+"')");
+					afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getChild(0).getText()+"' est 'int' (actuellement de type '"+typeDetecte+"')",path);
 				}
 				break;
 			case "IFTHEN" :
-				String typeCondition = detectionTypeExp(tree.getChild(i).getChild(0),tableParent);
-				String typeThen = detectionTypeExp(tree.getChild(i).getChild(1), tableParent);
+				String typeCondition = detectionTypeExp(tree.getChild(i).getChild(0),tableParent,path);
+				String typeThen = detectionTypeExp(tree.getChild(i).getChild(1), tableParent,path);
 				int nbFils = tree.getChild(i).getChildCount();
 				if (typeCondition !="int") {		// controle semantique sur la condtion du if
 					//System.err.println("La condition du IF doit être de type 'int' (actuellement : '"+typeCondition+"')");
-					afficherErreurSemantique(tree.getChild(i).getChild(0), "La condition du IF doit être de type 'int' (actuellement : '"+typeCondition+"')");
+					afficherErreurSemantique(tree.getChild(i).getChild(0), "La condition du IF doit être de type 'int' (actuellement : '"+typeCondition+"')",path);
 				}
 				if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
 					if(typeThen != "void") {
 						//System.err.println("La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
-						afficherErreurSemantique(tree.getChild(i).getChild(0), "La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
+						afficherErreurSemantique(tree.getChild(i).getChild(0), "La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')",path);
 					}
 				}
 				else if (nbFils == 3) {		// si ELSE les types doivent correspondre
-					String typeElse = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
+					String typeElse = detectionTypeExp(tree.getChild(i).getChild(2),tableParent,path);
 					if (typeThen != typeElse) {
 						//System.err.println("Les clauses THEN et ELSE doivent être de même type");
-						afficherErreurSemantique(tree.getChild(i).getChild(2), "Les clauses THEN et ELSE doivent être de même type");
+						afficherErreurSemantique(tree.getChild(i).getChild(2), "Les clauses THEN et ELSE doivent être de même type",path);
 					}
 				}
 				nouvelle = new TableSymboles(tableParent);
 				tableParent.addFils(nouvelle);
-				parcoursArbre(tree.getChild(i),nouvelle);
+				parcoursArbre(tree.getChild(i),nouvelle,path);
 				break;
 			case "break" :
 				if(!tableParent.isBreakable()) {
 					//System.err.println("Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
-					afficherErreurSemantique(tree.getChild(i), "Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
+					afficherErreurSemantique(tree.getChild(i), "Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'",path);
 				}
 				break;
 
 			default:
-				parcoursArbre(tree.getChild(i),tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
+				parcoursArbre(tree.getChild(i),tableParent,path);//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
 			}
 
@@ -355,107 +365,107 @@ public class Main {
 
 	}
 
-	public static void controleOp(Tree tree, TableSymbolesAbs tds) {		// controle semantique sur les operateurs ayant pour operandes des type int
+	public static void controleOp(Tree tree, TableSymbolesAbs tds,String path) {		// controle semantique sur les operateurs ayant pour operandes des type int
 		String root = tree.getText();
 		if(root.equals("+") || root.equals("-") || root.equals("*") || root.equals("/") ||	 root.equals("&") || root.equals("|")){ // si on est dans une operation ou les opérandes sont des int
 			// cas ou le fils gauche n'est pas un entier ou seqexp
 			String fg = tree.getChild(0).getText();
 			String fd = tree.getChild(1).getText();
 			if (!fg.matches("INT") && fg != "SEQEXP"){
-				String typeFg = detectionTypeExp(tree.getChild(0), tds);
+				String typeFg = detectionTypeExp(tree.getChild(0), tds,path);
 				if(typeFg != null) {
 					if(typeFg != "int") {
 						//System.err.println("La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int");
-						afficherErreurSemantique(tree.getChild(0), "La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int");
+						afficherErreurSemantique(tree.getChild(0), "La variable '"+tree.getChild(0).getChild(0).getText()+"' n'est pas de type int",path);
 					}
 				}
 				// cas ou le fils gauche n'est pas une operation
 				else if(!(fg.equals("+") || fg.equals("-") || fg.equals("*") || fg.equals("/") || fg.equals("=") || fg.equals("<>") || fg.equals("&") || fg.equals("|"))) {
 					//System.err.println("L'opérande "+fg+" n'est pas un int");
-					afficherErreurSemantique(tree.getChild(0), "L'opérande "+fg+" n'est pas un int");
+					afficherErreurSemantique(tree.getChild(0), "L'opérande "+fg+" n'est pas un int",path);
 				}
 			}
 			// cas ou le fils droit n'est pas un entier ou seqexp
 			if (!fd.matches("INT") && fd != "SEQEXP"){
-				String typeFd = detectionTypeExp(tree.getChild(1), tds);
+				String typeFd = detectionTypeExp(tree.getChild(1), tds,path);
 				if(typeFd != null) {
 					if(typeFd != "int") {
 						//System.err.println("La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
-						afficherErreurSemantique(tree.getChild(1), "La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int");
+						afficherErreurSemantique(tree.getChild(1), "La variable '"+tree.getChild(1).getChild(0).getText()+"' n'est pas de type int",path);
 					}
 				}
 
 				// cas ou le fils droit n'est pas une operation
 				else if(!(fd.equals("+") || fd.equals("-") || fd.equals("*") || fd.equals("/") || fd.equals("=") || fd.equals("<>") || fd.equals("&") || fd.equals("|"))) {
 					//System.err.println("L'opérande "+fd+" n'est pas de type int");
-					afficherErreurSemantique(tree.getChild(1), "L'opérande "+fd+" n'est pas de type int");
+					afficherErreurSemantique(tree.getChild(1), "L'opérande "+fd+" n'est pas de type int",path);
 				}
 			}
 			if(fg == "SEQEXP") {
 				if(tree.getChild(0).getChildCount() == 0) { // cas ou SEQEXP est de type void
 					//System.err.println("La sequence d'expressions est vide");
-					afficherErreurSemantique(tree.getChild(0), "La sequence d'expressions est vide");
+					afficherErreurSemantique(tree.getChild(0), "La sequence d'expressions est vide",path);
 				}
 			}
 			if(fd == "SEQEXP") {
 				if(tree.getChild(1).getChildCount() == 0) { // cas ou SEQEXP est de type void
 					//System.err.println("La sequence d'expressions est vide");
-					afficherErreurSemantique(tree.getChild(1), "La sequence d'expressions est vide");
+					afficherErreurSemantique(tree.getChild(1), "La sequence d'expressions est vide",path);
 				}
 			}
 		}
 	}
 
-	public static void controleComparateurEgEq(Tree tree, TableSymbolesAbs tds) { 	// verifie que les deux operandes des comparateurs = et <> sont de meme type
+	public static void controleComparateurEgEq(Tree tree, TableSymbolesAbs tds,String path) { 	// verifie que les deux operandes des comparateurs = et <> sont de meme type
 		String root = tree.getText();
 		if(root.equals("=") || root.equals("<>")) {	// si le noeud est l'un des deux operateurs
 			Tree fg = tree.getChild(0);
 			Tree fd = tree.getChild(1);
-			String typeDetecteFg = detectionTypeExp(fg, tds);
-			String typeDetecteFd = detectionTypeExp(fd, tds);
+			String typeDetecteFg = detectionTypeExp(fg, tds,path);
+			String typeDetecteFd = detectionTypeExp(fd, tds,path);
 			if (typeDetecteFd != null && typeDetecteFg != null) {
 				if (!typeDetecteFg.equals(typeDetecteFd)) {
 					//System.err.println("L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')");
-					afficherErreurSemantique(fd.getChild(0), "L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')");
+					afficherErreurSemantique(fd.getChild(0), "L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')",path);
 				}
 			}
 			else {
 				//System.err.println("Aucun type détecté");
-				afficherErreurSemantique(fd.getChild(0), "Aucun type détecté");
+				afficherErreurSemantique(fd.getChild(0), "Aucun type détecté",path);
 			}
 		}
 
 	}
 
-	public static void controleComparateurInfSup(Tree tree, TableSymbolesAbs tds) { // verifie que les deux operandes des comparateurs < <= > >= sont de même type et de type int ou string
+	public static void controleComparateurInfSup(Tree tree, TableSymbolesAbs tds,String path) { // verifie que les deux operandes des comparateurs < <= > >= sont de même type et de type int ou string
 		String root = tree.getText();
 		if (root.equals("<") || root.equals("<=") || root.equals(">") || root.equals(">=")) {
 			Tree fg = tree.getChild(0);
 			Tree fd = tree.getChild(1);
-			String typeDetecteFg = detectionTypeExp(fg, tds);
-			String typeDetecteFd = detectionTypeExp(fd, tds);
+			String typeDetecteFg = detectionTypeExp(fg, tds,path);
+			String typeDetecteFd = detectionTypeExp(fd, tds,path);
 			if (typeDetecteFd != null && typeDetecteFg != null) {
 				if(typeDetecteFg == "int" && typeDetecteFd != "int") {
 					//System.err.println("Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'int' alors qu'il est de type '"+typeDetecteFd+"'");
-					afficherErreurSemantique(fd.getChild(0), "Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'int' alors qu'il est de type '"+typeDetecteFd+"'");
+					afficherErreurSemantique(fd.getChild(0), "Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'int' alors qu'il est de type '"+typeDetecteFd+"'",path);
 				}
 				else if(typeDetecteFg == "string" && typeDetecteFd != "string") {
 					//System.err.println("Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'string' alors qu'il est de type '"+typeDetecteFd+"'");
-					afficherErreurSemantique(fd.getChild(0), "Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'string' alors qu'il est de type '"+typeDetecteFd+"'");
+					afficherErreurSemantique(fd.getChild(0), "Le type attendu de l'identificateur '"+fd.getChild(0).getText()+"' est 'string' alors qu'il est de type '"+typeDetecteFd+"'",path);
 				}
 				else if (typeDetecteFg != "int" && typeDetecteFg != "string"){
 					//System.err.println("L'identificateur '"+fg.getChild(0).getText()+"' (type '"+typeDetecteFd+"') n'est ni de type 'int' ni de type 'string'");
-					afficherErreurSemantique(fd.getChild(0), "L'identificateur '"+fg.getChild(0).getText()+"' (type '"+typeDetecteFd+"') n'est ni de type 'int' ni de type 'string'");
+					afficherErreurSemantique(fd.getChild(0), "L'identificateur '"+fg.getChild(0).getText()+"' (type '"+typeDetecteFd+"') n'est ni de type 'int' ni de type 'string'",path);
 				}
 			}
 			else {
 				//System.err.println("Aucun type détecté");
-				afficherErreurSemantique(fg,"Aucun type détecté");
+				afficherErreurSemantique(fg,"Aucun type détecté",path);
 			}
 		}
 	}
 
-	public static String detectionTypeExp(Tree noeud, TableSymbolesAbs tds) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
+	public static String detectionTypeExp(Tree noeud, TableSymbolesAbs tds,String path) {  // gestion de tous les types possible d'une exp; retourne le type du noeud entre
 		String texteNoeud = noeud.getText();
 		String typeRes = null;
 		switch(texteNoeud) {
@@ -466,7 +476,7 @@ public class Main {
 				Variable v = (Variable)tds.get(noeud.getChild(0).getText());
 				if(v==null) {
 					//System.err.println("La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
-					afficherErreurSemantique(noeud.getChild(0), "La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
+					afficherErreurSemantique(noeud.getChild(0), "La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée",path);
 				}
 				else {
 					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
@@ -548,7 +558,7 @@ public class Main {
 			}
 			//Sinon typeRes = typeDerniereExp
 			else {
-				typeRes = detectionTypeExp(noeud.getChild(nbChild-1), tds);
+				typeRes = detectionTypeExp(noeud.getChild(nbChild-1), tds,path);
 			}
 			break;
 
@@ -563,14 +573,14 @@ public class Main {
 				typeRes = "void";
 			}
 			else {		// si else, le type de retour est le même que celui de les clauses then et else
-				typeRes = detectionTypeExp(noeud.getChild(1), tds);
+				typeRes = detectionTypeExp(noeud.getChild(1), tds,path);
 			}
 			break;
 		case "FOR" :
 			typeRes = "void";
 			break;
 		case "LET" :
-			typeRes = detectionTypeExp(noeud.getChild(noeud.getChildCount()-1), tds);		// let est de meme type que la derniere expression du corps
+			typeRes = detectionTypeExp(noeud.getChild(noeud.getChildCount()-1), tds,path);		// let est de meme type que la derniere expression du corps
 			if (typeRes == null) {	// si typeRes est null alors le corps de let est vide
 				typeRes = "void";	// le type de let est donc void
 			}
@@ -598,10 +608,44 @@ public class Main {
 		System.out.println(tds.toString());
 	}
 	
-	public static void afficherErreurSemantique(Tree noeudErreur,String texteErreur)
+	public static void afficherErreurSemantique(Tree noeudErreur,String texteErreur,String path)
 	{
 		CommonTree ct=(CommonTree)noeudErreur;
-		System.err.println("Ligne : "+ct.getLine()+",Colonne : "+ct.getCharPositionInLine()+":"+texteErreur);
+		//on coupe le path
+		String[] resSplit=path.split("/");
+		
+		System.err.println(resSplit[resSplit.length-1]+":("+ct.getLine()+","+ct.getCharPositionInLine()+") : "+texteErreur);
+		String line="";
+		//On charge la ligne dans le fichier
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			int i=0;
+			for(i=0;i<ct.getLine()-1;i++)
+			{
+				reader.readLine();
+			}
+			line = reader.readLine();
+			System.err.println(line);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		//On ajoute une ligne avec un accent circonflexe à ct.getCharPositionInLine()
+		String s="";
+		for(int j=0;j<ct.getCharPositionInLine();j++)
+		{
+			if(line.charAt(j)=='\t')
+			{
+				s+="\t";
+			}
+			else
+			{
+				s+=" ";
+			}
+		}
+		s+="^";
+		System.err.println(s);
 	}
 
 	/*public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?
