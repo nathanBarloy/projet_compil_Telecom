@@ -25,7 +25,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 		
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testFor/nonFonctionnel/assignementIndexFor.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/fonctionnels/prog1.txt"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -76,7 +76,7 @@ public class Main {
 	//	System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			controleOp(tree.getChild(i), tableParent);
 			controleComparateurEgEq(tree.getChild(i),tableParent);
 			controleComparateurInfSup(tree.getChild(i), tableParent);

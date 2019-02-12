@@ -169,11 +169,15 @@ public abstract class TableSymbolesAbs {
 	 */
 	public Type getVariableType(String variable)
 	{
-		Type res = ((Variable)identificateurs.get(variable)).getType();
-		if(res == null && parent != null) {
-			res = parent.getVariableType(variable);
+		Variable tmp = ((Variable)get(variable));
+		if(tmp!=null)
+		{
+			return tmp.getType();
 		}
-		return res;
+		else
+		{
+			return null;
+		}
 	}
 	public Identificateur get(String name) { // renvoie l'identificateur de nom name
 		Identificateur res = (Identificateur)(identificateurs.get(name));
@@ -230,7 +234,11 @@ public abstract class TableSymbolesAbs {
 			}
 			s+= "Fils "+(i+1)+ " : "+fils.get(i).toString();
 		}
-		s+="}";
+		for(int j=0;j<niveau;j++)
+		{
+			s+="\t";
+		}
+		s+="}\n";
 		return s;
 	}
 
