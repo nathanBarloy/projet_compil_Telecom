@@ -69,7 +69,7 @@ public abstract class TableSymbolesAbs {
 	
 	public void ajouterTypeArray(String name, String sousType)
 	{
-		if(getType(name)==null && getType(sousType)!=null)
+		if(getType(name)==null)
 		{
 			ajouterIdentificateur(name, new ArrayType(name,getType(sousType)));
 		}

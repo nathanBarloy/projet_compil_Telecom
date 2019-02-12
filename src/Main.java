@@ -1,6 +1,7 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -18,6 +19,7 @@ import tableSymbole.*;
 
 public class Main {
 
+	private static ArrayList<String> listeNomsType;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
 		TableSymbolesAbs blocOrig = new TableSymboles();
@@ -184,6 +186,16 @@ public class Main {
 			case "TYDEC" :
 				Tree tydecTree = tree.getChild(i);
 				String nomType = tydecTree.getChild(0).getText();
+				if (i==0 || !tree.getChild(i-1).getText().equals("TYDEC")) { // si le premier element du bloc de declaration
+					int j=0;
+					listeNomsType = new ArrayList<String>();
+					while (i+j<tree.getChildCount() && tree.getChild(i+j).getText().equals("TYDEC")) { //on parcours les noeuds suivant pour connaitre la taille du bloc de déclaration
+						listeNomsType.add(tree.getChild(i+j).getChild(0).getText());
+						j++;
+					}
+					// listeNomsType contient la liste des noms de type qu'on veut déclarer dans ce bloc
+				}
+
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
 					System.err.println("Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
@@ -196,17 +208,24 @@ public class Main {
 							String nomSousType = decTree.getChild(1).getText();
 
 							Type sousType = tableParent.getType(nomSousType);
-							if (sousType==null) {
+							if (sousType==null && !listeNomsType.contains(nomSousType)) {
 								System.err.println("Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
 							} else {
 								newType.addComponent(nomComponent, sousType);
 							}
 						}
 						tableParent.ajouterTypeRecord(nomType, newType);
+
+						//en fin de bloc de déclaration
+						if (!tree.getChild(i+1).getText().equals("TYDEC")) {
+
+
+						}
+
 						break;
 					case "ARRTY" : // on défini une liste
 						String sousType = tydecTree.getChild(1).getChild(0).getText();
-						if (tableParent.getType(sousType)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+						if (tableParent.getType(sousType)==null && !listeNomsType.contains(sousType)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							System.err.println("Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
 							tableParent.ajouterTypeArray(nomType, sousType);
@@ -214,7 +233,7 @@ public class Main {
 						break;
 					default : // on défini un alias
 						String aliased = tydecTree.getChild(1).getText();
-						if (tableParent.getType(aliased)==null) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+						if (tableParent.getType(aliased)==null && !listeNomsType.contains(aliased)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 							System.err.println("Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
 						} else { // si le nom entré est valable
 							tableParent.ajouterTypeAlias(nomType, aliased);
@@ -472,6 +491,7 @@ public class Main {
 		}
 		return typeRes;
 	}
+
 
 	public static void afficherTDS(TableSymbolesAbs tds)
 	{
