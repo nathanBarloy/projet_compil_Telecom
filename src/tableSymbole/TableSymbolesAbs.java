@@ -13,6 +13,7 @@ import identificateurs.Identificateur;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import identificateurs.Variable;
+import identificateurs.RecordType;
 
 public abstract class TableSymbolesAbs {
 
@@ -69,7 +70,7 @@ public abstract class TableSymbolesAbs {
 	
 	public void ajouterTypeArray(String name, String sousType)
 	{
-		if(getType(name)==null && getType(sousType)!=null)
+		if(getType(name)==null)
 		{
 			ajouterIdentificateur(name, new ArrayType(name,getType(sousType)));
 		}
@@ -162,6 +163,38 @@ public abstract class TableSymbolesAbs {
 		return res;
 	}
 	
+	public Type getRecordType(String rec) {
+		Type res;
+		Identificateur temp = identificateurs.get(rec);
+		if(!(temp instanceof RecordType)) {
+			res = null;
+		}
+		else {
+			res = (RecordType) temp;
+		}
+		
+		if (res == null && parent !=null) {
+			res = parent.getRecordType(rec);
+		}
+		
+		return res;
+	}
+	
+	public Type getArrayType(String arr) {
+		Type res;
+		Identificateur tmp = identificateurs.get(arr);
+		if(!(tmp instanceof ArrayType)) {
+			res = null;
+		}
+		else {
+			res = (ArrayType) tmp;
+		}
+		if(res == null && parent != null) {
+			res = parent.getArrayType(arr);
+		}
+		return res;
+	}
+	
 	/**
 	 * Cette méthode retourne le type de la variable dont le nom est passé en paramètre
 	 * @param variable nom de la variable dont on cherche le type
@@ -179,7 +212,17 @@ public abstract class TableSymbolesAbs {
 			return null;
 		}
 	}
-	public Identificateur get(String name) { // renvoie l'identificateur de nom name
+	
+	public Type getFunctionType(String function)
+	{
+		Type res = ((Fonction)identificateurs.get(function)).getTypeRetour();
+		if(res == null && parent != null) {
+			res = parent.getFunctionType(function);
+		}
+		return res;
+	}
+	
+	public Identificateur get(String name) { // renvoie l'identificateuérifier que le fils gauche d'IDBEG est une fonctionr de nom name
 		Identificateur res = (Identificateur)(identificateurs.get(name));
 		if(res == null && parent != null) {
 			res = parent.get(name);

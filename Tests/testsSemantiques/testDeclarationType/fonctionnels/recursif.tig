@@ -1,0 +1,9 @@
+let
+    
+    type rec1 = { x : int, s : string, a : rec2}
+    
+    type rec2 = { x : int, s : string, a : rec1}
+    
+in
+
+end

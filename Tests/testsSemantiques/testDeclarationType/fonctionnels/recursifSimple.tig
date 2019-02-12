@@ -1,0 +1,9 @@
+let
+    
+    type rec1 = { x : int, s : string, a : rec1}
+    
+    type rec2 = array of rec2
+    
+in
+
+end
