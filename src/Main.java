@@ -424,10 +424,31 @@ public class Main {
 					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
 				}
 			}
-			// TODO : faire les autres cas possible du IDBEG
 			// cas avec 2 fils
-			if (noeud.getChildCount() == 2) {
+			else if (noeud.getChildCount() == 2) {
 				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+				String filsDroit = tds.getVariableType(noeud.getChild(1).getText()).getName();
+				switch(filsDroit) {
+
+				case "EXPBEG":
+					// TODO : Gerer le fils droit de EXPBEG
+					break;
+				case "FIELDEXP":
+					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+					break;
+				case "RECCREATE":
+					typeRes = tds.getRecordType(noeud.getChild(0).getText()).getName();
+					break;
+				case "ASSIGNMENT":
+					typeRes = "void";
+					break;
+				case "CALLEXP":
+					String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					if(typeRetour != null) { // fils gauche est une fonction
+						typeRes =  typeRetour;
+					}
+					break;
+				}
 			}
 			break;
 
@@ -477,7 +498,6 @@ public class Main {
 		case "break":
 			typeRes = "void";
 			break;
-
 		case "ASSIGNMENT":
 			typeRes = "void";
 			break;

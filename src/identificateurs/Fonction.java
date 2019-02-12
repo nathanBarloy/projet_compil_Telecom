@@ -15,6 +15,9 @@ public class Fonction extends Identificateur {
 	public TableSymbolesAbs getTdsFonction() {
 		return tdsFonction;
 	}
+	public Type getTypeRetour() {
+		return typeRetour;
+	}
 
 
 
