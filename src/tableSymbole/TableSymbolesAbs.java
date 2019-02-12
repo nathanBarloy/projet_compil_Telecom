@@ -12,6 +12,7 @@ import identificateurs.Identificateur;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import identificateurs.Variable;
+import identificateurs.RecordType;
 
 public abstract class TableSymbolesAbs {
 
@@ -68,7 +69,7 @@ public abstract class TableSymbolesAbs {
 	
 	public void ajouterTypeArray(String name, String sousType)
 	{
-		if(getType(name)==null && getType(sousType)!=null)
+		if(getType(name)==null)
 		{
 			ajouterIdentificateur(name, new ArrayType(name,getType(sousType)));
 		}
@@ -161,6 +162,23 @@ public abstract class TableSymbolesAbs {
 		return res;
 	}
 	
+	public Type getRecordType(String rec) {
+		Type res;
+		Identificateur temp = identificateurs.get(rec);
+		if(!(temp instanceof RecordType)) {
+			res = null;
+		}
+		else {
+			res = (RecordType) temp;
+		}
+		
+		if (res == null && parent !=null) {
+			res = parent.getRecordType(rec);
+		}
+		
+		return res;
+	}
+	
 	/**
 	 * Cette méthode retourne le type de la variable dont le nom est passé en paramètre
 	 * @param variable nom de la variable dont on cherche le type
@@ -206,6 +224,10 @@ public abstract class TableSymbolesAbs {
 	
 	public int getNiveau() {
 		return niveau;
+	}
+	
+	public TableSymbolesAbs getParent() {
+		return parent;
 	}
 
 	@Override
