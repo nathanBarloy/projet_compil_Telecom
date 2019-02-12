@@ -284,7 +284,8 @@ public abstract class TableSymbolesAbs {
 		s+="}\n";
 		return s;
 	}
-
+	
+	public abstract boolean isBreakable();
 	/*@Override
   public String toString(){
     StringBuilder s =new StringBuilder();

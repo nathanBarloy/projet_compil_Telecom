@@ -9,4 +9,12 @@ public class TableSymbolesFor extends TableSymbolesAbs{
 	public TableSymbolesFor() { // table des symboles sans pere
 		super();
 	}
+
+
+	@Override
+	public boolean isBreakable() {
+		return true;
+	}
+	
+	
 }

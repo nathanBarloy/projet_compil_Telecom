@@ -304,7 +304,7 @@ public class Main {
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 			case "break" :
-				if(!(tableParent instanceof TableSymbolesFor) && !(tableParent instanceof TableSymbolesWhile)) {
+				if(!tableParent.isBreakable()) {
 					System.err.println("Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 				}
 				break;
