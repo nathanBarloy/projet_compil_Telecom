@@ -22,13 +22,13 @@ import tableSymbole.*;
 public class Main {
 
 	private static ArrayList<String> listeNomsType;
-	
+
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
 		TableSymbolesAbs blocOrig = new TableSymboles();
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-
+		
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testDeclarationType/fonctionnels/recursifArray.tig"));
 
 		TigerLexer lexer = new TigerLexer(input);
@@ -81,7 +81,7 @@ public class Main {
 	//	System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			controleOp(tree.getChild(i), tableParent);
 			controleComparateurEgEq(tree.getChild(i),tableParent);
 			controleComparateurInfSup(tree.getChild(i), tableParent);
@@ -198,7 +198,7 @@ public class Main {
 					}
 					// listeNomsType contient la liste des noms de type qu'on veut déclarer dans ce bloc
 				}
-				
+
 				if (tableParent.get(nomType)!=null) { // si le nom existe déjà
 					System.err.println("Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
@@ -284,7 +284,6 @@ public class Main {
 							// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
 							break;
 					}
-					// else -> controle semantique
 				}
 				else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
 				{
@@ -326,7 +325,7 @@ public class Main {
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 			case "break" :
-				if(!(tableParent instanceof TableSymbolesFor) && !(tableParent instanceof TableSymbolesWhile)) {
+				if(!tableParent.isBreakable()) {
 					System.err.println("Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 				}
 				break;
@@ -445,10 +444,32 @@ public class Main {
 					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
 				}
 			}
-			// TODO : faire les autres cas possible du IDBEG
 			// cas avec 2 fils
-			if (noeud.getChildCount() == 2) {
+			else if (noeud.getChildCount() == 2) {
+				System.out.println(noeud.getChild(1).getText());
 				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+				String filsDroit = tds.getVariableType(noeud.getChild(1).getText()).getName();
+				switch(filsDroit) {
+
+				case "EXPBEG":
+					// TODO : Gerer le fils droit de EXPBEG
+					break;
+				case "FIELDEXP":
+					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+					break;
+				case "RECCREATE":
+					typeRes = tds.getRecordType(noeud.getChild(0).getText()).getName();
+					break;
+				case "ASSIGNMENT":
+					typeRes = "void";
+					break;
+				case "CALLEXP":
+					String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					if(typeRetour != null) { // fils gauche est une fonction
+						typeRes =  typeRetour;
+					}
+					break;
+				}
 			}
 			break;
 
@@ -498,7 +519,6 @@ public class Main {
 		case "break":
 			typeRes = "void";
 			break;
-
 		case "ASSIGNMENT":
 			typeRes = "void";
 			break;
@@ -512,15 +532,15 @@ public class Main {
 		}
 		return typeRes;
 	}
-	
+
 
 	public static void afficherTDS(TableSymbolesAbs tds)
 	{
 		System.out.println(tds.toString());
-		for(int i = 0;i<tds.getFils().size();i++)
+		/*for(int i = 0;i<tds.getFils().size();i++)
 		{
 			afficherTDS(tds.getFils(i));
-		}
+		}*/
 	}
 
 	/*public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?

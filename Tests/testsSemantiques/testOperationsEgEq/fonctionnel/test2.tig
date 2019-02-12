@@ -1,0 +1,5 @@
+let 
+	var x := 42
+in 
+	42 <> x = 42
+end
