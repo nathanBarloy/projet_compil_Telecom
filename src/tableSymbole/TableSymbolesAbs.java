@@ -30,11 +30,11 @@ public abstract class TableSymbolesAbs {
 
 		fils = new ArrayList<TableSymbolesAbs>();
 		identificateurs=new HashMap<>();
-		
+
 		/*variableMap = new HashMap<String, Variable>();
     	fonctionMap = new HashMap<Fonction, TableSymboles>();*/
 	}
-	
+
 
 	public TableSymbolesAbs() { // table des symboles sans pere
 		this.parent = null;
@@ -55,7 +55,7 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
-	
+
 	public void ajouterTypeAlias(String name, String aliasedType)
 	{
 		if(getType(name)==null && getType(aliasedType)!=null)
@@ -67,7 +67,7 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
-	
+
 	public void ajouterTypeArray(String name, String sousType)
 	{
 		if(getType(name)==null)
@@ -79,7 +79,7 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
-	
+
 	public void ajouterTypeRecord(String name, Type newType)
 	{
 		if(getType(name)==null && newType!=null)
@@ -91,7 +91,7 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
-	
+
 	public void ajouterFonction(String name, String retour, TableSymbolesAbs tds) {
 		//fonctionMap.put(new Fonction(name,retour),tds);
 		Type t=getType(retour);
@@ -141,7 +141,7 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Type non défini '"+type+"' lors de la déclaration de la variable "+name);
 		}
 	}
-	
+
 	/**
 	 * Cette méthode retourne le type s'il existe dans cette tds ou dans les parents, null sinon
 	 * @param type : identificateur en chaine de caractère du type
@@ -156,13 +156,13 @@ public abstract class TableSymbolesAbs {
 		} else {
 			res = (Type) resInt;
 		}
-		
+
 		if(res == null && parent != null) {
 			res = parent.getType(type);
 		}
 		return res;
 	}
-	
+
 	public Type getRecordType(String rec) {
 		Type res;
 		Identificateur temp = identificateurs.get(rec);
@@ -172,29 +172,32 @@ public abstract class TableSymbolesAbs {
 		else {
 			res = (RecordType) temp;
 		}
-		
+
 		if (res == null && parent !=null) {
 			res = parent.getRecordType(rec);
 		}
-		
+
 		return res;
 	}
-	
-	public Type getArrayType(String arr) {
+
+	public Type getArrayType(String rec) {
 		Type res;
-		Identificateur tmp = identificateurs.get(arr);
-		if(!(tmp instanceof ArrayType)) {
+		Identificateur temp = identificateurs.get(rec);
+		if(!(temp instanceof ArrayType)) {
 			res = null;
 		}
 		else {
-			res = (ArrayType) tmp;
+			res = (ArrayType) temp;
 		}
-		if(res == null && parent != null) {
-			res = parent.getArrayType(arr);
+
+		if (res == null && parent !=null) {
+			res = parent.getArrayType(rec);
 		}
+
 		return res;
 	}
-	
+
+
 	/**
 	 * Cette méthode retourne le type de la variable dont le nom est passé en paramètre
 	 * @param variable nom de la variable dont on cherche le type
@@ -212,7 +215,7 @@ public abstract class TableSymbolesAbs {
 			return null;
 		}
 	}
-	
+
 	public Type getFunctionType(String function)
 	{
 		Type res = ((Fonction)identificateurs.get(function)).getTypeRetour();
@@ -221,7 +224,7 @@ public abstract class TableSymbolesAbs {
 		}
 		return res;
 	}
-	
+
 	public Identificateur get(String name) { // renvoie l'identificateuérifier que le fils gauche d'IDBEG est une fonctionr de nom name
 		Identificateur res = (Identificateur)(identificateurs.get(name));
 		if(res == null && parent != null) {
@@ -237,15 +240,15 @@ public abstract class TableSymbolesAbs {
 	public TableSymbolesAbs getFils(int i){ // récupère le ième fils tds
 		return fils.get(i);
 	}
-	
+
 	public ArrayList<TableSymbolesAbs> getFils() {
 		return fils;
 	}
-	
+
 	public int getNiveau() {
 		return niveau;
 	}
-	
+
 	public TableSymbolesAbs getParent() {
 		return parent;
 	}
@@ -284,7 +287,7 @@ public abstract class TableSymbolesAbs {
 		s+="}\n";
 		return s;
 	}
-	
+
 	public abstract boolean isBreakable();
 	/*@Override
   public String toString(){
