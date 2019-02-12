@@ -26,8 +26,7 @@ public class Main {
 		ajouterTypesBase(blocOrig);
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
-
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testComparateurInfSup/fonctionnel/test1.tig"));
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/fonctionnels/prog1.txt"));
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -78,7 +77,7 @@ public class Main {
 	//	System.out.println("Nb de fils : "+tree.getChildCount());
 		for(int i=0;i<tree.getChildCount();i++)
 		{
-		//	System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			controleOp(tree.getChild(i), tableParent);
 			controleComparateurEgEq(tree.getChild(i),tableParent);
 			controleComparateurInfSup(tree.getChild(i), tableParent);
@@ -305,7 +304,7 @@ public class Main {
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
 			case "break" :
-				if(!(tableParent instanceof TableSymbolesFor) && !(tableParent instanceof TableSymbolesWhile)) {
+				if(!tableParent.isBreakable()) {
 					System.err.println("Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 				}
 				break;
@@ -426,6 +425,7 @@ public class Main {
 			}
 			// cas avec 2 fils
 			else if (noeud.getChildCount() == 2) {
+				System.out.println(noeud.getChild(1).getText());
 				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
 				String filsDroit = noeud.getChild(1).getText();
 				switch(filsDroit) {
@@ -535,10 +535,10 @@ public class Main {
 	public static void afficherTDS(TableSymbolesAbs tds)
 	{
 		System.out.println(tds.toString());
-		for(int i = 0;i<tds.getFils().size();i++)
+		/*for(int i = 0;i<tds.getFils().size();i++)
 		{
 			afficherTDS(tds.getFils(i));
-		}
+		}*/
 	}
 
 	/*public static String detecterType(String texteNoeud) // a integrer dans detectionTypeExp ?
