@@ -490,10 +490,10 @@ public class Main {
 							typeRes = "void";
 							break;
 						case "BRACBEG":
-							System.err.println("Not yet implemented");
+							typeRes = tds.getArrayType(noeud.getChild(0).getText()).getName();
 							break;
-						case "IDSTOCK":
-							System.err.println("Not yet implemented");
+						case "IDSTOR":
+							typeRes = tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName();
 							break;
 						case "EXPSTOR":
 							if (tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName() == "int") {
@@ -504,7 +504,17 @@ public class Main {
 					}
 					break;
 				case "FIELDEXP":
-					typeRes = tds.getVariableType(noeud.getChild(1).getChild(0).getText()).getName();
+					//TODO : faire les autres cas 
+					//typeRes = tds.getVariableType(noeud.getChild(1).getChild(0).getText()).getName();
+					System.err.println("Not yet implemented");
+					String fieldExp = noeud.getChild(1).getChild(0).getText();
+					switch(fieldExp) {
+					case "EXPSTOR":
+						break;
+					case "IDSTOR":
+						break;
+					}
+					
 					break;
 				case "RECCREATE":
 					typeRes = tds.getRecordType(noeud.getChild(1).getChild(0).getText()).getName();
