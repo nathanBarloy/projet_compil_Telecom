@@ -174,7 +174,17 @@ public abstract class TableSymbolesAbs {
 		}
 		return res;
 	}
-	public Identificateur get(String name) { // renvoie l'identificateur de nom name
+	
+	public Type getFunctionType(String function)
+	{
+		Type res = ((Fonction)identificateurs.get(function)).getTypeRetour();
+		if(res == null && parent != null) {
+			res = parent.getFunctionType(function);
+		}
+		return res;
+	}
+	
+	public Identificateur get(String name) { // renvoie l'identificateuérifier que le fils gauche d'IDBEG est une fonctionr de nom name
 		Identificateur res = (Identificateur)(identificateurs.get(name));
 		if(res == null && parent != null) {
 			res = parent.get(name);

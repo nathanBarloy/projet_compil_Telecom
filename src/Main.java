@@ -25,11 +25,7 @@ public class Main {
 		ajouterFonctionBase(blocOrig);
 		System.out.println("///////////////////////////////////////");
 
-<<<<<<< HEAD
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSyntaxiques/testProf/nonFonctionnels/prog1NF.tig"));
-=======
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("Tests/testsSemantiques/testFor/nonFonctionnel/assignementIndexFor.tig"));
->>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
 		TigerLexer lexer = new TigerLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		TigerParser parser = new TigerParser(tokens);
@@ -147,7 +143,7 @@ public class Main {
 				}
 				parcoursArbre(tree.getChild(i),nouvelle);
 				break;
-				
+
 			// cas ne creant pas de nouveau blocOrig
 
 			case "VARDEC":
@@ -409,10 +405,31 @@ public class Main {
 					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
 				}
 			}
-			// TODO : faire les autres cas possible du IDBEG
 			// cas avec 2 fils
-			if (noeud.getChildCount() == 2) {
+			else if (noeud.getChildCount() == 2) {
 				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+				String filsDroit = tds.getVariableType(noeud.getChild(1).getText()).getName();
+				switch(filsDroit) {
+					
+				case "EXPBEG":
+					// TODO : Gerer le fils droit de EXPBEG
+					break;
+				case "FIELDEXP":
+					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+					break;
+				case "RECCREATE":
+					typeRes = tds.getRecordType(noeud.getChild(0).getText()).getName();
+					break;
+				case "ASSIGNMENT":
+					typeRes = "void";
+					break;
+				case "CALLEXP":
+					String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					if(typeRetour != null) { // fils gauche est une fonction
+						typeRes =  typeRetour; 
+					}
+					break;
+				}
 			}
 			break;
 
@@ -462,23 +479,15 @@ public class Main {
 		case "break":
 			typeRes = "void";
 			break;
-<<<<<<< HEAD
-			
 		case "ASSIGNMENT":
 			typeRes = "void";
 			break;
 		// TODO : faire les autre cas possible de exp
-=======
-		// TODO : 'nil' ? 
-		}
-		if(texteNoeud.equals("+") || texteNoeud.equals("-") || texteNoeud.equals("*") || texteNoeud.equals("/") || texteNoeud.equals("=") 
-				|| texteNoeud.equals("<>") || texteNoeud.equals(">") || texteNoeud.equals(">=") || texteNoeud.equals("<")
-				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
-			typeRes = "int";
->>>>>>> 84d72f36ac6640a7cf8bacf6766d2f17aac5959a
+		
 		}
 		return typeRes;
 	}
+
 
 	public static void afficherTDS(TableSymbolesAbs tds)
 	{
