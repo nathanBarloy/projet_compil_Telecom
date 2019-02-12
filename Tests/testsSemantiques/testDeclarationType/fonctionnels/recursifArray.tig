@@ -1,0 +1,13 @@
+let
+    
+    type rec1 = array of rec2
+    
+    type rec2 = array of rec3
+    
+    type rec3 = array of rec4
+    
+    type rec4 = array of int
+    
+in
+
+end
