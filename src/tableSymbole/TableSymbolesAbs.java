@@ -12,6 +12,7 @@ import identificateurs.Identificateur;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import identificateurs.Variable;
+import identificateurs.RecordType;
 
 public abstract class TableSymbolesAbs {
 
@@ -158,6 +159,23 @@ public abstract class TableSymbolesAbs {
 		if(res == null && parent != null) {
 			res = parent.getType(type);
 		}
+		return res;
+	}
+	
+	public Type getRecordType(String rec) {
+		Type res;
+		Identificateur temp = identificateurs.get(rec);
+		if(!(temp instanceof RecordType)) {
+			res = null;
+		}
+		else {
+			res = (RecordType) temp;
+		}
+		
+		if (res == null && parent !=null) {
+			res = parent.getRecordType(rec);
+		}
+		
 		return res;
 	}
 	
