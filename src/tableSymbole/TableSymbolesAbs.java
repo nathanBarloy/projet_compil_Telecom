@@ -179,6 +179,21 @@ public abstract class TableSymbolesAbs {
 		return res;
 	}
 	
+	public Type getArrayType(String arr) {
+		Type res;
+		Identificateur tmp = identificateurs.get(arr);
+		if(!(tmp instanceof ArrayType)) {
+			res = null;
+		}
+		else {
+			res = (ArrayType) tmp;
+		}
+		if(res == null && parent != null) {
+			res = parent.getArrayType(arr);
+		}
+		return res;
+	}
+	
 	/**
 	 * Cette méthode retourne le type de la variable dont le nom est passé en paramètre
 	 * @param variable nom de la variable dont on cherche le type
