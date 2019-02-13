@@ -19,8 +19,6 @@ public abstract class TableSymbolesAbs {
 
 	protected TableSymbolesAbs parent; // TDS parent
 	protected ArrayList<TableSymbolesAbs> fils; //liste des TDS fils
-	//private HashMap<String,Variable> variableMap; // stocke les entrés dans la table
-	//private HashMap<Fonction,TableSymboles> fonctionMap;	// stocke les fonctions et leur tds associee
 	protected HashMap<String,Identificateur> identificateurs;
 	protected int niveau ; //niveau d'imbrication
 
@@ -30,9 +28,6 @@ public abstract class TableSymbolesAbs {
 
 		fils = new ArrayList<TableSymbolesAbs>();
 		identificateurs=new HashMap<>();
-
-		/*variableMap = new HashMap<String, Variable>();
-    	fonctionMap = new HashMap<Fonction, TableSymboles>();*/
 	}
 
 
