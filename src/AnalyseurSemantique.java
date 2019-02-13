@@ -11,6 +11,7 @@ import org.antlr.runtime.tree.Tree;
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
 import identificateurs.Fonction;
+import identificateurs.Identificateur;
 import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.Variable;
@@ -77,16 +78,16 @@ public class AnalyseurSemantique {
 	private void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
 		System.out.println("Ajout des fonctions intrinsèques");
-		tds.ajouterFonction(new Fonction("print", tds.getType("void"), null));
-		tds.ajouterFonction(new Fonction("flush",tds.getType("void"), null));
-		tds.ajouterFonction(new Fonction("getchar", tds.getType("string"), null));
-		tds.ajouterFonction(new Fonction("ord", tds.getType("int"), null));
-		tds.ajouterFonction(new Fonction("chr", tds.getType("string"), null));
-		tds.ajouterFonction(new Fonction("size", tds.getType("int"), null));
-		tds.ajouterFonction(new Fonction("substring", tds.getType("string"), null));
-		tds.ajouterFonction(new Fonction("concat", tds.getType("string"), null));
-		tds.ajouterFonction(new Fonction("not", tds.getType("int"), null));
-		tds.ajouterFonction(new Fonction("exit", tds.getType("int"), null));
+		tds.ajouterIdentificateur("print",new Fonction("print", tds.getType("void"), null));
+		tds.ajouterIdentificateur("flush",new Fonction("flush",tds.getType("void"), null));
+		tds.ajouterIdentificateur("getchar",new Fonction("getchar", tds.getType("string"), null));
+		tds.ajouterIdentificateur("ord",new Fonction("ord", tds.getType("int"), null));
+		tds.ajouterIdentificateur("chr",new Fonction("chr", tds.getType("string"), null));
+		tds.ajouterIdentificateur("size",new Fonction("size", tds.getType("int"), null));
+		tds.ajouterIdentificateur("substring",new Fonction("substring", tds.getType("string"), null));
+		tds.ajouterIdentificateur("concat",new Fonction("concat", tds.getType("string"), null));
+		tds.ajouterIdentificateur("not",new Fonction("not", tds.getType("int"), null));
+		tds.ajouterIdentificateur("exit",new Fonction("exit", tds.getType("int"), null));
 	}
 	
 	/**
@@ -101,15 +102,62 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(retour.getText());
 		if(t!=null)
 		{
-			tds.ajouterFonction(new Fonction(name.getText(), t, tdsFonction));
+			ajouterIdentificateur(tds, name, new Fonction(name.getText(), t, tdsFonction));
 		}
 		else
 		{
-			//System.err.println("Type de retour non défini '"+retour+"' lors de la déclaration de la fonction "+name);
 			afficherErreurSemantique(retour, "Type de retour non défini '"+retour.getText()+"' lors de la déclaration de la fonction "+name.getText());
 		}
 	}
 	
+	/**
+	 * Cette méthode réalise les controles sémantique avant l'ajout d'un identificateur dans la tds
+	 * @param tds table des symboles dans laquelle on veut ajouter l'identificateur
+	 * @param name noeud contenant le nom de l'identificateur
+	 * @param identificateur identificateur à controler et eventuellement ajouter dans la tds
+	 */
+	private void ajouterIdentificateur(TableSymbolesAbs tds, Tree name,Identificateur identificateur)
+	{
+		if(!tds.containsIdentificateur(identificateur.getName()))
+		{
+			tds.ajouterIdentificateur(identificateur.getName(), identificateur);
+		}
+		else
+		{
+			afficherErreurSemantique(name, "Identificateur déjà utilisé : "+name.getText());
+		}
+	}
+	
+	/**
+	 * Cette méthode réalise les controles sémantiques avant l'ajout d'une variable dans la tds
+	 * @param tds table des symboles dans laquelle on veut ajouter la variable
+	 * @param name noeud contenant le nom de la variable
+	 * @param type noeud contenant le nom du type de la variable
+	 */
+	private void ajouterVariable(TableSymbolesAbs tds,Tree name,Tree type)
+	{
+		Type t=tds.getType(type.getText());
+		if(t != null)
+		{
+			ajouterIdentificateur(tds, name, new Variable(name.getText(),t));
+		}
+		else
+		{
+			//System.err.println("Type non défini '"+type+"' lors de la déclaration de la variable "+name);
+			afficherErreurSemantique(type, "Type non défini '"+type.getText()+"' lors de la déclaration de la variable "+name.getText());
+		}
+	}
+	
+	/**
+	 * Cetet méthode réalise les controles sémantiques avant l'ajout d'une variable dans la tds lorsque l'on fait de l'inférence de type 
+	 * @param tds
+	 * @param name
+	 * @param nomType
+	 */
+	private void ajouterVariable(TableSymbolesAbs tds,Tree name,String nomType)
+	{
+		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType)));
+	}
 	/**
 	 * Parcours l'AST et réalise l'analyse et la construction de la TDS
 	 * @param tree AST à parcourir
@@ -132,7 +180,6 @@ public class AnalyseurSemantique {
 			{
 				//case "ROOT":
 				//cas creant un nouveau bloc
-	
 				case "FUNDEC":
 					nouvelle = new TableSymboles(tableParent);
 					tableParent.addFils(nouvelle);
@@ -178,8 +225,9 @@ public class AnalyseurSemantique {
 					tableParent.addFils(nouvelle);
 					String start=tree.getChild(i).getChild(1).getText();//valeur
 					String end=tree.getChild(i).getChild(2).getText();//valeur
-					if(start.matches("INT") && end.matches("INT")) { 		//si le debut et la fin du for sont des entiers
-						nouvelle.ajouterVariable(tree.getChild(i).getChild(0).getText(),"int");
+					if(start.matches("INT") && end.matches("INT"))
+					{ 		//si le debut et la fin du for sont des entiers
+						ajouterVariable(nouvelle,tree.getChild(i).getChild(0),"int");
 					}
 					else {
 						//System.err.println("Le début et la fin de l'index doit être de type : int");
@@ -219,7 +267,7 @@ public class AnalyseurSemantique {
 						}
 						else
 						{
-							tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(),tree.getChild(i).getChild(1).getText());
+							ajouterVariable(tableParent,tree.getChild(i).getChild(0),tree.getChild(i).getChild(1));
 						}
 					}
 					else //s'il n'y a que deux fils, alors il faut detecter le type
@@ -227,7 +275,7 @@ public class AnalyseurSemantique {
 						Tree valeur=tree.getChild(i).getChild(1);//valeur
 						//System.out.println("valeur : "+valeur);
 						String type=detectionTypeExp(valeur,tableParent);
-						tableParent.ajouterVariable(tree.getChild(i).getChild(0).getText(), type);
+						ajouterVariable(tableParent,tree.getChild(i).getChild(0), type);
 					}
 					break;
 	

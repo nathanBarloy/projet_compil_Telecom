@@ -91,48 +91,19 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
-	
-	public void ajouterFonction(Fonction fonction)
-	{
-		ajouterIdentificateur(fonction.getName(), fonction);
-	}
 
-	private void ajouterIdentificateur(String name,Identificateur identificateur)
+	public void ajouterIdentificateur(String name,Identificateur identificateur)
 	{
-		if(!identificateurs.containsKey(name))
-		{
-			System.out.println("Ajout de l'identificateur : "+name);
 			identificateurs.put(name,identificateur);
-		}
-		else
-		{
-			System.err.println("Identificateur déjà présent : "+name);
-		}
-
 	}
 
+	public boolean containsIdentificateur(String identificateur)
+	{
+		return identificateurs.containsKey(identificateur);
+	}
+	
 	public TableSymbolesAbs getTDSFonction(Fonction f) {
 		return f.getTdsFonction();
-	}
-
-	public void ajouterVariable(String name, String type) {
-		//nouvelle variable
-		Type t=getType(type);
-		if(t != null)
-		{
-			if(!identificateurs.containsKey(name))
-			{
-				ajouterIdentificateur(name, new Variable(name, t));
-			}
-			else
-			{
-				System.err.println("Identificateur déjà utilisé : "+name);
-			}
-		}
-		else
-		{
-			System.err.println("Type non défini '"+type+"' lors de la déclaration de la variable "+name);
-		}
 	}
 
 	/**
