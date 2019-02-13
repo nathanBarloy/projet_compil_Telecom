@@ -10,6 +10,7 @@ import org.antlr.runtime.tree.Tree;
 
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
+import identificateurs.Fonction;
 import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.Variable;
@@ -76,16 +77,37 @@ public class AnalyseurSemantique {
 	private void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
 		System.out.println("Ajout des fonctions intrinsèques");
-		tds.ajouterFonction("print", "void", null);
-		tds.ajouterFonction("flush","void", null);
-		tds.ajouterFonction("getchar", "string", null);
-		tds.ajouterFonction("ord", "int", null);
-		tds.ajouterFonction("chr", "string", null);
-		tds.ajouterFonction("size", "int", null);
-		tds.ajouterFonction("substring", "string", null);
-		tds.ajouterFonction("concat", "string", null);
-		tds.ajouterFonction("not", "int", null);
-		tds.ajouterFonction("exit", "int", null);
+		tds.ajouterFonction(new Fonction("print", tds.getType("void"), null));
+		tds.ajouterFonction(new Fonction("flush",tds.getType("void"), null));
+		tds.ajouterFonction(new Fonction("getchar", tds.getType("string"), null));
+		tds.ajouterFonction(new Fonction("ord", tds.getType("int"), null));
+		tds.ajouterFonction(new Fonction("chr", tds.getType("string"), null));
+		tds.ajouterFonction(new Fonction("size", tds.getType("int"), null));
+		tds.ajouterFonction(new Fonction("substring", tds.getType("string"), null));
+		tds.ajouterFonction(new Fonction("concat", tds.getType("string"), null));
+		tds.ajouterFonction(new Fonction("not", tds.getType("int"), null));
+		tds.ajouterFonction(new Fonction("exit", tds.getType("int"), null));
+	}
+	
+	/**
+	 * Cette méthode réalise les controles sémantiques avant l'ajout d'une fonction dans la TDS
+	 * @param tds table des symbole dans laquelle on veut ajouter la fonction
+	 * @param name noeud contenant le nom de la fonction que l'on veut ajouter
+	 * @param retour noeud contenant le nom du type de retour de la fonction
+	 * @param tdsFonction table des symbole de la fonction
+	 */
+	private void ajouterFonction(TableSymbolesAbs tds, Tree name, Tree retour, TableSymbolesAbs tdsFonction)
+	{
+		Type t=tds.getType(retour.getText());
+		if(t!=null)
+		{
+			tds.ajouterFonction(new Fonction(name.getText(), t, tdsFonction));
+		}
+		else
+		{
+			//System.err.println("Type de retour non défini '"+retour+"' lors de la déclaration de la fonction "+name);
+			afficherErreurSemantique(retour, "Type de retour non défini '"+retour.getText()+"' lors de la déclaration de la fonction "+name.getText());
+		}
 	}
 	
 	/**
@@ -114,14 +136,14 @@ public class AnalyseurSemantique {
 				case "FUNDEC":
 					nouvelle = new TableSymboles(tableParent);
 					tableParent.addFils(nouvelle);
-					String nom = tree.getChild(i).getChild(0).getText();
+					Tree nom = tree.getChild(i).getChild(0);
 					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
 						// on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
-						String retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText();
-						tableParent.ajouterFonction(nom, retour, nouvelle);
+						Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2);
+						ajouterFonction(tableParent, nom, retour, nouvelle);
 					}
 					else {
-						tableParent.ajouterFonction(nom, null, nouvelle);
+						ajouterFonction(tableParent, nom, null, nouvelle);
 					}
 					parcoursArbre(tree.getChild(i),nouvelle);
 					break;

@@ -24,7 +24,7 @@ import tableSymbole.*;
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, RecognitionException {
-		String path = "Tests/testsSemantiques/testNegation/nonFonctionnel/test1.tig";
+		String path = "Tests/testsSyntaxiques/testDec/fonctionnels/functionDeclaration.tig";
 		AnalyseurSemantique as=new AnalyseurSemantique(path);
 		System.out.println(as.analyser().toString());
 	}

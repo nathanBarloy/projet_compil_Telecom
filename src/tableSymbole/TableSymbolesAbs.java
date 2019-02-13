@@ -91,18 +91,10 @@ public abstract class TableSymbolesAbs {
 			System.err.println("Tentative de déclaration d'un type existant : "+name);
 		}
 	}
-
-	public void ajouterFonction(String name, String retour, TableSymbolesAbs tds) {
-		//fonctionMap.put(new Fonction(name,retour),tds);
-		Type t=getType(retour);
-		if(t!=null)
-		{
-			ajouterIdentificateur(name,new Fonction(name, t,tds));
-		}
-		else
-		{
-			System.err.println("Type de retour non défini '"+retour+"' lors de la déclaration de la fonction "+name);
-		}
+	
+	public void ajouterFonction(Fonction fonction)
+	{
+		ajouterIdentificateur(fonction.getName(), fonction);
 	}
 
 	private void ajouterIdentificateur(String name,Identificateur identificateur)
