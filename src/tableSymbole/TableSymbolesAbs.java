@@ -123,9 +123,10 @@ public abstract class TableSymbolesAbs {
 		return f.getTdsFonction();
 	}
 
-	public void ajouterVariable(String name, String type) { // nouvelle variable
+	public void ajouterVariable(String name, String type) {
+		//nouvelle variable
 		Type t=getType(type);
-		if(t!=null)
+		if(t != null)
 		{
 			if(!identificateurs.containsKey(name))
 			{
@@ -296,7 +297,10 @@ public abstract class TableSymbolesAbs {
 		s+="}\n";
 		return s;
 	}
-
+	/**
+	 * Cette fonction permet de savoir si on est dans un bloc dans lequel on peut utiliser break
+	 * @return true si on est dans un bloc dans lequel on peut utiliser break, false sinon
+	 */
 	public abstract boolean isBreakable();
 	/*@Override
   public String toString(){

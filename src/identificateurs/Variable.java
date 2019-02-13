@@ -8,7 +8,7 @@ public class Variable extends Identificateur{
 		super(name);
 		this.type = type;
 		//this.deplacement = deplacement; 
-		//caluler le déplacement à partir du déplacement de la variable précédente, et de la taille du type
+		//TODO caluler le déplacement à partir du déplacement de la variable précédente, et de la taille du type
 	}
 
 	
