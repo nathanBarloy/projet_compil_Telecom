@@ -56,41 +56,7 @@ public abstract class TableSymbolesAbs {
 		}
 	}
 
-	public void ajouterTypeAlias(String name, String aliasedType)
-	{
-		if(getType(name)==null && getType(aliasedType)!=null)
-		{
-			ajouterIdentificateur(name, new AliasType(name,getType(aliasedType), aliasedType));
-		}
-		else
-		{
-			System.err.println("Tentative de déclaration d'un type existant : "+name);
-		}
-	}
-
-	public void ajouterTypeArray(String name, String sousType)
-	{
-		if(getType(name)==null)
-		{
-			ajouterIdentificateur(name, new ArrayType(name,getType(sousType),sousType));
-		}
-		else
-		{
-			System.err.println("Tentative de déclaration d'un type existant : "+name);
-		}
-	}
-
-	public void ajouterTypeRecord(String name, Type newType)
-	{
-		if(getType(name)==null && newType!=null)
-		{
-			ajouterIdentificateur(name, newType);
-		}
-		else
-		{
-			System.err.println("Tentative de déclaration d'un type existant : "+name);
-		}
-	}
+	
 
 	public void ajouterIdentificateur(String name,Identificateur identificateur)
 	{

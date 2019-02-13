@@ -90,6 +90,42 @@ public class AnalyseurSemantique {
 		tds.ajouterIdentificateur("exit",new Fonction("exit", tds.getType("int"), null));
 	}
 	
+	public void ajouterTypeAlias(TableSymbolesAbs tds,Tree name, Tree aliasedType)
+	{
+		if(tds.getType(name.getText())==null && tds.getType(aliasedType.getText())!=null)
+		{
+			ajouterIdentificateur(tds,name, new AliasType(name.getText(),tds.getType(aliasedType.getText()), aliasedType.getText()));
+		}
+		else
+		{
+			System.err.println("Tentative de déclaration d'un type existant : "+name);
+		}
+	}
+	
+	public void ajouterTypeRecord(TableSymbolesAbs tds, Tree name, Type newType)
+	{
+		if(tds.getType(name.getText())==null && newType!=null)
+		{
+			ajouterIdentificateur(tds,name, newType);
+		}
+		else
+		{
+			afficherErreurSemantique(name, "Tentative de déclaration d'un type existant : "+name);
+		}
+	}
+	
+	public void ajouterTypeArray(TableSymbolesAbs tds,Tree name, Tree sousType)
+	{
+		if(tds.getType(name.getText())==null)
+		{
+			ajouterIdentificateur(tds,name, new ArrayType(name.getText(),tds.getType(sousType.getText()),sousType.getText()));
+		}
+		else
+		{
+			//System.err.println("Tentative de déclaration d'un type existant : "+name);
+			afficherErreurSemantique(name, "Tentative de déclaration d'un type existant : "+name.getText());
+		}
+	}
 	/**
 	 * Cette méthode réalise les controles sémantiques avant l'ajout d'une fonction dans la TDS
 	 * @param tds table des symbole dans laquelle on veut ajouter la fonction
@@ -281,7 +317,7 @@ public class AnalyseurSemantique {
 	
 				case "TYDEC" :
 					Tree tydecTree = tree.getChild(i);
-					String nomType = tydecTree.getChild(0).getText();
+					Tree nomType = tydecTree.getChild(0);
 					if (i==0 || !tree.getChild(i-1).getText().equals("TYDEC")) { // si le premier element du bloc de declaration
 						int j=0;
 						listeNomsType = new ArrayList<String>();
@@ -292,13 +328,13 @@ public class AnalyseurSemantique {
 						// listeNomsType contient la liste des noms de type qu'on veut déclarer dans ce bloc
 					}
 	
-					if (tableParent.get(nomType)!=null) { // si le nom existe déjà
+					if (tableParent.get(nomType.getText())!=null) { // si le nom existe déjà
 						//System.err.println("Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 						afficherErreurSemantique(tydecTree.getChild(0), "Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 					} else { // si le nom est valable
 						switch(tydecTree.getChild(1).getText()) {
 						case "RECTY" : // on défini un ensemble
-							RecordType newType = new RecordType(nomType);
+							RecordType newType = new RecordType(nomType.getText());
 							for (int j=0; j<tydecTree.getChildCount(); j++) {
 								Tree decTree = tydecTree.getChild(1).getChild(j);
 								String nomComponent = decTree.getChild(0).getText();
@@ -312,25 +348,25 @@ public class AnalyseurSemantique {
 									newType.addComponent(nomComponent, sousType);
 								}
 							}
-							tableParent.ajouterTypeRecord(nomType, newType);
+							ajouterTypeRecord(tableParent,nomType, newType);
 							break;
 							
 						case "ARRTY" : // on défini une liste
-							String sousType = tydecTree.getChild(1).getChild(0).getText();
-							if (tableParent.getType(sousType)==null && !listeNomsType.contains(sousType)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+							Tree sousType = tydecTree.getChild(1).getChild(0);
+							if (tableParent.getType(sousType.getText())==null && !listeNomsType.contains(sousType.getText())) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 								//System.err.println("Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type");
-								afficherErreurSemantique(tydecTree.getChild(1).getChild(0), "Le nom '"+ sousType+"' n'existe pas ou ne représente pas un type");
+								afficherErreurSemantique(sousType, "Le nom '"+ sousType.getText()+"' n'existe pas ou ne représente pas un type");
 							} else { // si le nom entré est valable
-								tableParent.ajouterTypeArray(nomType, sousType);
+								ajouterTypeArray(tableParent,nomType, sousType);
 							}
 							break;
 						default : // on défini un alias
-							String aliased = tydecTree.getChild(1).getText();
-							if (tableParent.getType(aliased)==null && !listeNomsType.contains(aliased)) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
+							Tree aliased = tydecTree.getChild(1);
+							if (tableParent.getType(aliased.getText())==null && !listeNomsType.contains(aliased.getText())) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
 								//System.err.println("Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
 								afficherErreurSemantique(tydecTree.getChild(1), "Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
 							} else { // si le nom entré est valable
-								tableParent.ajouterTypeAlias(nomType, aliased);
+								ajouterTypeAlias(tableParent,nomType, aliased);
 							}
 							break;
 						}
