@@ -17,14 +17,84 @@ import org.junit.Test;
 public class TestsSemantiques {
 
 	private final String REPERTOIRETEST="Tests/testsSemantiques/";
+	
 	@Test
-	public void testsFournis() throws IOException
+	public void testsBreak() throws IOException
+	{
+		System.out.println(":");
+		String rep="testBreak/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsCoherenceType() throws IOException
+	{
+		System.out.println(":");
+		String rep="testCoherenceType/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsComparateurInfSup() throws IOException
+	{
+		System.out.println(":");
+		String rep="testComparateurInfSup/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsIdentificateurDejaExistant() throws IOException
 	{
 		System.out.println(":");
 		String rep="testDeclarationIdentificateurDejaExistant/";
 		executeOnDir(REPERTOIRETEST+rep);
 	}
-	
+	@Test
+	public void testsDeclarationType() throws IOException
+	{
+		System.out.println(":");
+		String rep="testDeclarationType/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsFor() throws IOException
+	{
+		System.out.println(":");
+		String rep="testFor/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsIDBEG() throws IOException
+	{
+		System.out.println(":");
+		String rep="testIDBEG/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsIfThen() throws IOException
+	{
+		System.out.println(":");
+		String rep="testIfThen/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsNegation() throws IOException
+	{
+		System.out.println(":");
+		String rep="testNegation/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsOperations() throws IOException
+	{
+		System.out.println(":");
+		String rep="testOperations/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsOperationEgEq() throws IOException
+	{
+		System.out.println(":");
+		String rep="testOperationEgEq/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
 	public int numberOfFiles(String path)
 	{
 		return new File(path).listFiles().length;
