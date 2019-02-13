@@ -282,28 +282,37 @@ public class AnalyseurSemantique {
 				case "VARDEC":
 					if (tree.getChild(i).getChildCount()==3)//cas où le type est précisé
 					{
-						String typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText()).getName();
-						String dernierNoeud = tree.getChild(i).getChild(2).getText();
-						String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
-					/*	if(dernierNoeud.compareTo("IDBEG")==0)//il faut récupérer le type de cet identificateur dans la TDS
-						{
-							//System.out.println("cas IDBEG");
-							typeDetecte = tableParent.getVariableType(tree.getChild(i).getChild(2).getChild(0).getText());
+						System.out.println(tree.getChild(i).getChild(1).getText());
+						Type typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText());
+
+						if(typeDeclare == null) {
+							afficherErreurSemantique(tree.getChild(i).getChild(1),"Le type ("+tree.getChild(i).getChild(1).getText()+") n'existpe pas");
 						}
-						else
-						{
-							//System.out.println("Cas pas IDBEG");
-							typeDetecte = tableParent.getType(detecterType(dernierNoeud));
-						}*/
-	
-						if (typeDeclare != typeDetecte || typeDetecte == null)
-						{
-							//System.err.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
-							afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
-						}
-						else
-						{
-							ajouterVariable(tableParent,tree.getChild(i).getChild(0),tree.getChild(i).getChild(1));
+						else {
+							String typeDeclareStr = typeDeclare.getName();
+						
+					//		String dernierNoeud = tree.getChild(i).getChild(2).getText();
+							String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
+						/*	if(dernierNoeud.compareTo("IDBEG")==0)//il faut récupérer le type de cet identificateur dans la TDS
+							{
+								//System.out.println("cas IDBEG");
+								typeDetecte = tableParent.getVariableType(tree.getChild(i).getChild(2).getChild(0).getText());
+							}
+							else
+							{
+								//System.out.println("Cas pas IDBEG");
+								typeDetecte = tableParent.getType(detecterType(dernierNoeud));
+							}*/
+		
+							if (typeDeclareStr != typeDetecte || typeDetecte == null)
+							{
+								//System.err.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
+								afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de la declaration ("+typeDeclareStr+") est different du type détecté ("+typeDetecte+").");
+							}
+							else
+							{
+								ajouterVariable(tableParent,tree.getChild(i).getChild(0),tree.getChild(i).getChild(1));
+							}
 						}
 					}
 					else //s'il n'y a que deux fils, alors il faut detecter le type
