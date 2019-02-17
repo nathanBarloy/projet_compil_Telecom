@@ -19,6 +19,12 @@ public class Fonction extends Identificateur {
 		return typeRetour;
 	}
 
+	@Override
+	public String toString() {
+		return "Fonction [typeRetour : '" + typeRetour.getName() + "', tdsFonction=" + tdsFonction + "]";
+	}
+	
+
 
 
 }

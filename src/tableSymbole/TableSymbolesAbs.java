@@ -191,21 +191,42 @@ public abstract class TableSymbolesAbs {
 	public String toString() {
 		String s = "";
 		s+="Table des symboles (Imbrication "+niveau+") { \n";
-		for(int j=0;j<niveau;j++)
+		for(int j=0;j<niveau+1;j++)
 		{
 			s+="\t";
 		};
 		s+="Identificateurs : [";
 		Iterator<Identificateur> iterateur = identificateurs.values().iterator();
-		while (iterateur.hasNext())
+		if(iterateur.hasNext())//s'il y a au moins un identificateur
 		{
-			s += "Identificateur : "+iterateur.next().getName();
-			if(iterateur.hasNext())
+			s+='\n';
+			while (iterateur.hasNext())
 			{
-				s += ", ";
+				for(int j=0;j<=niveau+2;j++)
+				{
+					s+="\t";
+				}
+				s += iterateur.next().toString();
+				if(iterateur.hasNext())
+				{
+					s += ",\n";
+				}
+				else
+				{
+					s += '\n';
+				}
+			}
+			for(int j=0;j<=niveau;j++)
+			{
+				s+="\t";
 			}
 		}
-		s+="]\n";
+		s+="]";
+		if(fils.size()>0)
+		{
+			s+=',';
+		}
+		s+='\n';
 		for (int i=0;i<fils.size();i++)
 		{
 			for(int j=0;j<=niveau;j++)

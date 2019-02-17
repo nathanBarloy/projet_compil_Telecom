@@ -17,12 +17,13 @@ public class Variable extends Identificateur{
 		return type;
 	}
 
+
+
 	@Override
 	public String toString() {
-		String res = "";
-		res = nom + " : " + type;
-
-		return res;
+		return "Variable '"+nom+"' [type '" + type.getName() + "', déplacement : " + deplacement + "]";
 	}
+	
+	
 
 }
