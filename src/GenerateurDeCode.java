@@ -12,6 +12,10 @@ public class GenerateurDeCode {
 		this.ast = ast;
 	}
 	
+	/**
+	 * Génère le code assembleur à l'aide de la TDS et de l'AST
+	 * @return chaine de caractère contenant le code assembleur du programme
+	 */
 	public String genererCode()
 	{
 		//TODO

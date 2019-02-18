@@ -32,4 +32,9 @@ public class AliasType extends Type {
 		this.nomAliasedType = nomAliasedType;
 	}
 
+	@Override
+	public int getTaille() {
+		return aliasedType.getTaille();
+	}
+
 }

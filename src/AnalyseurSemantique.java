@@ -9,6 +9,7 @@ import identificateurs.ArrayType;
 import identificateurs.Identificateur;
 import identificateurs.RecordType;
 import identificateurs.Type;
+import identificateurs.TypePrimitif;
 import identificateurs.Variable;
 import identificateurs.fonctions.*;
 import tableSymbole.TableSymboles;
@@ -65,9 +66,9 @@ public class AnalyseurSemantique {
 	private void ajouterTypesBase(TableSymbolesAbs tds)
 	{
 		//System.out.println("Ajout des types de bases à la TDS d'origine");
-		tds.ajouterTypePrimitif("int");
-		tds.ajouterTypePrimitif("string");
-		tds.ajouterTypePrimitif("void");
+		tds.ajouterTypePrimitif(TypePrimitif.INT);
+		tds.ajouterTypePrimitif(TypePrimitif.STRING);
+		tds.ajouterTypePrimitif(TypePrimitif.VOID);
 	}
 
 	/**
@@ -173,7 +174,7 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(type.getText());
 		if(t != null)
 		{
-			ajouterIdentificateur(tds, name, new Variable(name.getText(),t));
+			ajouterIdentificateur(tds, name, new Variable(name.getText(),t,tds.calculerDeplacement()));
 		}
 		else
 		{
@@ -189,7 +190,7 @@ public class AnalyseurSemantique {
 	 */
 	private void ajouterVariable(TableSymbolesAbs tds,Tree name,String nomType)
 	{
-		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType)));
+		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType),tds.calculerDeplacement()));
 	}
 	/**
 	 * Parcours l'AST et réalise l'analyse et la construction de la TDS

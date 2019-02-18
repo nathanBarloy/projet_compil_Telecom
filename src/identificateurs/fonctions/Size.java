@@ -11,7 +11,7 @@ public class Size extends Fonction {
 
 	@Override
 	public String genererCode() {
-		// TODO On parcours jusqu'a trouver NUL
+		// TODO On parcours jusqu'a trouver NUL en incrémentant un registre
 		return super.genererCode();
 	}
 	

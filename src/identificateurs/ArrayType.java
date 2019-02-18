@@ -30,6 +30,12 @@ public class ArrayType extends Type {
 	public void setNomSousType(String nomSousType) {
 		this.nomSousType = nomSousType;
 	}
+
+	@Override
+	public int getTaille() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 
 }

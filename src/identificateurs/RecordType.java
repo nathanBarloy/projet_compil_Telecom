@@ -15,7 +15,7 @@ public class RecordType extends Type {
 		if (this.existe(name)) {
 			System.err.println("l'attribut "+name+" existe deja pour le type "+ this.nom);
 		} else {
-			listeVar.add(new Variable(name, type));
+			listeVar.add(new Variable(name, type,deplacementDerniereVariable()));
 		}
 	}
 	
@@ -35,6 +35,33 @@ public class RecordType extends Type {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * calcule le deplacement à appliquer à une variable avant son ajout
+	 * @return le déplacement à appliquer à la variable que l'on va ajouter
+	 */
+	private int deplacementDerniereVariable()
+	{
+		if(listeVar.size()>0)
+		{
+			Variable lastVar=listeVar.get(listeVar.size()-1);
+			return lastVar.getDeplacement()+lastVar.getType().getTaille();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	@Override
+	public int getTaille() {
+		int somme=0;
+		for(Variable v:listeVar)
+		{
+			somme += v.getType().getTaille();
+		}
+		return somme;
 	}
 
 	

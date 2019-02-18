@@ -10,4 +10,12 @@ public class Ord extends Fonction {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public String genererCode() {
+		// TODO On parcours et on compare pour chaque caractère, si les caractères sont égaux on retourne la valeur
+		return super.genererCode();
+	}
+	
+	
+
 }

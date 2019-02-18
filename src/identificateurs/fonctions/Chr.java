@@ -9,6 +9,14 @@ public class Chr extends Fonction {
 		super("chr", retour, null);
 		// TODO Auto-generated constructor stub
 	}
+
+	@Override
+	public String genererCode() {
+		// TODO Retourne le caractère correspondant au code ASCII passé en paramètre
+		return super.genererCode();
+	}
+	
+	
 	
 	
 

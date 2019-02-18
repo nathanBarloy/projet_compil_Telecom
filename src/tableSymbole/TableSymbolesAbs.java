@@ -39,15 +39,15 @@ public abstract class TableSymbolesAbs {
 		identificateurs=new HashMap<>();
 	}
 
-	public void ajouterTypePrimitif(String name)
+	public void ajouterTypePrimitif(TypePrimitif type)
 	{
-		if(getType(name)==null)
+		if(getType(type.getName())==null)
 		{
-			ajouterIdentificateur(new TypePrimitif(name));
+			ajouterIdentificateur(type);
 		}
 		else
 		{
-			System.err.println("Tentative de déclaration d'un type existant : "+name);
+			System.err.println("Tentative de déclaration d'un type existant : "+type.getName());
 		}
 	}
 
@@ -252,15 +252,11 @@ public abstract class TableSymbolesAbs {
 	 * Cette méthode calcule le déplacement nécessaire avant d'ajouter une variable dans la TDS
 	 * @return un entier décrivant le déplacement en octet depuis la base 
 	 */
-	/*private int calculerDeplacement()
+	public int calculerDeplacement()
 	{
-		int deplacement=0;
-		for(String s:identificateurs.keySet())
-		{
-			deplacement += identificateurs.get(s);
-		}
-		return deplacement;
-	}*/
+		//TODO
+		return 0;
+	}
 	
 	/*@Override
   public String toString(){

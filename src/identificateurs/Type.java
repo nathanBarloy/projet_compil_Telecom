@@ -2,8 +2,6 @@ package identificateurs;
 
 
 public abstract class Type extends Identificateur{
-	
-	protected int taille; // taille en octet du type dans la pile
 
 	public Type(String nom) {
 		super(nom);
@@ -11,8 +9,10 @@ public abstract class Type extends Identificateur{
 
 	@Override
 	public String toString() {
-		return "Type '"+nom+"' [taille : " + taille + " octets]";
+		return "Type '"+nom+"' [taille : " + getTaille() + " octets]";
 	}
+
+	public abstract int getTaille();
 	
 	
 	
