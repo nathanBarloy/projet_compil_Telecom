@@ -1,20 +1,16 @@
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
-
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
-import identificateurs.Fonction;
 import identificateurs.Identificateur;
 import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.Variable;
+import identificateurs.fonctions.*;
 import tableSymbole.TableSymboles;
 import tableSymbole.TableSymbolesAbs;
 import tableSymbole.TableSymbolesFor;
@@ -81,16 +77,16 @@ public class AnalyseurSemantique {
 	private void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
 		//System.out.println("Ajout des fonctions intrinsèques");
-		tds.ajouterIdentificateur("print",new Fonction("print", tds.getType("void"), null));
-		tds.ajouterIdentificateur("flush",new Fonction("flush",tds.getType("void"), null));
-		tds.ajouterIdentificateur("getchar",new Fonction("getchar", tds.getType("string"), null));
-		tds.ajouterIdentificateur("ord",new Fonction("ord", tds.getType("int"), null));
-		tds.ajouterIdentificateur("chr",new Fonction("chr", tds.getType("string"), null));
-		tds.ajouterIdentificateur("size",new Fonction("size", tds.getType("int"), null));
-		tds.ajouterIdentificateur("substring",new Fonction("substring", tds.getType("string"), null));
-		tds.ajouterIdentificateur("concat",new Fonction("concat", tds.getType("string"), null));
-		tds.ajouterIdentificateur("not",new Fonction("not", tds.getType("int"), null));
-		tds.ajouterIdentificateur("exit",new Fonction("exit", tds.getType("int"), null));
+		tds.ajouterIdentificateur(new Print(tds.getType("void")));
+		tds.ajouterIdentificateur(new Flush(tds.getType("void")));
+		tds.ajouterIdentificateur(new GetChar(tds.getType("string")));
+		tds.ajouterIdentificateur(new Ord(tds.getType("int")));
+		tds.ajouterIdentificateur(new Chr(tds.getType("string")));
+		tds.ajouterIdentificateur(new Size(tds.getType("int")));
+		tds.ajouterIdentificateur(new Substring(tds.getType("string")));
+		tds.ajouterIdentificateur(new Concat(tds.getType("string")));
+		tds.ajouterIdentificateur(new Not(tds.getType("int")));
+		tds.ajouterIdentificateur(new Exit(tds.getType("int")));
 	}
 	
 	public void ajouterTypeAlias(TableSymbolesAbs tds,Tree name, Tree aliasedType)
@@ -158,7 +154,7 @@ public class AnalyseurSemantique {
 	{
 		if(!tds.containsIdentificateur(identificateur.getName()))
 		{
-			tds.ajouterIdentificateur(identificateur.getName(), identificateur);
+			tds.ajouterIdentificateur(identificateur);
 		}
 		else
 		{

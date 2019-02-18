@@ -1,5 +1,7 @@
-package identificateurs;
+package identificateurs.fonctions;
 
+import identificateurs.Identificateur;
+import identificateurs.Type;
 import tableSymbole.TableSymbolesAbs;
 
 public class Fonction extends Identificateur {
@@ -21,9 +23,9 @@ public class Fonction extends Identificateur {
 
 	public String genererCode()
 	{
-		//TODO mettre en place la génération de code assembleur
 		return "";
 	}
+	
 	@Override
 	public String toString() {
 		return "Fonction '"+nom+"' [typeRetour : '" + typeRetour.getName() + "', tdsFonction=" + tdsFonction + "]";

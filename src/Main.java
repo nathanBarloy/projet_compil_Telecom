@@ -1,4 +1,6 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -9,20 +11,14 @@ import tableSymbole.TableSymbolesAbs;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
 		String path = "Tests/testsSyntaxiques/testProf/fonctionnels/prog1.txt";
 		//Passe 1 : Analyse lexicale et syntaxique
-		CommonTree tree=null;
-		try {
-			ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
-			TigerLexer lexer = new TigerLexer(input);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			TigerParser parser = new TigerParser(tokens);
-			tree = (CommonTree)parser.program().getTree();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
+		TigerLexer lexer = new TigerLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		TigerParser parser = new TigerParser(tokens);
+		CommonTree tree = (CommonTree)parser.program().getTree();
 		//On obtient l'AST
 		//Passe 2 : Analyse sémantique
 		AnalyseurSemantique as=new AnalyseurSemantique(path,tree);
@@ -31,6 +27,8 @@ public class Main {
 		//On obtient la TDS
 		//Passe 3 : Génération de code
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
+		String codeAssembleur=gdc.genererCode();
+		
 		
 	}
 

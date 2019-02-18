@@ -1,6 +1,5 @@
 package identificateurs.fonctions;
 
-import identificateurs.Fonction;
 import identificateurs.Type;
 
 public class Print extends Fonction{

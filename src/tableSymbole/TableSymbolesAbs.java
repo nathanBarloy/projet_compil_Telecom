@@ -8,11 +8,11 @@ import org.antlr.runtime.tree.Tree;
 
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
-import identificateurs.Fonction;
 import identificateurs.Identificateur;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import identificateurs.Variable;
+import identificateurs.fonctions.Fonction;
 import identificateurs.RecordType;
 
 public abstract class TableSymbolesAbs {
@@ -43,7 +43,7 @@ public abstract class TableSymbolesAbs {
 	{
 		if(getType(name)==null)
 		{
-			ajouterIdentificateur(name, new TypePrimitif(name));
+			ajouterIdentificateur(new TypePrimitif(name));
 		}
 		else
 		{
@@ -53,9 +53,9 @@ public abstract class TableSymbolesAbs {
 
 	
 
-	public void ajouterIdentificateur(String name,Identificateur identificateur)
+	public void ajouterIdentificateur(Identificateur identificateur)
 	{
-			identificateurs.put(name,identificateur);
+			identificateurs.put(identificateur.getName(),identificateur);
 	}
 
 	public boolean containsIdentificateur(String identificateur)
