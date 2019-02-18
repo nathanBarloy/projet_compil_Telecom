@@ -18,6 +18,9 @@ import identificateurs.Variable;
 import tableSymbole.TableSymboles;
 import tableSymbole.TableSymbolesAbs;
 import tableSymbole.TableSymbolesFor;
+import tableSymbole.TableSymbolesFunction;
+import tableSymbole.TableSymbolesIf;
+import tableSymbole.TableSymbolesLet;
 import tableSymbole.TableSymbolesWhile;
 
 public class AnalyseurSemantique {
@@ -215,7 +218,7 @@ public class AnalyseurSemantique {
 				//case "ROOT":
 				//cas creant un nouveau bloc
 				case "FUNDEC":
-					nouvelle = new TableSymboles(tableParent);
+					nouvelle = new TableSymbolesFunction(tableParent);
 					tableParent.addFils(nouvelle);
 					Tree nom = tree.getChild(i).getChild(0);
 					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
@@ -230,7 +233,7 @@ public class AnalyseurSemantique {
 					break;
 	
 				case "LET":
-					nouvelle = new TableSymboles(tableParent);
+					nouvelle = new TableSymbolesLet(tableParent);
 					tableParent.addFils(nouvelle);
 					parcoursArbre(tree.getChild(i),nouvelle);
 					break;
@@ -459,7 +462,7 @@ public class AnalyseurSemantique {
 							afficherErreurSemantique(tree.getChild(i).getChild(2), "Les clauses THEN et ELSE doivent être de même type");
 						}
 					}
-					nouvelle = new TableSymboles(tableParent);
+					nouvelle = new TableSymbolesIf(tableParent);
 					tableParent.addFils(nouvelle);
 					parcoursArbre(tree.getChild(i),nouvelle);
 					break;
