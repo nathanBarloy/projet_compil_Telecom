@@ -10,12 +10,14 @@ public class Not extends Fonction {
 	}
 
 	@Override
-	public String genererCode() {
+	protected String codeAssembleurFonction() {
 		String codeAssembleur="";
 		//TODO : On déplace l'adresse de la variable dont on veut la négation dans un registre if i=0 then 1 else 0.
-		codeAssembleur += "NEG R1,R2";
+		codeAssembleur += "\tNEG R1,R2";
 		return codeAssembleur;
 	}
+
+	
 	
 	
 }

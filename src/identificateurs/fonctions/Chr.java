@@ -12,10 +12,12 @@ public class Chr extends Fonction {
 	}
 
 	@Override
-	public String genererCode() {
+	protected String codeAssembleurFonction() {
 		// TODO Retourne le caractère correspondant au code ASCII passé en paramètre
-		return super.genererCode();
+		return "";
 	}
+	
+	
 	
 	
 	

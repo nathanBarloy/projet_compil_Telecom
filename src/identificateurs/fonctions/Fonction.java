@@ -4,7 +4,7 @@ import identificateurs.Identificateur;
 import identificateurs.Type;
 import tableSymbole.TableSymbolesAbs;
 
-public class Fonction extends Identificateur {
+public abstract class Fonction extends Identificateur {
 	private Type typeRetour;
 	private TableSymbolesAbs tdsFonction;
 
@@ -23,13 +23,17 @@ public class Fonction extends Identificateur {
 
 	public String genererCode()
 	{
-		return "";
+		String res=nom+"_ \t\n";
+		res+=codeAssembleurFonction();
+		return res+'\n';
 	}
 	
 	@Override
 	public String toString() {
 		return "Fonction '"+nom+"' [typeRetour : '" + typeRetour.getName() + "', tdsFonction=" + tdsFonction + "]";
 	}
+	
+	protected abstract String codeAssembleurFonction();
 	
 
 

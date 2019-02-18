@@ -9,12 +9,14 @@ public class Exit extends Fonction {
 	}
 
 	@Override
-	public String genererCode() {
+	protected String codeAssembleurFonction() {
 		String codeAssembleur="";
-		codeAssembleur += "LDQ EXIT_EXC, WR"; // charge n° de trappe EXIT dans registre WR
-		codeAssembleur += "TRP WR"; // lance la trappe EXIT
+		codeAssembleur += "\tLDQ EXIT_EXC, WR\n"; // charge n° de trappe EXIT dans registre WR
+		codeAssembleur += "\tTRP WR\n"; // lance la trappe EXIT
 		return codeAssembleur;
 	}
+	
+	
 	
 	
 }

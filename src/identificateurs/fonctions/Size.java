@@ -11,10 +11,11 @@ public class Size extends Fonction {
 	}
 
 	@Override
-	public String genererCode() {
-		// TODO On parcours jusqu'a trouver NUL en incrémentant un registre
-		return super.genererCode();
+	protected String codeAssembleurFonction() {
+		// TODO Auto-generated method stub
+		return "";
 	}
+	
 	
 	
 }

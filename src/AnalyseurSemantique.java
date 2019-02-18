@@ -78,6 +78,7 @@ public class AnalyseurSemantique {
 	private void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
 		//System.out.println("Ajout des fonctions intrinsèques");
+		tds.ajouterIdentificateur(new PrintI());
 		tds.ajouterIdentificateur(new Print());
 		tds.ajouterIdentificateur(new Flush());
 		tds.ajouterIdentificateur(new GetChar());
@@ -137,7 +138,7 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(retour.getText());
 		if(t!=null)
 		{
-			ajouterIdentificateur(tds, name, new Fonction(name.getText(), t, tdsFonction));
+			ajouterIdentificateur(tds, name, new FonctionDefinie(name.getText(), t, tdsFonction));
 		}
 		else
 		{

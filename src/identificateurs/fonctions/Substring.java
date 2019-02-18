@@ -9,5 +9,11 @@ public class Substring extends Fonction {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	protected String codeAssembleurFonction() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
 	
 }

@@ -26,9 +26,10 @@ public class Main {
 		System.out.println(tdsRes.toString());
 		//On obtient la TDS
 		//Passe 3 : Génération de code
+		System.out.println("Code généré :");
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
 		String codeAssembleur=gdc.genererCode();
-		
+		System.out.println(codeAssembleur);
 		
 	}
 

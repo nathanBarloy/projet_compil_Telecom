@@ -258,6 +258,24 @@ public abstract class TableSymbolesAbs {
 		return 0;
 	}
 	
+	public String genererCode()
+	{
+		String res="";
+		//TODO
+		//On ajoute le code des fonctions
+		for(Identificateur identificateur:identificateurs.values())
+		{
+			if(identificateur instanceof Fonction)
+			{
+				res+=((Fonction) identificateur).genererCode();
+			}
+		}
+		for(TableSymbolesAbs tables:fils)
+		{
+			res+=tables.genererCode();
+;		}
+		return res;
+	}
 	/*@Override
   public String toString(){
     StringBuilder s =new StringBuilder();
