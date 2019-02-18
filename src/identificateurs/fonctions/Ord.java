@@ -1,12 +1,13 @@
 package identificateurs.fonctions;
 
 import identificateurs.Type;
+import identificateurs.TypePrimitif;
 import tableSymbole.TableSymbolesAbs;
 
 public class Ord extends Fonction {
 
-	public Ord(Type retour) {
-		super("ord", retour, null);
+	public Ord() {
+		super("ord", TypePrimitif.INT, null);
 		// TODO Auto-generated constructor stub
 	}
 

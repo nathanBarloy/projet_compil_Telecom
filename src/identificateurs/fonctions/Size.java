@@ -1,11 +1,12 @@
 package identificateurs.fonctions;
 
 import identificateurs.Type;
+import identificateurs.TypePrimitif;
 
 public class Size extends Fonction {
 
-	public Size(Type retour) {
-		super("size", retour, null);
+	public Size() {
+		super("size", TypePrimitif.INT, null);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -2,14 +2,15 @@ package identificateurs.fonctions;
 
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
+import tableSymbole.TableSymbolesAbs;
 
-public class Print extends Fonction{
+public class PrintI extends Fonction {
 
-	public Print() {
-		super("print", TypePrimitif.VOID, null);
+	public PrintI() {
+		super("printi", TypePrimitif.VOID, null);
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	@Override
 	public String genererCode() {
 		//TODO : déplacer l'adresse de la variable à afficher dans R0
@@ -19,7 +20,6 @@ public class Print extends Fonction{
 		codeAssembleur +="TRP WR"; // lance la trappe WRITE
 		return codeAssembleur;
 	}
-	
-	
 
+	
 }

@@ -1,11 +1,12 @@
 package identificateurs.fonctions;
 
 import identificateurs.Type;
+import identificateurs.TypePrimitif;
 
 public class Not extends Fonction {
 
-	public Not(Type retour) {
-		super("not", retour, null);
+	public Not() {
+		super("not", TypePrimitif.INT, null);
 	}
 
 	@Override

@@ -1,12 +1,13 @@
 package identificateurs.fonctions;
 
 import identificateurs.Type;
+import identificateurs.TypePrimitif;
 import tableSymbole.TableSymbolesAbs;
 
 public class GetChar extends Fonction {
 
-	public GetChar(Type retour) {
-		super("getchar", retour, null);
+	public GetChar() {
+		super("getchar", TypePrimitif.STRING, null);
 		// TODO Auto-generated constructor stub
 	}
 

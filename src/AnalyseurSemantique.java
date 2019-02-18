@@ -78,16 +78,16 @@ public class AnalyseurSemantique {
 	private void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
 		//System.out.println("Ajout des fonctions intrinsèques");
-		tds.ajouterIdentificateur(new Print(tds.getType("void")));
-		tds.ajouterIdentificateur(new Flush(tds.getType("void")));
-		tds.ajouterIdentificateur(new GetChar(tds.getType("string")));
-		tds.ajouterIdentificateur(new Ord(tds.getType("int")));
-		tds.ajouterIdentificateur(new Chr(tds.getType("string")));
-		tds.ajouterIdentificateur(new Size(tds.getType("int")));
-		tds.ajouterIdentificateur(new Substring(tds.getType("string")));
-		tds.ajouterIdentificateur(new Concat(tds.getType("string")));
-		tds.ajouterIdentificateur(new Not(tds.getType("int")));
-		tds.ajouterIdentificateur(new Exit(tds.getType("int")));
+		tds.ajouterIdentificateur(new Print());
+		tds.ajouterIdentificateur(new Flush());
+		tds.ajouterIdentificateur(new GetChar());
+		tds.ajouterIdentificateur(new Ord());
+		tds.ajouterIdentificateur(new Chr());
+		tds.ajouterIdentificateur(new Size());
+		tds.ajouterIdentificateur(new Substring());
+		tds.ajouterIdentificateur(new Concat());
+		tds.ajouterIdentificateur(new Not());
+		tds.ajouterIdentificateur(new Exit());
 	}
 	
 	public void ajouterTypeAlias(TableSymbolesAbs tds,Tree name, Tree aliasedType)
@@ -282,7 +282,7 @@ public class AnalyseurSemantique {
 						Type typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText());
 
 						if(typeDeclare == null) {
-							afficherErreurSemantique(tree.getChild(i).getChild(1),"Le type ("+tree.getChild(i).getChild(1).getText()+") n'existpe pas");
+							afficherErreurSemantique(tree.getChild(i).getChild(1),"Le type ("+tree.getChild(i).getChild(1).getText()+") n'existe pas");
 						}
 						else {
 							String typeDeclareStr = typeDeclare.getName();

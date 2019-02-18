@@ -1,12 +1,11 @@
 package identificateurs.fonctions;
 
-import identificateurs.Type;
-import tableSymbole.TableSymbolesAbs;
+import identificateurs.TypePrimitif;
 
 public class Substring extends Fonction {
 
-	public Substring(Type retour) {
-		super("substring", retour, null);
+	public Substring() {
+		super("substring", TypePrimitif.STRING, null);
 		// TODO Auto-generated constructor stub
 	}
 

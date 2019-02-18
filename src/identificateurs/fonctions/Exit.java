@@ -1,11 +1,11 @@
 package identificateurs.fonctions;
 
-import identificateurs.Type;
+import identificateurs.TypePrimitif;
 
 public class Exit extends Fonction {
 
-	public Exit(Type retour) {
-		super("exit", retour, null);
+	public Exit() {
+		super("exit", TypePrimitif.VOID, null);
 	}
 
 	@Override
