@@ -81,7 +81,7 @@ public class TestsSemantiques {
 	@Test
 	public void testsOperationEgEq() throws IOException
 	{
-		String rep="testOperationEgEq/";
+		String rep="testOperationsEgEq/";
 		executeOnDir(REPERTOIRETEST+rep);
 	}
 	public int numberOfFiles(String path)
@@ -131,15 +131,8 @@ public class TestsSemantiques {
 	    PrintStream ps = new PrintStream(baos);
 	    PrintStream err = System.err;
 	    System.setErr(ps);
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichier));
-        TigerLexer lexer = new TigerLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        TigerParser parser = new TigerParser(tokens);
-        try {
-			parser.program();
-		} catch (RecognitionException e) {
-			e.printStackTrace();
-		}
+		AnalyseurSemantique as=new AnalyseurSemantique(fichier.getAbsolutePath());
+        as.analyser();
       //on restaure out
         String res=baos.toString();
 	    assertEquals("", baos.toString());
@@ -154,15 +147,8 @@ public class TestsSemantiques {
 	    PrintStream ps = new PrintStream(baos);
 	    PrintStream err = System.err;
 	    System.setErr(ps);
-		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichier));
-        TigerLexer lexer = new TigerLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        TigerParser parser = new TigerParser(tokens);
-        try {
-			parser.program();
-		} catch (RecognitionException e) {
-			e.printStackTrace();
-		}
+	    AnalyseurSemantique as=new AnalyseurSemantique(fichier.getAbsolutePath());
+        as.analyser();
       //on restaure out
         String res=baos.toString();
 	    assertNotEquals("", baos.toString());

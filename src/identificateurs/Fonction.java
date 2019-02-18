@@ -19,9 +19,14 @@ public class Fonction extends Identificateur {
 		return typeRetour;
 	}
 
+	public String genererCode()
+	{
+		//TODO mettre en place la génération de code assembleur
+		return "";
+	}
 	@Override
 	public String toString() {
-		return "Fonction [typeRetour : '" + typeRetour.getName() + "', tdsFonction=" + tdsFonction + "]";
+		return "Fonction '"+nom+"' [typeRetour : '" + typeRetour.getName() + "', tdsFonction=" + tdsFonction + "]";
 	}
 	
 

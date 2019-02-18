@@ -247,6 +247,21 @@ public abstract class TableSymbolesAbs {
 	 * @return true si on est dans un bloc dans lequel on peut utiliser break, false sinon
 	 */
 	public abstract boolean isBreakable();
+	
+	/**
+	 * Cette méthode calcule le déplacement nécessaire avant d'ajouter une variable dans la TDS
+	 * @return un entier décrivant le déplacement en octet depuis la base 
+	 */
+	/*private int calculerDeplacement()
+	{
+		int deplacement=0;
+		for(String s:identificateurs.keySet())
+		{
+			deplacement += identificateurs.get(s);
+		}
+		return deplacement;
+	}*/
+	
 	/*@Override
   public String toString(){
     StringBuilder s =new StringBuilder();

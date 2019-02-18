@@ -43,7 +43,7 @@ public class AnalyseurSemantique {
 			TableSymbolesAbs blocOrig = new TableSymboles();
 			ajouterTypesBase(blocOrig);
 			ajouterFonctionBase(blocOrig);
-			System.out.println("///////////////////////////////////////");
+			//System.out.println("///////////////////////////////////////");
 			ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichierAnalyse));
 
 			TigerLexer lexer = new TigerLexer(input);
@@ -65,7 +65,7 @@ public class AnalyseurSemantique {
 	 */
 	private void ajouterTypesBase(TableSymbolesAbs tds)
 	{
-		System.out.println("Ajout des types de bases à la TDS d'origine");
+		//System.out.println("Ajout des types de bases à la TDS d'origine");
 		tds.ajouterTypePrimitif("int");
 		tds.ajouterTypePrimitif("string");
 		tds.ajouterTypePrimitif("void");
@@ -77,7 +77,7 @@ public class AnalyseurSemantique {
 	 */
 	private void ajouterFonctionBase(TableSymbolesAbs tds)
 	{
-		System.out.println("Ajout des fonctions intrinsèques");
+		//System.out.println("Ajout des fonctions intrinsèques");
 		tds.ajouterIdentificateur("print",new Fonction("print", tds.getType("void"), null));
 		tds.ajouterIdentificateur("flush",new Fonction("flush",tds.getType("void"), null));
 		tds.ajouterIdentificateur("getchar",new Fonction("getchar", tds.getType("string"), null));
@@ -122,7 +122,6 @@ public class AnalyseurSemantique {
 		}
 		else
 		{
-			//System.err.println("Tentative de déclaration d'un type existant : "+name);
 			afficherErreurSemantique(name, "Tentative de déclaration d'un type existant : "+name.getText());
 		}
 	}
@@ -179,7 +178,6 @@ public class AnalyseurSemantique {
 		}
 		else
 		{
-			//System.err.println("Type non défini '"+type+"' lors de la déclaration de la variable "+name);
 			afficherErreurSemantique(type, "Type non défini '"+type.getText()+"' lors de la déclaration de la variable "+name.getText());
 		}
 	}
@@ -266,12 +264,10 @@ public class AnalyseurSemantique {
 						ajouterVariable(nouvelle,tree.getChild(i).getChild(0),"int");
 					}
 					else {
-						//System.err.println("Le début et la fin de l'index doit être de type : int");
 						afficherErreurSemantique(tree.getChild(i).getChild(0), "Le début et la fin de l'index doit être de type : int");
 					}
 					String typeCorps = detectionTypeExp(tree.getChild(i).getChild(3), tableParent);
 					if(typeCorps != "void") {
-						//System.err.println("Le corps du FOR doit être de type 'void'");
 						afficherErreurSemantique(tree.getChild(i).getChild(3), "Le corps du FOR doit être de type 'void'");
 					}
 					parcoursArbre(tree.getChild(i),nouvelle);
@@ -282,7 +278,7 @@ public class AnalyseurSemantique {
 				case "VARDEC":
 					if (tree.getChild(i).getChildCount()==3)//cas où le type est précisé
 					{
-						System.out.println(tree.getChild(i).getChild(1).getText());
+						//System.out.println(tree.getChild(i).getChild(1).getText());
 						Type typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText());
 
 						if(typeDeclare == null) {
@@ -338,7 +334,6 @@ public class AnalyseurSemantique {
 					}
 	
 					if (tableParent.get(nomType.getText())!=null) { // si le nom existe déjà
-						//System.err.println("Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 						afficherErreurSemantique(tydecTree.getChild(0), "Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 					} else { // si le nom est valable
 						switch(tydecTree.getChild(1).getText()) {
@@ -372,7 +367,6 @@ public class AnalyseurSemantique {
 						default : // on défini un alias
 							Tree aliased = tydecTree.getChild(1);
 							if (tableParent.getType(aliased.getText())==null && !listeNomsType.contains(aliased.getText())) { // si le type que l'on veut utiliser n'existe pas ou n'est pas un type
-								//System.err.println("Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
 								afficherErreurSemantique(tydecTree.getChild(1), "Le nom '"+ aliased+"' n'existe pas ou ne représente pas un type");
 							} else { // si le nom entré est valable
 								ajouterTypeAlias(tableParent,nomType, aliased);
@@ -409,7 +403,7 @@ public class AnalyseurSemantique {
 	
 				case "IDBEG":
 					// que des controle semantique dans IDBEGIN ?
-					System.out.println("Cas idbeg : "+tree.getChild(i).getChildCount());
+					//System.out.println("Cas idbeg : "+tree.getChild(i).getChildCount());
 					if (tree.getChild(i).getChildCount()==2)
 					{
 						switch(tree.getChild(i).getChild(1).getText())
@@ -430,10 +424,9 @@ public class AnalyseurSemantique {
 					else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
 					{
 						String texte = tree.getChild(i).getChild(0).getText();
-						System.out.println(texte);
+						//System.out.println(texte);
 						if(tableParent.get(texte) == null)
 						{
-							//System.err.println("Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
 						}
 	
@@ -442,7 +435,6 @@ public class AnalyseurSemantique {
 				case "NEGATION" :
 					String typeDetecte = detectionTypeExp(tree.getChild(i).getChild(0),tableParent);
 					if (typeDetecte != "int") {
-						//System.err.println("Le type attendu de '"+tree.getChild(i).getChild(0).getChild(0).getText()+"' est 'int' (actuellement de type '"+typeDetecte+"')");
 						afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getChild(0).getText()+"' est 'int' (actuellement de type '"+typeDetecte+"')");
 					}
 					break;
@@ -498,7 +490,7 @@ public class AnalyseurSemantique {
 		//on coupe le path
 		String[] resSplit=fichierAnalyse.split("/");
 		
-		System.err.println(resSplit[resSplit.length-1]+":("+ct.getLine()+","+ct.getCharPositionInLine()+") : "+texteErreur);
+		//System.err.println(resSplit[resSplit.length-1]+":("+ct.getLine()+","+ct.getCharPositionInLine()+") : "+texteErreur);
 		String line="";
 		//On charge la ligne dans le fichier
 		try {
@@ -551,7 +543,7 @@ public class AnalyseurSemantique {
 			}
 			// cas avec 2 fils
 			else if (noeud.getChildCount() == 2) {
-				System.out.println(noeud.getChild(1).getText());
+				//System.out.println(noeud.getChild(1).getText());
 				//typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
 				String filsDroit = noeud.getChild(1).getText();
 				switch(filsDroit) {

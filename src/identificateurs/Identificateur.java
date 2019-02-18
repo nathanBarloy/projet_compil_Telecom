@@ -13,6 +13,4 @@ public abstract class Identificateur {
 	public String getName() {
 		return nom;
 	}
-	
-	
 }
