@@ -157,7 +157,7 @@ public class TestsSyntaxiques {
 	 */
 	public void executeOnDir(String path) throws FileNotFoundException, IOException
 	{
-		System.out.println("Répertoire de test:"+path+"\tNombre de fichiers:"+numberOfFiles(path));
+		System.out.println("Répertoire de test:"+path+"\tNombre de fichiers : "+(numberOfFiles(path+"fonctionnels")+numberOfFiles(path+"nonFonctionnels")));
 		ArrayList<File> fichiersFonctionnels=filesInPath(path+"fonctionnels");
 		for(File fichier:fichiersFonctionnels)
 		{

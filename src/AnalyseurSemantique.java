@@ -29,8 +29,14 @@ public class AnalyseurSemantique {
 	 */
 	private String fichierAnalyse;
 	
-	public AnalyseurSemantique(String path) {
+	/**
+	 * Arbre abstrait sur lequel on réalise l'analyse sémantique
+	 */
+	private CommonTree ast;
+	
+	public AnalyseurSemantique(String path,CommonTree ast) {
 		this.fichierAnalyse=path;
+		this.ast=ast;
 	}
 	
 	/**
@@ -44,13 +50,7 @@ public class AnalyseurSemantique {
 			ajouterTypesBase(blocOrig);
 			ajouterFonctionBase(blocOrig);
 			//System.out.println("///////////////////////////////////////");
-			ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichierAnalyse));
-
-			TigerLexer lexer = new TigerLexer(input);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			TigerParser parser = new TigerParser(tokens);
-			CommonTree tree=(CommonTree)parser.program().getTree();
-			return parcoursArbre(tree, blocOrig);
+			return parcoursArbre(ast, blocOrig);
 		}
 		catch(Exception e)
 		{
@@ -302,7 +302,6 @@ public class AnalyseurSemantique {
 		
 							if (typeDeclareStr != typeDetecte || typeDetecte == null)
 							{
-								//System.err.println("Le type de la declaration ("+typeDeclare+") est different du type détecté ("+typeDetecte+").");
 								afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de la declaration ("+typeDeclareStr+") est different du type détecté ("+typeDetecte+").");
 							}
 							else
@@ -346,7 +345,6 @@ public class AnalyseurSemantique {
 	
 								Type sousType = tableParent.getType(nomSousType);
 								if (sousType==null && !listeNomsType.contains(nomSousType)) {
-									//System.err.println("Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
 									afficherErreurSemantique(decTree.getChild(1), "Le nom '"+ nomSousType+"' n'existe pas ou ne représente pas un type");
 								} else {
 									newType.addComponent(nomComponent, sousType);
@@ -424,7 +422,6 @@ public class AnalyseurSemantique {
 					else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
 					{
 						String texte = tree.getChild(i).getChild(0).getText();
-						//System.out.println(texte);
 						if(tableParent.get(texte) == null)
 						{
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Tentative d'affectation avec une variable non déclarée : '"+texte+"'.");
@@ -443,19 +440,16 @@ public class AnalyseurSemantique {
 					String typeThen = detectionTypeExp(tree.getChild(i).getChild(1), tableParent);
 					int nbFils = tree.getChild(i).getChildCount();
 					if (typeCondition !="int") {		// controle semantique sur la condtion du if
-						//System.err.println("La condition du IF doit être de type 'int' (actuellement : '"+typeCondition+"')");
 						afficherErreurSemantique(tree.getChild(i).getChild(0), "La condition du IF doit être de type 'int' (actuellement : '"+typeCondition+"')");
 					}
 					if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
 						if(typeThen != "void") {
-							//System.err.println("La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
 						}
 					}
 					else if (nbFils == 3) {		// si ELSE les types doivent correspondre
 						String typeElse = detectionTypeExp(tree.getChild(i).getChild(2),tableParent);
 						if (typeThen != typeElse) {
-							//System.err.println("Les clauses THEN et ELSE doivent être de même type");
 							afficherErreurSemantique(tree.getChild(i).getChild(2), "Les clauses THEN et ELSE doivent être de même type");
 						}
 					}
@@ -465,7 +459,6 @@ public class AnalyseurSemantique {
 					break;
 				case "break" :
 					if(!tableParent.isBreakable()) {
-						//System.err.println("Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 						afficherErreurSemantique(tree.getChild(i), "Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 					}
 					break;
@@ -490,7 +483,6 @@ public class AnalyseurSemantique {
 		//on coupe le path
 		String[] resSplit=fichierAnalyse.split("/");
 		
-		//System.err.println(resSplit[resSplit.length-1]+":("+ct.getLine()+","+ct.getCharPositionInLine()+") : "+texteErreur);
 		String line="";
 		//On charge la ligne dans le fichier
 		try {
@@ -534,7 +526,6 @@ public class AnalyseurSemantique {
 			{
 				Variable v = (Variable)tds.get(noeud.getChild(0).getText());
 				if(v==null) {
-					//System.err.println("La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
 					afficherErreurSemantique(noeud.getChild(0), "La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
 				}
 				else {

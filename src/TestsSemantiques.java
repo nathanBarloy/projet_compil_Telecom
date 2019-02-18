@@ -10,8 +10,7 @@ import java.util.ArrayList;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.junit.Before;
+import org.antlr.runtime.tree.CommonTree;
 import org.junit.Test;
 
 public class TestsSemantiques {
@@ -111,7 +110,7 @@ public class TestsSemantiques {
 	 */
 	public void executeOnDir(String path) throws FileNotFoundException, IOException
 	{
-		System.out.println("Répertoire de test:"+path+"\tNombre de fichiers:"+numberOfFiles(path));
+		System.out.println("Répertoire de test:"+path+"\tNombre de fichiers : "+(numberOfFiles(path+"fonctionnels")+numberOfFiles(path+"nonFonctionnels")));
 		ArrayList<File> fichiersFonctionnels=filesInPath(path+"fonctionnels");
 		for(File fichier:fichiersFonctionnels)
 		{
@@ -131,9 +130,20 @@ public class TestsSemantiques {
 	    PrintStream ps = new PrintStream(baos);
 	    PrintStream err = System.err;
 	    System.setErr(ps);
-		AnalyseurSemantique as=new AnalyseurSemantique(fichier.getAbsolutePath());
+	    CommonTree tree=null;
+		try {
+			ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichier.getAbsolutePath()));
+			TigerLexer lexer = new TigerLexer(input);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			TigerParser parser = new TigerParser(tokens);
+			tree = (CommonTree)parser.program().getTree();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		AnalyseurSemantique as=new AnalyseurSemantique(fichier.getAbsolutePath(),tree);
         as.analyser();
-      //on restaure out
+        //on restaure out
         String res=baos.toString();
 	    assertEquals("", baos.toString());
 	    System.setErr(err);
@@ -147,13 +157,23 @@ public class TestsSemantiques {
 	    PrintStream ps = new PrintStream(baos);
 	    PrintStream err = System.err;
 	    System.setErr(ps);
-	    AnalyseurSemantique as=new AnalyseurSemantique(fichier.getAbsolutePath());
+	    CommonTree tree=null;
+		try {
+			ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(fichier.getAbsolutePath()));
+			TigerLexer lexer = new TigerLexer(input);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			TigerParser parser = new TigerParser(tokens);
+			tree = (CommonTree)parser.program().getTree();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    AnalyseurSemantique as=new AnalyseurSemantique(fichier.getAbsolutePath(),tree);
         as.analyser();
-      //on restaure out
+        //on restaure out
         String res=baos.toString();
 	    assertNotEquals("", baos.toString());
 	    System.setErr(err);
 	    System.err.println(res);
 	}
-
 }
