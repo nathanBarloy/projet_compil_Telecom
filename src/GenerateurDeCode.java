@@ -33,6 +33,7 @@ public class GenerateurDeCode {
 		codeAssembleur+="LDW SP, #STACK_ADRS\n"; // charge SP avec STACK_ADRS
 		codeAssembleur+="\n";//On saute une ligne après avoir défini les alias
 		//TODO parcourir l'AST et utiliser la TDS pour générer le code
+		codeAssembleur+="main_\n";
 		codeAssembleur+=tds.genererCode();
 		return codeAssembleur;
 	}

@@ -15,4 +15,13 @@ public class TableSymbolesIf extends TableSymbolesAbs{
 	public boolean isBreakable() {
 		return false;
 	}
+
+
+	@Override
+	protected String nomBloc() {
+		// TODO Auto-generated method stub
+		return "if";
+	}
+	
+	
 }

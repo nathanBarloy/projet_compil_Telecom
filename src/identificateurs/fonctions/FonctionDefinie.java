@@ -17,7 +17,7 @@ public class FonctionDefinie extends Fonction {
 	@Override
 	protected String codeAssembleurFonction() {
 		//TODO
-		return "";
+		return getTdsFonction().genererCode();
 	}
 
 }

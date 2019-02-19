@@ -16,4 +16,13 @@ public class TableSymbolesLet extends TableSymbolesAbs {
 		return false;
 	}
 
+
+	@Override
+	protected String nomBloc() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+	
+	
+
 }

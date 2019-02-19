@@ -243,7 +243,7 @@ public class AnalyseurSemantique {
 				//cas creant un nouveau bloc
 				case "FUNDEC":
 					nouvelle = new TableSymbolesFunction(tableParent);
-					tableParent.addFils(nouvelle);
+					//tableParent.addFils(nouvelle);
 					Tree nom = tree.getChild(i).getChild(0);
 					Tree corps = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1);
 					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() == "RETOUR") {
