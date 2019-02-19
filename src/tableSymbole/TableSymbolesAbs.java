@@ -21,17 +21,25 @@ public abstract class TableSymbolesAbs {
 	protected ArrayList<TableSymbolesAbs> fils; //liste des TDS fils
 	protected HashMap<String,Identificateur> identificateurs;
 	protected int niveau ; //niveau d'imbrication
+	
+	/**
+	 * Nombre de TDS généré jusqu'a présent
+	 */
+	private static int nbTDS = 0;
+	/**
+	 * Stocke le numéro de la TDS afin de s'assurer de disposer d'un numéro unique lors de la génération de code
+	 */
+	private int numeroTDS = nbTDS;
 
 	public TableSymbolesAbs(TableSymbolesAbs parent) {
+		this();
 		this.parent = parent;
 		niveau = parent.getNiveau()+1;
-
-		fils = new ArrayList<TableSymbolesAbs>();
-		identificateurs=new HashMap<>();
 	}
 
 
 	public TableSymbolesAbs() { // table des symboles sans pere
+		nbTDS++;
 		this.parent = null;
 		niveau = 0;
 
@@ -268,9 +276,18 @@ public abstract class TableSymbolesAbs {
 	
 	public String genererCode()
 	{
-		String res="";
+		String res = "";
+		if(!nomBloc().isEmpty())
+		{
+			res+=nomBloc()+numeroTDS+"_\n";
+		}
+		
+		for(TableSymbolesAbs tables:fils)
+		{
+			res+=tables.genererCode();
+		}
 		//TODO
-		//On ajoute le code des fonctions
+		//On ajoute le code des fonctions à la fin
 		for(Identificateur identificateur:identificateurs.values())
 		{
 			if(identificateur instanceof Fonction)
@@ -278,19 +295,9 @@ public abstract class TableSymbolesAbs {
 				res+=((Fonction) identificateur).genererCode();
 			}
 		}
-		for(TableSymbolesAbs tables:fils)
-		{
-			res+=tables.genererCode();
-;		}
-		return res;
+		
+		return res+'\n';
 	}
-	/*@Override
-  public String toString(){
-    StringBuilder s =new StringBuilder();
-    Set<String> cles = variableMap.keySet();
-    for(String string : cles){
-      s.append("\n" + string+ ":" +variableMap.get(string));
-    }
-    return s.toString();
-  }*/
+	
+	protected abstract String nomBloc();
 }

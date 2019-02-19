@@ -15,6 +15,14 @@ public class TableSymbolesWhile extends TableSymbolesAbs{
 	public boolean isBreakable() {
 		return true;
 	}
+
+	@Override
+	protected String nomBloc() {
+		// TODO Auto-generated method stub
+		return "while";
+	}
+	
+	
 	
 	
 }

@@ -15,6 +15,12 @@ public class TableSymbolesFor extends TableSymbolesAbs{
 	public boolean isBreakable() {
 		return true;
 	}
+
+	@Override
+	protected String nomBloc() {
+		return "for";
+	}
+	
 	
 	
 }
