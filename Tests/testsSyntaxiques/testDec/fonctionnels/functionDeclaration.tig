@@ -1,12 +1,12 @@
 let
 	function hello() = print("Hello")
-	function avecUnParametreSansRetour(param1 : entier) = print(param1)
-	function avecUnParametreEtRetour(param1 : entier) : entier = param1
-	function avecPlusieursParametresSansRetour(param1 : entier, param2:string, param3:char) =
+	function avecUnParametreSansRetour(param1 : int) = print(param1)
+	function avecUnParametreEtRetour(param1 : int) : int = param1
+	function avecPlusieursParametresSansRetour(param1 : int, param2:string, param3:string) =
 	(print(param1);
 	print(param2);
 	print(param3))
-	function avecPlusieursParametresAvecRetour(param1 : entier, param2:string, param3:char) : entier =
+	function avecPlusieursParametresAvecRetour(param1 : int, param2:string, param3:int) : int =
 	(print(param2);
 	print(param3);
 	param1)
