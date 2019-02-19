@@ -28,8 +28,6 @@ public class Variable extends Identificateur{
 		return deplacement;
 	}
 	
-	
-	
-	
+		
 
 }

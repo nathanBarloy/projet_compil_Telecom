@@ -7,6 +7,7 @@ import org.antlr.runtime.tree.Tree;
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
 import identificateurs.Identificateur;
+import identificateurs.Parametre;
 import identificateurs.RecordType;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
@@ -133,7 +134,7 @@ public class AnalyseurSemantique {
 	 * @param retour noeud contenant le nom du type de retour de la fonction
 	 * @param tdsFonction table des symbole de la fonction
 	 */
-	private void ajouterFonction(TableSymbolesAbs tds, Tree name, Tree retour, TableSymbolesAbs tdsFonction)
+	private void ajouterFonctionAvecRetour(TableSymbolesAbs tds, Tree name, Tree retour, TableSymbolesAbs tdsFonction)
 	{
 		Type t=tds.getType(retour.getText());
 		if(t!=null)
@@ -144,6 +145,12 @@ public class AnalyseurSemantique {
 		{
 			afficherErreurSemantique(retour, "Type de retour non défini '"+retour.getText()+"' lors de la déclaration de la fonction "+name.getText());
 		}
+	}
+	
+	private void ajouterFonctionSansRetour(TableSymbolesAbs tds, Tree name, Tree retour, TableSymbolesAbs tdsFonction)
+	{
+		Type t=tds.getType("void");
+		ajouterIdentificateur(tds, name, new FonctionDefinie(name.getText(), t, tdsFonction));
 	}
 	
 	/**
@@ -176,6 +183,25 @@ public class AnalyseurSemantique {
 		if(t != null)
 		{
 			ajouterIdentificateur(tds, name, new Variable(name.getText(),t,tds.calculerDeplacement()));
+		}
+		else
+		{
+			afficherErreurSemantique(type, "Type non défini '"+type.getText()+"' lors de la déclaration de la variable "+name.getText());
+		}
+	}
+	
+	/**
+	 * Cette méthode ajoute les parametre d'une fonction dans la tds associe
+	 * @param tds table des symboles dans laquelle on veut ajouter les parametres
+	 * @param name noeud contenant le nom du parametre
+	 * @param type noeud contenant le nom du type du paramtre
+	 */
+	private void ajouterParametre(TableSymbolesAbs tds,Tree name,Tree type)
+	{
+		Type t=tds.getType(type.getText());
+		if(t != null)
+		{
+			ajouterIdentificateur(tds, name, new Parametre(name.getText(),t,tds.calculerDeplacement()));
 		}
 		else
 		{
@@ -219,13 +245,25 @@ public class AnalyseurSemantique {
 					nouvelle = new TableSymbolesFunction(tableParent);
 					tableParent.addFils(nouvelle);
 					Tree nom = tree.getChild(i).getChild(0);
-					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() != "FIELDDEC") {
-						// on test si l'avant dernier fils n'est pas FIELDDEC (donc est le type de retour)
-						Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2);
-						ajouterFonction(tableParent, nom, retour, nouvelle);
+					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getText() == "RETOUR") {
+						System.out.println("Nom de la fonction : ");
+						// on test si l'avant dernier fils est RETOUR -> donne le type de retour
+						for(int j = 1; j < tree.getChild(i).getChildCount()-3; j++) {
+							// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
+							ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
+							
+						}
+						Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getChild(0);
+						ajouterFonctionAvecRetour(tableParent, nom, retour, nouvelle);
 					}
-					else {
-						ajouterFonction(tableParent, nom, null, nouvelle);
+					else {	
+						for(int j = 1; j < tree.getChild(i).getChildCount()-2; j++) {
+							System.out.println("j : "+j+"; noeud : "+tree.getChild(i).getChild(j).getText());
+							// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
+							ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
+							
+						}
+						ajouterFonctionSansRetour(tableParent, nom, null, nouvelle);
 					}
 					parcoursArbre(tree.getChild(i),nouvelle);
 					break;
