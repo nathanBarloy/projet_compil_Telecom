@@ -46,6 +46,7 @@ tokens {
 	FUNDEC;
 	INT;
 	STRING;
+	RETOUR;
 }
 
 program
@@ -85,7 +86,7 @@ funDec
 	;
 
 returnType
-	: ':' tyid -> tyid
+	: ':' tyid -> ^(RETOUR tyid)
 	;
 
 varDec
