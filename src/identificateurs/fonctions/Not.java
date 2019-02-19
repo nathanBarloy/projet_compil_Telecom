@@ -5,6 +5,8 @@ import identificateurs.TypePrimitif;
 
 public class Not extends Fonction {
 
+	private final static String REGISTRESOURCE = "R1";
+	private final static String REGISTREDESTINATION = "R2";
 	public Not() {
 		super("not", TypePrimitif.INT, null);
 	}
@@ -13,7 +15,7 @@ public class Not extends Fonction {
 	protected String codeAssembleurFonction() {
 		String codeAssembleur="";
 		//TODO : On déplace l'adresse de la variable dont on veut la négation dans un registre if i=0 then 1 else 0.
-		codeAssembleur += "\tNEG R1,R2";
+		codeAssembleur += "\tNOT "+REGISTRESOURCE+","+REGISTREDESTINATION+'\n';
 		return codeAssembleur;
 	}
 

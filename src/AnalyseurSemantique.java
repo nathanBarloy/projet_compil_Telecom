@@ -483,7 +483,7 @@ public class AnalyseurSemantique {
 		CommonTree ct=(CommonTree)noeudErreur;
 		//on coupe le path
 		String[] resSplit=fichierAnalyse.split("/");
-		
+		System.err.println(resSplit[resSplit.length-1]+":("+ct.getLine()+","+ct.getCharPositionInLine()+") : "+texteErreur);
 		String line="";
 		//On charge la ligne dans le fichier
 		try {

@@ -255,7 +255,15 @@ public abstract class TableSymbolesAbs {
 	public int calculerDeplacement()
 	{
 		//TODO
-		return 0;
+		int deplacement=0;
+		for(Identificateur identificateur:identificateurs.values())
+		{
+			if(identificateur instanceof Variable)//TODO voir pour remédier à l'usage d'instance of
+			{
+				deplacement+=((Variable) identificateur).getType().getTaille();
+			}
+		}
+		return deplacement;
 	}
 	
 	public String genererCode()

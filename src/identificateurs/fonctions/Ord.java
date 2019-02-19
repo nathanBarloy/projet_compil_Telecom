@@ -1,8 +1,6 @@
 package identificateurs.fonctions;
 
-import identificateurs.Type;
 import identificateurs.TypePrimitif;
-import tableSymbole.TableSymbolesAbs;
 
 public class Ord extends Fonction {
 
@@ -13,7 +11,7 @@ public class Ord extends Fonction {
 
 	@Override
 	protected String codeAssembleurFonction() {
-		// TODO Auto-generated method stub
+		// TODO On récupère le code ASCII du premier caractère si la chaine n'est pas vide, -1 sinon
 		return "";
 	}
 	
