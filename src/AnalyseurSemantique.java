@@ -245,26 +245,32 @@ public class AnalyseurSemantique {
 					nouvelle = new TableSymbolesFunction(tableParent);
 					tableParent.addFils(nouvelle);
 					Tree nom = tree.getChild(i).getChild(0);
-					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getText() == "RETOUR") {
-						System.out.println("Nom de la fonction : ");
+					Tree corps = tree.getChild(i).getChild(tree.getChildCount()-1);
+					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() == "RETOUR") {
 						// on test si l'avant dernier fils est RETOUR -> donne le type de retour
-						for(int j = 1; j < tree.getChild(i).getChildCount()-3; j++) {
+						for(int j = 1; j < tree.getChild(i).getChildCount()-2; j++) {
 							// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
 							ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
 							
 						}
-						Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getChild(0);
+						Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getChild(0);
 						ajouterFonctionAvecRetour(tableParent, nom, retour, nouvelle);
+						if(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getChild(0).getText() != detectionTypeExp(corps, nouvelle)) {
+							afficherErreurSemantique(corps,"Le type de retour de la variable ne correspond pas à celui déclaré ("+tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getChild(0).getText()+")");
+						}
 					}
 					else {	
-						for(int j = 1; j < tree.getChild(i).getChildCount()-2; j++) {
-							System.out.println("j : "+j+"; noeud : "+tree.getChild(i).getChild(j).getText());
+						for(int j = 1; j < tree.getChild(i).getChildCount()-1; j++) {
 							// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
 							ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
 							
 						}
 						ajouterFonctionSansRetour(tableParent, nom, null, nouvelle);
+						if("void" != detectionTypeExp(corps, nouvelle)) {
+							afficherErreurSemantique(corps,"Le type de retour de la variable ne correspond pas à celui déclaré (void)");
+						}
 					}
+					
 					parcoursArbre(tree.getChild(i),nouvelle);
 					break;
 	
