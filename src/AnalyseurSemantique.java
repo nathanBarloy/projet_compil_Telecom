@@ -182,7 +182,7 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(type.getText());
 		if(t != null)
 		{
-			ajouterIdentificateur(tds, name, new Variable(name.getText(),t,tds.calculerDeplacement()));
+			ajouterIdentificateur(tds, name, new Variable(name.getText(),t,tds.calculerDeplacementVariable()));
 		}
 		else
 		{
@@ -201,7 +201,7 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(type.getText());
 		if(t != null)
 		{
-			ajouterIdentificateur(tds, name, new Parametre(name.getText(),t,tds.calculerDeplacement()));
+			ajouterIdentificateur(tds, name, new Parametre(name.getText(),t,tds.calculerDeplacementParametre(t)));
 		}
 		else
 		{
@@ -217,7 +217,7 @@ public class AnalyseurSemantique {
 	 */
 	private void ajouterVariable(TableSymbolesAbs tds,Tree name,String nomType)
 	{
-		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType),tds.calculerDeplacement()));
+		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType),tds.calculerDeplacementVariable()));
 	}
 	/**
 	 * Parcours l'AST et réalise l'analyse et la construction de la TDS

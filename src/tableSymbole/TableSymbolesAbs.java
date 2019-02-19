@@ -9,6 +9,7 @@ import org.antlr.runtime.tree.Tree;
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
 import identificateurs.Identificateur;
+import identificateurs.Parametre;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import identificateurs.Variable;
@@ -260,7 +261,7 @@ public abstract class TableSymbolesAbs {
 	 * Cette méthode calcule le déplacement nécessaire avant d'ajouter une variable dans la TDS
 	 * @return un entier décrivant le déplacement en octet depuis la base 
 	 */
-	public int calculerDeplacement()
+	public int calculerDeplacementVariable()
 	{
 		//TODO
 		int deplacement=0;
@@ -274,6 +275,18 @@ public abstract class TableSymbolesAbs {
 		return deplacement;
 	}
 	
+	public int calculerDeplacementParametre(Type t)
+	{
+		int deplacement=-t.getTaille();
+		for(Identificateur identificateur:identificateurs.values())
+		{
+			if(identificateur instanceof Parametre)
+			{
+				deplacement -= ((Parametre) identificateur).getType().getTaille();
+			}
+		}
+		return deplacement;
+	}
 	public String genererCode()
 	{
 		String res = "";

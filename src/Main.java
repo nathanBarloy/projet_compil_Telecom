@@ -12,7 +12,8 @@ import tableSymbole.TableSymbolesAbs;
 public class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
-		String path = "Tests/testsSyntaxiques/testProf/fonctionnels/prog2.txt";
+		//String path = "Tests/testsSyntaxiques/testProf/fonctionnels/prog2.txt";
+		String path = "Tests/testsSyntaxiques/testDec/fonctionnels/functionDeclaration.tig";
 		//Passe 1 : Analyse lexicale et syntaxique
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
 		TigerLexer lexer = new TigerLexer(input);
@@ -30,7 +31,6 @@ public class Main {
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
 		String codeAssembleur=gdc.genererCode();
 		System.out.println(codeAssembleur);
-		
 	}
 
 	
