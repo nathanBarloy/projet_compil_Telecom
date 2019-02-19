@@ -245,7 +245,7 @@ public class AnalyseurSemantique {
 					nouvelle = new TableSymbolesFunction(tableParent);
 					tableParent.addFils(nouvelle);
 					Tree nom = tree.getChild(i).getChild(0);
-					Tree corps = tree.getChild(i).getChild(tree.getChildCount()-1);
+					Tree corps = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1);
 					if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() == "RETOUR") {
 						// on test si l'avant dernier fils est RETOUR -> donne le type de retour
 						for(int j = 1; j < tree.getChild(i).getChildCount()-2; j++) {
@@ -255,8 +255,9 @@ public class AnalyseurSemantique {
 						}
 						Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getChild(0);
 						ajouterFonctionAvecRetour(tableParent, nom, retour, nouvelle);
-						if(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getChild(0).getText() != detectionTypeExp(corps, nouvelle)) {
-							afficherErreurSemantique(corps,"Le type de retour de la variable ne correspond pas à celui déclaré ("+tree.getChild(i).getChild(tree.getChild(i).getChildCount()-3).getChild(0).getText()+")");
+						// test si le type du corps correspond au type de retour de la fonction
+						if(!tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getChild(0).getText().equals(detectionTypeExp(corps, nouvelle))) {
+							afficherErreurSemantique(nom,"Le type de retour de la fonction ne correspond pas à celui déclaré ("+tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getChild(0).getText()+")");
 						}
 					}
 					else {	
@@ -266,8 +267,9 @@ public class AnalyseurSemantique {
 							
 						}
 						ajouterFonctionSansRetour(tableParent, nom, null, nouvelle);
-						if("void" != detectionTypeExp(corps, nouvelle)) {
-							afficherErreurSemantique(corps,"Le type de retour de la variable ne correspond pas à celui déclaré (void)");
+						// test si le type du corps correspond au type de retour de la fonction
+						if(!"void".equals(detectionTypeExp(corps, nouvelle))) {
+							afficherErreurSemantique(nom,"Le type de retour de la fonction ne correspond pas à celui déclaré (void)");
 						}
 					}
 					
