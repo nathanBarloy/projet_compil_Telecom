@@ -1,0 +1,9 @@
+let
+  var a : int := 2
+in
+  if a > 3
+  then
+    a = a + 1
+  else
+    a = a - 1
+end
