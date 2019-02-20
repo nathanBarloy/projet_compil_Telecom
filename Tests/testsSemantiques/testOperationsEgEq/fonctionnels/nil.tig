@@ -1,0 +1,8 @@
+let 
+	type rec = { a : int }
+	var a : rec := nil
+in
+	if a = nil
+	then
+	print("coucou")
+end

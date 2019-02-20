@@ -383,10 +383,11 @@ public class AnalyseurSemantique {
 				if (tableParent.get(nomType.getText())!=null) { // si le nom existe déjà
 					afficherErreurSemantique(tydecTree.getChild(0), "Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
+					System.out.println("tedecTred :"+tydecTree.getText());
 					switch(tydecTree.getChild(1).getText()) {
 					case "RECTY" : // on défini un ensemble
 						RecordType newType = new RecordType(nomType.getText());
-						for (int j=0; j<tydecTree.getChildCount(); j++) {
+						for (int j=0; j<tydecTree.getChild(1).getChildCount(); j++) {
 							Tree decTree = tydecTree.getChild(1).getChild(j);
 							String nomComponent = decTree.getChild(0).getText();
 							String nomSousType = decTree.getChild(1).getText();
@@ -751,7 +752,7 @@ public class AnalyseurSemantique {
 		case "ASSIGNMENT":
 			typeRes = "void";
 			break;
-		case "nil":
+		case "NIL":
 			typeRes = "nil";
 			break;
 			// TODO : faire les autre cas possible de exp

@@ -132,7 +132,7 @@ multExp
 	;
 
 atom
-	: 'nil'
+	: 'nil'-> ^(NIL 'nil')
 	| INTLIT -> ^(INT INTLIT)
 	| STRINGLIT -> ^(STRING STRINGLIT)
 	| seqExp
