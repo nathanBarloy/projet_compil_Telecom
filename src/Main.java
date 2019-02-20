@@ -30,8 +30,7 @@ public class Main {
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
 		String codeAssembleur=gdc.genererCode();
 		System.out.println(codeAssembleur);
-		
 	}
 
-	
+
 }

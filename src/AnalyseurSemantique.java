@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.antlr.xjlib.appkit.gview.object.GElementArrow;
 
 import identificateurs.AliasType;
 import identificateurs.ArrayType;
@@ -26,7 +27,7 @@ public class AnalyseurSemantique {
 	private static ArrayList<String> listeNomsType;
 
 	/**
-	 * Chemin du fichier analysé, permet de récupérer la ligne 
+	 * Chemin du fichier analysé, permet de récupérer la ligne
 	 */
 	private String fichierAnalyse;
 
@@ -182,7 +183,7 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(type.getText());
 		if(t != null)
 		{
-			ajouterIdentificateur(tds, name, new Variable(name.getText(),t,tds.calculerDeplacement()));
+			ajouterIdentificateur(tds, name, new Variable(name.getText(),t,tds.calculerDeplacementVariable()));
 		}
 		else
 		{
@@ -201,7 +202,7 @@ public class AnalyseurSemantique {
 		Type t=tds.getType(type.getText());
 		if(t != null)
 		{
-			ajouterIdentificateur(tds, name, new Parametre(name.getText(),t,tds.calculerDeplacement()));
+			ajouterIdentificateur(tds, name, new Parametre(name.getText(),t,tds.calculerDeplacementParametre(t)));
 		}
 		else
 		{
@@ -210,14 +211,14 @@ public class AnalyseurSemantique {
 	}
 
 	/**
-	 * Cetet méthode réalise les controles sémantiques avant l'ajout d'une variable dans la tds lorsque l'on fait de l'inférence de type 
+	 * Cetet méthode réalise les controles sémantiques avant l'ajout d'une variable dans la tds lorsque l'on fait de l'inférence de type
 	 * @param tds
 	 * @param name
 	 * @param nomType
 	 */
 	private void ajouterVariable(TableSymbolesAbs tds,Tree name,String nomType)
 	{
-		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType),tds.calculerDeplacement()));
+		ajouterIdentificateur(tds, name, new Variable(name.getText(),tds.getType(nomType),tds.calculerDeplacementVariable()));
 	}
 	/**
 	 * Parcours l'AST et réalise l'analyse et la construction de la TDS
@@ -260,7 +261,7 @@ public class AnalyseurSemantique {
 						afficherErreurSemantique(nom,"Le type de retour de la fonction ne correspond pas à celui déclaré ("+tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getChild(0).getText()+")");
 					}
 				}
-				else {	
+				else {
 					for(int j = 1; j < tree.getChild(i).getChildCount()-1; j++) {
 						// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
 						ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
@@ -421,7 +422,7 @@ public class AnalyseurSemantique {
 				}
 
 				//en fin de bloc de déclaration
-				if (i+1<tree.getChildCount() && !tree.getChild(i+1).getText().equals("TYDEC")) {		
+				if (i+1<tree.getChildCount() && !tree.getChild(i+1).getText().equals("TYDEC")) {
 					for (String nomSsType:listeNomsType) {
 						Type ssType = tableParent.getType(nomSsType);
 						if (ssType instanceof ArrayType) {
@@ -453,17 +454,80 @@ public class AnalyseurSemantique {
 				{
 					switch(tree.getChild(i).getChild(1).getText())
 					{
-					case "EXPBEG":
-						break;
-					case "FIELDEXP":
-						break;
-					case "RECCREATE":
-						break;
-					case "CALLEXP" :
-						break;
-					case "ASSIGNMENT":
-						// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
-						break;
+						switch(tree.getChild(i).getChild(1).getText())
+						{
+							case "EXPBEG":
+								String index = tableParent.getVariableType(tree.getChild(i).getChild(1).getChild(0).getText()).getName();
+								String identificateur = tableParent.getArrayType(tree.getChild(i).getChild(0).getText()).getName();
+								String filsDroitExpbeg = tree.getChild(i).getChild(1).getChild(1).getText();
+								if (index != "int") {
+									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+index+"')");
+								}
+								if (identificateur == null) {
+									afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'array' (actuellement de type '"+identificateur+"')");
+								}
+								switch(filsDroitExpbeg) {
+									case "BRACBEG":
+										//TODO verifier que le fils de BRACBEG est du même type que les éléments du tableau
+										/*if (filsDroitExpbeg != "" ) {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getText()+"' est '"+ " ~type array~ " +"' (actuellement de type '"+filsDroiExpbeg+"')");
+										}*/
+										break;
+									case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
+										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+										}
+										break;
+									case "IDSTOR":
+										/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
+										*  !!!!!!!! A verifier !!!!!!!!
+										*/
+										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+										}
+										break;
+									case "ASSIGNMENT": // Concordance des types lors de l'assignment
+										if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
+										}
+										break;
+								}
+								break;
+							case "FIELDEXP":
+								//TODO : l’expression de base doit être de type record et l’id doit nommer un champ du records
+								if (tree.getChild(i).getChild(1).getChildCount() != 1) {
+									String filsDroitFieldExp = tree.getChild(i).getChild(1).getChild(1).getText();
+									switch(filsDroitFieldExp) {
+									//TODO : Verifier si c'est le meme cas qu'avec EXPBEG (verifier les indices)
+									case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
+										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+										}
+										break;
+									case "IDSTOR":
+										/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
+										*  !!!!!!!! A verifier !!!!!!!!
+										*/
+										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+										}
+										break;
+									case "ASSIGNMENT": // Concordance des types lors de l'assignment
+										if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
+										}
+										break;
+									}
+								}
+								break;
+							case "RECCREATE":
+								break;
+							case "CALLEXP" :
+								break;
+							case "ASSIGNMENT":
+								// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
+								break;
+						}
 					}
 				}
 				else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
@@ -611,7 +675,7 @@ public class AnalyseurSemantique {
 					}
 					break;
 				case "FIELDEXP":
-					//TODO : faire les autres cas 
+					//TODO : faire les autres cas
 					//typeRes = tds.getVariableType(noeud.getChild(1).getChild(0).getText()).getName();
 					System.err.println("Not yet implemented");
 					String fieldExp = noeud.getChild(1).getChild(0).getText();
