@@ -454,81 +454,79 @@ public class AnalyseurSemantique {
 				{
 					switch(tree.getChild(i).getChild(1).getText())
 					{
-						switch(tree.getChild(i).getChild(1).getText())
-						{
-							case "EXPBEG":
-								String index = tableParent.getVariableType(tree.getChild(i).getChild(1).getChild(0).getText()).getName();
-								String identificateur = tableParent.getArrayType(tree.getChild(i).getChild(0).getText()).getName();
-								String filsDroitExpbeg = tree.getChild(i).getChild(1).getChild(1).getText();
-								if (index != "int") {
-									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+index+"')");
-								}
-								if (identificateur == null) {
-									afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'array' (actuellement de type '"+identificateur+"')");
-								}
-								switch(filsDroitExpbeg) {
-									case "BRACBEG":
-										//TODO verifier que le fils de BRACBEG est du même type que les éléments du tableau
-										/*if (filsDroitExpbeg != "" ) {
+					case "EXPBEG":
+						String index = tableParent.getVariableType(tree.getChild(i).getChild(1).getChild(0).getText()).getName();
+						String identificateur = tableParent.getArrayType(tree.getChild(i).getChild(0).getText()).getName();
+						String filsDroitExpbeg = tree.getChild(i).getChild(1).getChild(1).getText();
+						if (index != "int") {
+							afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+index+"')");
+						}
+						if (identificateur == null) {
+							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'array' (actuellement de type '"+identificateur+"')");
+						}
+						switch(filsDroitExpbeg) {
+						case "BRACBEG":
+							//TODO verifier que le fils de BRACBEG est du même type que les éléments du tableau
+							/*if (filsDroitExpbeg != "" ) {
 											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getText()+"' est '"+ " ~type array~ " +"' (actuellement de type '"+filsDroiExpbeg+"')");
 										}*/
-										break;
-									case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
-										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
-										}
-										break;
-									case "IDSTOR":
-										/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
-										*  !!!!!!!! A verifier !!!!!!!!
-										*/
-										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
-										}
-										break;
-									case "ASSIGNMENT": // Concordance des types lors de l'assignment
-										if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
-										}
-										break;
-								}
-								break;
-							case "FIELDEXP":
-								//TODO : l’expression de base doit être de type record et l’id doit nommer un champ du records
-								if (tree.getChild(i).getChild(1).getChildCount() != 1) {
-									String filsDroitFieldExp = tree.getChild(i).getChild(1).getChild(1).getText();
-									switch(filsDroitFieldExp) {
-									//TODO : Verifier si c'est le meme cas qu'avec EXPBEG (verifier les indices)
-									case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
-										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
-										}
-										break;
-									case "IDSTOR":
-										/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
-										*  !!!!!!!! A verifier !!!!!!!!
-										*/
-										if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
-										}
-										break;
-									case "ASSIGNMENT": // Concordance des types lors de l'assignment
-										if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
-										}
-										break;
-									}
-								}
-								break;
-							case "RECCREATE":
-								break;
-							case "CALLEXP" :
-								break;
-							case "ASSIGNMENT":
-								// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
-								break;
+							break;
+						case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
+							if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
+								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+							}
+							break;
+						case "IDSTOR":
+							/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
+							 *  !!!!!!!! A verifier !!!!!!!!
+							 */
+							if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
+								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+							}
+							break;
+						case "ASSIGNMENT": // Concordance des types lors de l'assignment
+							if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
+								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
+							}
+							break;
 						}
+						break;
+					case "FIELDEXP":
+						//TODO : l’expression de base doit être de type record et l’id doit nommer un champ du records
+						if (tree.getChild(i).getChild(1).getChildCount() != 1) {
+							String filsDroitFieldExp = tree.getChild(i).getChild(1).getChild(1).getText();
+							switch(filsDroitFieldExp) {
+							//TODO : Verifier si c'est le meme cas qu'avec EXPBEG (verifier les indices)
+							case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
+								if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
+									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+								}
+								break;
+							case "IDSTOR":
+								/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
+								 *  !!!!!!!! A verifier !!!!!!!!
+								 */
+								if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
+									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+								}
+								break;
+							case "ASSIGNMENT": // Concordance des types lors de l'assignment
+								if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
+									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
+								}
+								break;
+							}
+						}
+						break;
+					case "RECCREATE":
+						break;
+					case "CALLEXP" :
+						break;
+					case "ASSIGNMENT":
+						// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
+						break;
 					}
+
 				}
 				else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
 				{
@@ -579,6 +577,7 @@ public class AnalyseurSemantique {
 			}
 
 		}
+
 		return tableParent;
 
 	}
