@@ -383,7 +383,6 @@ public class AnalyseurSemantique {
 				if (tableParent.get(nomType.getText())!=null) { // si le nom existe déjà
 					afficherErreurSemantique(tydecTree.getChild(0), "Le nom '"+nomType+"' à déjà été pris, impossible de créer le type");
 				} else { // si le nom est valable
-					System.out.println("tedecTred :"+tydecTree.getText());
 					switch(tydecTree.getChild(1).getText()) {
 					case "RECTY" : // on défini un ensemble
 						RecordType newType = new RecordType(nomType.getText());
@@ -800,7 +799,6 @@ public class AnalyseurSemantique {
 			Tree fd = tree.getChild(1);
 			String typeDetecteFg = detectionTypeExp(fg, tds);
 			String typeDetecteFd = detectionTypeExp(fd, tds);
-			System.out.println("Fg: "+typeDetecteFg+"; fd = "+typeDetecteFd);
 			if (typeDetecteFd != null && typeDetecteFg != null) {
 				if(typeDetecteFg.equals("nil") && typeDetecteFd.equals("nil")) {
 					afficherErreurSemantique(fd,"L'expression 'nil' doit être utilisée dans un context ou le type reccord peut être déterminé");
@@ -857,6 +855,7 @@ public class AnalyseurSemantique {
 				}
 			}
 			if(fg == "SEQEXP") {
+
 				if(tree.getChild(0).getChildCount() == 0) { // cas ou SEQEXP est de type void
 					//System.err.println("La sequence d'expressions est vide");
 					afficherErreurSemantique(tree.getChild(0), "La sequence d'expressions est vide");
