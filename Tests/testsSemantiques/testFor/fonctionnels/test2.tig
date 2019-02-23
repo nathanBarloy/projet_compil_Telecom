@@ -1,0 +1,7 @@
+let
+ var a := 3
+ var b := 0
+in 
+for a := 3 to 5  do
+ b := 2
+end

@@ -493,7 +493,10 @@ public class AnalyseurSemantique {
 						}
 						break;
 					case "FIELDEXP":
-						//TODO : l’expression de base doit être de type record et l’id doit nommer un champ du records
+						//TODO : id doit nommer un champ du records
+						if (tableParent.getRecordType(tree.getChild(i).getChild(0).getText())==null) {
+							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'record' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");						
+						}
 						if (tree.getChild(i).getChild(1).getChildCount() != 1) {
 							String filsDroitFieldExp = tree.getChild(i).getChild(1).getChild(1).getText();
 							switch(filsDroitFieldExp) {
@@ -520,11 +523,34 @@ public class AnalyseurSemantique {
 						}
 						break;
 					case "RECCREATE":
+						// Si l'id n'est pas du type record 
+						if (tableParent.getRecordType(tree.getChild(i).getChild(0).getText()) == null) {
+							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'record' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"')");
+						}
+						int nbFilsReccreate = tree.getChild(i).getChild(1).getChildCount();
+						for (int a = 0;a<nbFilsReccreate-1;a++) {
+							// Si type de champs ne correspond pas
+							if(!detectionTypeExp(tree.getChild(i).getChild(1).getChild(a), tableParent).equals(detectionTypeExp(tree.getChild(i).getChild(1).getChild(a+1), tableParent))){
+								afficherErreurSemantique(tree.getChild(i).getChild(1), "Probleme de type dans reccreate");
+							}
+						}
+						//TODO : l'ordre et le nom doivent correspondre
 						break;
 					case "CALLEXP" :
+						// TODO : le nombre et le type des paramètre doivent correspondre à la définition
+						if(tableParent.getFunctionType(tree.getChild(i).getChild(0).getText()) == null) {
+							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'function' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");
+						}
 						break;
-					case "ASSIGNMENT":
-						// TODO : verifier que si on est dans un for on n'assigne pas de valeur a l'index du for
+					case "ASSIGNMENT":						
+						// Si on est dans un boucle FOR et que on assigne l'increment 
+						if(tree.getChild(i-1).getParent().getText().equals("FOR") && tree.getChild(i-1).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
+							afficherErreurSemantique(tree.getChild(i).getChild(1), "Assigment de l'increment de la boucle FOR");
+						}
+						// Sinon si probleme de concordance de type 
+						else if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)) {
+							afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)+"')");
+						}
 						break;
 					}
 
