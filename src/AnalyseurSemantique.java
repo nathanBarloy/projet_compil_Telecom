@@ -547,13 +547,22 @@ public class AnalyseurSemantique {
 							afficherErreurSemantique(tree.getChild(i).getChild(1), "Assigment de l'increment de la boucle FOR");
 						}
 						// Sinon si probleme de concordance de type 
-						else if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)) {
-							afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)+"')");
+						else {
+							Variable v = (Variable)tableParent.get(tree.getChild(i).getChild(0).getText());
+							if(v==null) {
+								afficherErreurSemantique(tree.getChild(i).getChild(0), "La variable '"+tree.getChild(i).getChild(0).getText()+"' n'est pas déclarée");
+							}
+							else {
+								String typeId = tableParent.getVariableType(tree.getChild(i).getChild(0).getText()).getName();
+								if(typeId != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)) {
+									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)+"')");
+								}
+							}
+							break;
 						}
-						break;
 					}
-
 				}
+
 				else if(tree.getChild(i).getChildCount()==1)//s'il n'y a qu'un fils, on vérifie que la variable existe
 				{
 					String texte = tree.getChild(i).getChild(0).getText();
