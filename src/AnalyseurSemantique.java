@@ -362,7 +362,12 @@ public class AnalyseurSemantique {
 					Tree valeur=tree.getChild(i).getChild(1);//valeur
 					//System.out.println("valeur : "+valeur);
 					String type=detectionTypeExp(valeur,tableParent);
-					ajouterVariable(tableParent,tree.getChild(i).getChild(0), type);
+					if(type.equals("nil")) {
+						afficherErreurSemantique(valeur,"L'expression 'nil' doit être utilisée dans un context où le type record peut être déterminé");
+					}
+					else {
+						ajouterVariable(tableParent,tree.getChild(i).getChild(0), type);
+					}
 				}
 				break;
 
@@ -836,7 +841,7 @@ public class AnalyseurSemantique {
 			if (typeDetecteFd != null && typeDetecteFg != null) {
 				// gestion de nil
 				if(typeDetecteFg.equals("nil") && typeDetecteFd.equals("nil")) {
-					afficherErreurSemantique(fd,"L'expression 'nil' doit être utilisée dans un context ou le type reccord peut être déterminé");
+					afficherErreurSemantique(fd,"L'expression 'nil' doit être utilisée dans un context où le type record peut être déterminé");
 				}
 				else if(typeDetecteFg.equals("nil") && !typeDetecteFd.equals("record")) {
 					afficherErreurSemantique(fd.getChild(0),"L'identifiacteur '"+fd.getChild(0).getText()+"' n'est pas de type 'record'");
