@@ -496,7 +496,7 @@ public class AnalyseurSemantique {
 						}
 						break;
 					case "FIELDEXP":
-						//TODO : id doit nommer un champ du records
+						
 						if (tableParent.getRecordType(tree.getChild(i).getChild(0).getText())==null) {
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'record' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");						
 						}
@@ -545,9 +545,10 @@ public class AnalyseurSemantique {
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'function' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");
 						}
 						break;
-					case "ASSIGNMENT":						
+					case "ASSIGNMENT":	
+					//	System.out.println("---------" + tree.getChild(i).getText());
 						// Si on est dans un boucle FOR et que on assigne l'increment 
-						if(tree.getChild(i-1).getParent().getText().equals("FOR") && tree.getChild(i-1).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
+						/*if(tree.getChild(i-1).getParent().getText().equals("FOR") && tree.getChild(i-1).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
 							afficherErreurSemantique(tree.getChild(i).getChild(1), "Assigment de l'increment de la boucle FOR");
 						}
 						// Sinon si probleme de concordance de type 
@@ -563,7 +564,7 @@ public class AnalyseurSemantique {
 								}
 							}
 							break;
-						}
+						}*/
 					}
 				}
 
