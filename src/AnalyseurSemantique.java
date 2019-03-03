@@ -690,9 +690,9 @@ public class AnalyseurSemantique {
 				switch(filsDroit) {
 
 				case "EXPBEG":
-					String filsGauche = tds.getArrayType(noeud.getChild(0).getText()).getName();
-					String filsGaucheExpbeg = tds.getVariableType(noeud.getChild(1).getChild(0).getText()).getName();
-					String filsDroitExpbeg = tds.getVariableType(noeud.getChild(1).getChild(1).getText()).getName();
+					String filsGauche = detectionTypeExp(noeud.getChild(0),tds);
+					String filsGaucheExpbeg = detectionTypeExp(noeud.getChild(1).getChild(0),tds);
+					String filsDroitExpbeg = noeud.getChild(1).getChild(1).getText();
 					if (filsGaucheExpbeg == "int" && filsGauche != null) {
 						// TODO : Gerer tous les cas des fils de EXPBEG
 						switch(filsDroitExpbeg) {
@@ -712,6 +712,9 @@ public class AnalyseurSemantique {
 							break;
 						}
 					}
+					if(typeRes == null) {
+						System.err.println("Error : typeRes == null ");
+					}
 					break;
 				case "FIELDEXP":
 					//TODO : faire les autres cas
@@ -727,7 +730,7 @@ public class AnalyseurSemantique {
 
 					break;
 				case "RECCREATE":
-					typeRes = tds.getRecordType(noeud.getChild(1).getChild(0).getText()).getName();
+					typeRes = tds.getRecordType(noeud.getChild(0).getText()).getName();
 					break;
 				case "ASSIGNMENT":
 					typeRes = "void";
