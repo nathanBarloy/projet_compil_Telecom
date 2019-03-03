@@ -1,8 +1,8 @@
 let 
 	type rec = { a : int }
-	var a : rec := nil
+	var record : rec := nil
 in
-	if a = nil
+	if record = nil
 	then
 	print("coucou")
 end

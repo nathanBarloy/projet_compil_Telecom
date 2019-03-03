@@ -328,7 +328,6 @@ public class AnalyseurSemantique {
 				{
 					//System.out.println(tree.getChild(i).getChild(1).getText());
 					Type typeDeclare = tableParent.getType(tree.getChild(i).getChild(1).getText());
-
 					if(typeDeclare == null) {
 						afficherErreurSemantique(tree.getChild(i).getChild(1),"Le type ("+tree.getChild(i).getChild(1).getText()+") n'existe pas");
 					}
@@ -347,8 +346,8 @@ public class AnalyseurSemantique {
 								//System.out.println("Cas pas IDBEG");
 								typeDetecte = tableParent.getType(detecterType(dernierNoeud));
 							}*/
-
-						if (typeDeclareStr != typeDetecte || typeDetecte == null)
+						// on test si le type detecte ne correspond pas au type declare et si le type declare est 'rec' on peut avoir 'nil' 
+						if ((typeDeclareStr != typeDetecte || typeDetecte == null) && !(typeDeclareStr.equals("rec") && typeDetecte.equals("nil")))
 						{
 							afficherErreurSemantique(tree.getChild(i).getChild(1), "Le type de la declaration ("+typeDeclareStr+") est different du type détecté ("+typeDetecte+").");
 						}
@@ -835,13 +834,20 @@ public class AnalyseurSemantique {
 			String typeDetecteFg = detectionTypeExp(fg, tds);
 			String typeDetecteFd = detectionTypeExp(fd, tds);
 			if (typeDetecteFd != null && typeDetecteFg != null) {
+				// gestion de nil
 				if(typeDetecteFg.equals("nil") && typeDetecteFd.equals("nil")) {
 					afficherErreurSemantique(fd,"L'expression 'nil' doit être utilisée dans un context ou le type reccord peut être déterminé");
 				}
-				// TODO : gerer les autres cas du nil
+				else if(typeDetecteFg.equals("nil") && !typeDetecteFd.equals("record")) {
+					afficherErreurSemantique(fd.getChild(0),"L'identifiacteur '"+fd.getChild(0).getText()+"' n'est pas de type 'record'");
+				}
+				else if(typeDetecteFd.equals("nil") && !typeDetecteFg.equals("record")) {
+					afficherErreurSemantique(fg.getChild(0),"L'identifiacteur '"+fg.getChild(0).getText()+"' n'est pas de type 'record'");
+				}
+				// cas où le type de l'operande gauche est different de celui de l'opérande droite
 				else if (!typeDetecteFg.equals(typeDetecteFd)) {
 					//System.err.println("L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')");
-					afficherErreurSemantique(fd.getChild(0), "L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')");
+					afficherErreurSemantique(fd.getChild(0), "'"+fg.getChild(0).getText()+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0).getText()+"' (type '"+typeDetecteFd+"')");
 
 				}
 			}
