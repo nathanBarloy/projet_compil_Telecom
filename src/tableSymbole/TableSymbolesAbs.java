@@ -144,10 +144,14 @@ public abstract class TableSymbolesAbs {
 		{
 			return tmp.getType();
 		}
-		else
+		else if (parent != null)
 		{
+			return parent.getVariableType(variable);
+		}
+		else {
 			return null;
 		}
+
 	}
 
 	public Type getFunctionType(String function)

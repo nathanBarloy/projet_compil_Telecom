@@ -357,7 +357,7 @@ public class AnalyseurSemantique {
 						}
 					}
 					if(tree.getChild(i).getChild(2).getText().equals("IDBEG")) {
-						gestionDecIdbeg(tree.getChild(i).getChild(2),tableParent);
+						gestionDecIdbeg(tree.getChild(i),tableParent);
 					}
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
@@ -372,7 +372,7 @@ public class AnalyseurSemantique {
 						ajouterVariable(tableParent,tree.getChild(i).getChild(0), type);
 					}
 					if(tree.getChild(i).getChild(1).getText().equals("IDBEG")) {
-						gestionDecIdbeg(tree.getChild(i).getChild(1),tableParent);
+						gestionDecIdbeg(tree.getChild(i),tableParent);
 					}
 				}
 				break;
@@ -708,7 +708,9 @@ public class AnalyseurSemantique {
 							typeRes = tds.getArrayType(noeud.getChild(0).getText()).getName();
 							break;
 						case "IDSTOR":
-								typeRes = tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName();
+							ArrayType array = (ArrayType) tds.getVariableType(noeud.getChild(0).getText());
+							RecordType sousType = (RecordType) array.getSousType();
+							typeRes = sousType.getVariable(noeud.getChild(1).getChild(1).getChild(0).getText()).getType().getName();
 							break;
 						case "EXPSTOR":
 							if (tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName() == "int") {
@@ -929,7 +931,14 @@ public class AnalyseurSemantique {
 		}
 	}
 	
-	public void gestionDecIdbeg(Tree treeIdbeg, TableSymbolesAbs tds) {
+	public void gestionDecIdbeg(Tree tree, TableSymbolesAbs tds) {
+		Tree treeIdbeg;
+		if (tree.getChildCount() == 3) {
+			treeIdbeg = tree.getChild(2);
+		}
+		else {
+			treeIdbeg = tree.getChild(1);
+		}
 		if(treeIdbeg.getChildCount() == 2) {
 			if (treeIdbeg.getChild(1).getText().equals("RECCREATE")) {
 				RecordType recordType = (RecordType) tds.getRecordType(treeIdbeg.getChild(0).getText());
@@ -958,6 +967,23 @@ public class AnalyseurSemantique {
 				}
 			}
 			else if (treeIdbeg.getChild(1).getText().equals("EXPBEG")) {
+				ArrayType arrayType = (ArrayType) tds.getArrayType(treeIdbeg.getChild(0).getText());
+				String arraySousTypeStr;
+				if(arrayType == null) {
+					afficherErreurSemantique(treeIdbeg.getChild(0), "Le type array '"+treeIdbeg.getChild(0).getText()+"' n'est pas déclaré");
+					return;
+				}
+				else {
+					arraySousTypeStr = arrayType.getSousType().getName();
+				}
+				if(detectionTypeExp(treeIdbeg.getChild(1).getChild(0),tds) == "int") {
+					if (detectionTypeExp(treeIdbeg.getChild(1).getChild(1).getChild(0),tds) != arraySousTypeStr && !detectionTypeExp(treeIdbeg.getChild(1).getChild(1).getChild(0),tds).equals("nil")) {
+						afficherErreurSemantique(treeIdbeg.getChild(1).getChild(1).getChild(0), "Erreur de type, attendu : '"+arraySousTypeStr+"'");
+					}
+				}
+				else {
+					afficherErreurSemantique(treeIdbeg.getChild(1).getChild(0), "Entier attendu");
+				}
 				
 			}
 
