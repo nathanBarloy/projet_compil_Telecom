@@ -727,7 +727,7 @@ public class AnalyseurSemantique {
 					switch(fieldExp) {
 					case "EXPSTOR":
 						System.err.println("Not yet implemented");
-						break;
+						break;	
 					case "IDSTOR":
 						System.err.println("Not yet implemented");
 						break;
