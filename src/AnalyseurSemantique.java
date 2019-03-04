@@ -724,15 +724,23 @@ public class AnalyseurSemantique {
 				case "FIELDEXP":
 					//TODO : faire les autres cas
 					//typeRes = tds.getVariableType(noeud.getChild(1).getChild(0).getText()).getName();
-					System.err.println("Not yet implemented");
+					
 					String fieldExp = noeud.getChild(1).getChild(0).getText();
-					switch(fieldExp) {
-					case "EXPSTOR":
-						System.err.println("Not yet implemented");
-						break;	
-					case "IDSTOR":
-						System.err.println("Not yet implemented");
-						break;
+					if(noeud.getChild(1).getChildCount() ==1) {
+						RecordType rec = (RecordType)  tds.getVariableType(noeud.getChild(0).getText());
+						typeRes = rec.getVariable(noeud.getChild(1).getChild(0).getText()).getName();
+					}
+					else {
+						switch(fieldExp) {
+						case "EXPSTOR":
+							System.err.println("Not yet implemented : expstor");
+							typeRes = "int";
+							break;	
+						case "IDSTOR":
+							System.err.println("Not yet implemented : idstor");
+							typeRes = "int";
+							break;
+						}
 					}
 
 					break;
@@ -813,7 +821,7 @@ public class AnalyseurSemantique {
 			typeRes = "int";
 		}
 		if(typeRes == null) {
-			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud);
+			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud + " ;fils :"+noeud.getChild(0) + " ;filsd : " + noeud.getChild(1) );
 		}
 		return typeRes;
 	}
