@@ -775,7 +775,7 @@ public class AnalyseurSemantique {
 					break;
 				case "CALLEXP":
 					//String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
-					String typeRetour = detectionTypeExp(noeud.getChild(0), tds);
+					String typeRetour = ((Fonction) tds.get(noeud.getChild(0).getText())).getTypeRetour().getName();
 					if(typeRetour != null) { // fils gauche est une fonction
 						typeRes =  typeRetour;
 					}
