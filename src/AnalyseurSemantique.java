@@ -465,7 +465,7 @@ public class AnalyseurSemantique {
 					{
 					case "EXPBEG":
 						String index = detectionTypeExp(tree.getChild(i).getChild(1).getChild(0),tableParent);
-						String identificateur = detectionTypeExp(tree.getChild(i).getChild(0), tableParent);
+						String identificateur = ((ArrayType) ((Variable) tableParent.get(tree.getChild(i).getChild(0).getText())).getType()).getNomSousType();
 						String filsDroitExpbeg = tree.getChild(i).getChild(1).getChild(1).getText();
 						if (index != "int") {
 							afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+index+"')");
@@ -491,8 +491,8 @@ public class AnalyseurSemantique {
 							 */
 
 							ArrayType typeA = (ArrayType) tableParent.getVariableType(tree.getChild(i).getChild(0).getText());
-							System.out.println(typeA.getSousType()+" ------ : "+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText());
-							if(typeA.getNomSousType() != detectionTypeExp(tree.getChild(i).getChild(1), tableParent)) {
+							System.out.println(typeA.getSousType()+" ------ : ");
+							if(typeA.getNomSousType() != tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()) {
 
 								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
 							}
@@ -711,7 +711,6 @@ public class AnalyseurSemantique {
 					//String filsGauche = filsDroit;
 					String filsGaucheExpbeg = detectionTypeExp(noeud.getChild(1).getChild(0),tds);
 					String filsDroitExpbeg = noeud.getChild(1).getChild(1).getText();
-					System.out.println(filsDroitExpbeg);
 					if (filsGaucheExpbeg == "int" && filsDroitExpbeg != null) {
 						switch(filsDroitExpbeg) {
 						case "ASSIGNMENT":
@@ -724,8 +723,8 @@ public class AnalyseurSemantique {
 							ArrayType array = (ArrayType) tds.getVariableType(noeud.getChild(0).getText());
 							RecordType sousType = (RecordType) array.getSousType();
 							typeRes = sousType.getVariable(noeud.getChild(1).getChild(1).getChild(0).getText()).getType().getName();
-							System.out.println("array : "+ array + " -- RecordType" + sousType+ " -- typeres : "+typeRes);
-							System.out.println(typeRes);
+							//System.out.println("array : "+ array + " -- RecordType" + sousType+ " -- typeres : "+typeRes);
+							//System.out.println(typeRes);
 
 							break;
 						case "EXPSTOR":
