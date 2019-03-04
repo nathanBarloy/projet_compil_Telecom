@@ -305,9 +305,9 @@ public class AnalyseurSemantique {
 				//dans les cas précédent, il faut créer une nouvelle table des symboles qui devient
 				nouvelle = new TableSymbolesFor(tableParent);
 				tableParent.addFils(nouvelle);
-				String start=tree.getChild(i).getChild(1).getText();//valeur
-				String end=tree.getChild(i).getChild(2).getText();//valeur
-				if(start.matches("INT") && end.matches("INT"))
+				String start= detectionTypeExp(tree.getChild(i).getChild(1),tableParent);//valeur
+				String end=detectionTypeExp(tree.getChild(i).getChild(2),tableParent);//valeur
+				if(start.equals("int") && end.equals("int"))
 				{ 		//si le debut et la fin du for sont des entiers
 					ajouterVariable(nouvelle,tree.getChild(i).getChild(0),"int");
 				}
@@ -459,14 +459,13 @@ public class AnalyseurSemantique {
 
 			case "IDBEG":
 				// que des controle semantique dans IDBEGIN ?
-				//System.out.println("Cas idbeg : "+tree.getChild(i).getChildCount());
 				if (tree.getChild(i).getChildCount()==2)
 				{
 					switch(tree.getChild(i).getChild(1).getText())
 					{
 					case "EXPBEG":
-						String index = tableParent.getVariableType(tree.getChild(i).getChild(1).getChild(0).getText()).getName();
-						String identificateur = tableParent.getArrayType(tree.getChild(i).getChild(0).getText()).getName();
+						String index = detectionTypeExp(tree.getChild(i).getChild(1).getChild(0),tableParent);
+						String identificateur = detectionTypeExp(tree.getChild(i).getChild(0), tableParent);
 						String filsDroitExpbeg = tree.getChild(i).getChild(1).getChild(1).getText();
 						if (index != "int") {
 							afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est 'int' (actuellement de type '"+index+"')");
@@ -476,10 +475,10 @@ public class AnalyseurSemantique {
 						}
 						switch(filsDroitExpbeg) {
 						case "BRACBEG":
-							//TODO verifier que le fils de BRACBEG est du même type que les éléments du tableau
-							/*if (filsDroitExpbeg != "" ) {
-											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getText()+"' est '"+ " ~type array~ " +"' (actuellement de type '"+filsDroiExpbeg+"')");
-										}*/
+							ArrayType typeArray = (ArrayType) tableParent.getArrayType(tree.getChild(i).getChild(0).getText());
+							if (typeArray.getNomSousType() != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)  && tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText() != "nil") {
+											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+ typeArray.getNomSousType() +"' ou 'nil' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
+										}
 							break;
 						case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
 							if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
@@ -533,7 +532,7 @@ public class AnalyseurSemantique {
 						break;
 					case "RECCREATE":
 						// Si l'id n'est pas du type record 
-						if (tableParent.getRecordType(tree.getChild(i).getChild(0).getText()) == null) {
+						if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != "record") {
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'record' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"')");
 						}
 						int nbFilsReccreate = tree.getChild(i).getChild(1).getChildCount();
@@ -543,18 +542,19 @@ public class AnalyseurSemantique {
 								afficherErreurSemantique(tree.getChild(i).getChild(1), "Probleme de type dans reccreate");
 							}
 						}
-						//TODO : l'ordre et le nom doivent correspondre
 						break;
 					case "CALLEXP" :
 						// TODO : le nombre et le type des paramètre doivent correspondre à la définition
+						TableSymbolesAbs tdsFunction = tableParent.getTDSFonction((Fonction) tableParent.get(tree.getChild(i).getChild(0).getText()));
+						// TODO : faire une boucle sur les fils et vérifier si c'est un parametre
 						if(tableParent.getFunctionType(tree.getChild(i).getChild(0).getText()) == null) {
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'function' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");
 						}
 						break;
 					case "ASSIGNMENT":	
-					//	System.out.println("---------" + tree.getChild(i).getText());
+						//System.err.println("---------" + tree.getChild(i).getText());
 						// Si on est dans un boucle FOR et que on assigne l'increment 
-						/*if(tree.getChild(i-1).getParent().getText().equals("FOR") && tree.getChild(i-1).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
+						if(tree.getChild(i).getParent().getText().equals("FOR") && tree.getChild(i).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
 							afficherErreurSemantique(tree.getChild(i).getChild(1), "Assigment de l'increment de la boucle FOR");
 						}
 						// Sinon si probleme de concordance de type 
@@ -570,7 +570,7 @@ public class AnalyseurSemantique {
 								}
 							}
 							break;
-						}*/
+						}
 					}
 				}
 
@@ -696,11 +696,10 @@ public class AnalyseurSemantique {
 				switch(filsDroit) {
 
 				case "EXPBEG":
-					String filsGauche = detectionTypeExp(noeud.getChild(0),tds);
+					String filsGauche = filsDroit;
 					String filsGaucheExpbeg = detectionTypeExp(noeud.getChild(1).getChild(0),tds);
 					String filsDroitExpbeg = noeud.getChild(1).getChild(1).getText();
-					if (filsGaucheExpbeg == "int" && filsGauche != null) {
-						// TODO : Gerer tous les cas des fils de EXPBEG
+					if (filsGaucheExpbeg == "int" && filsDroitExpbeg != null) {
 						switch(filsDroitExpbeg) {
 						case "ASSIGNMENT":
 							typeRes = "void";
@@ -709,7 +708,7 @@ public class AnalyseurSemantique {
 							typeRes = tds.getArrayType(noeud.getChild(0).getText()).getName();
 							break;
 						case "IDSTOR":
-							typeRes = tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName();
+								typeRes = tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName();
 							break;
 						case "EXPSTOR":
 							if (tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName() == "int") {
@@ -718,9 +717,7 @@ public class AnalyseurSemantique {
 							break;
 						}
 					}
-					if(typeRes == null) {
-						System.err.println("Error : typeRes == null ");
-					}
+					
 					break;
 				case "FIELDEXP":
 					//TODO : faire les autres cas
@@ -729,8 +726,10 @@ public class AnalyseurSemantique {
 					String fieldExp = noeud.getChild(1).getChild(0).getText();
 					switch(fieldExp) {
 					case "EXPSTOR":
+						System.err.println("Not yet implemented");
 						break;
 					case "IDSTOR":
+						System.err.println("Not yet implemented");
 						break;
 					}
 
@@ -742,7 +741,8 @@ public class AnalyseurSemantique {
 					typeRes = "void";
 					break;
 				case "CALLEXP":
-					String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					//String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					String typeRetour = detectionTypeExp(noeud.getChild(0), tds);
 					if(typeRetour != null) { // fils gauche est une fonction
 						typeRes =  typeRetour;
 					}
@@ -809,6 +809,9 @@ public class AnalyseurSemantique {
 				|| texteNoeud.equals("<>") || texteNoeud.equals(">") || texteNoeud.equals(">=") || texteNoeud.equals("<")
 				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
 			typeRes = "int";
+		}
+		if(typeRes == null) {
+			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud);
 		}
 		return typeRes;
 	}
