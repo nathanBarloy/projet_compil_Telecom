@@ -942,10 +942,7 @@ public class AnalyseurSemantique {
 				for (int i = 0; i < treeIdbeg.getChild(1).getChildCount(); i++) {
 					Variable var = recordType.getVariableFromIndex(i);
 					if (treeIdbeg.getChild(1).getChild(i).getChild(0).getText().equals(var.getName())) {
-						if(var.getType().getName() == detectionTypeExp(treeIdbeg.getChild(1).getChild(i).getChild(1),tds)) {
-							ajouterVariable(tds, treeIdbeg.getChild(1).getChild(i).getChild(0), var.getType().getName());
-						}
-						else {
+						if(var.getType().getName() != detectionTypeExp(treeIdbeg.getChild(1).getChild(i).getChild(1),tds)) {
 							afficherErreurSemantique(treeIdbeg.getChild(1).getChild(i).getChild(0), "La variable '"+treeIdbeg.getChild(1).getChild(i).getChild(0).getText()+"' doit être de type '"+var.getType().getName()+"'");
 						}
 					}
@@ -956,6 +953,9 @@ public class AnalyseurSemantique {
 						gestionDecIdbeg(treeIdbeg.getChild(1).getChild(i).getChild(1),tds);
 					}
 				}
+			}
+			else if (treeIdbeg.getChild(1).getText().equals("EXPBEG")) {
+				
 			}
 
 		}
