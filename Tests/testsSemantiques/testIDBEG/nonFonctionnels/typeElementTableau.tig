@@ -1,0 +1,8 @@
+let 
+	type data = { v : vector, to_add : int}
+	type dataArray = array of data
+	var l := dataArray[3] of int
+
+in
+
+end
