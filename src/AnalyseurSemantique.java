@@ -356,6 +356,9 @@ public class AnalyseurSemantique {
 							ajouterVariable(tableParent,tree.getChild(i).getChild(0),tree.getChild(i).getChild(1));
 						}
 					}
+					if(tree.getChild(i).getChild(2).getText().equals("IDBEG")) {
+						gestionDecIdbeg(tree.getChild(i).getChild(2),tableParent);
+					}
 				}
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
@@ -367,6 +370,9 @@ public class AnalyseurSemantique {
 					}
 					else {
 						ajouterVariable(tableParent,tree.getChild(i).getChild(0), type);
+					}
+					if(tree.getChild(i).getChild(1).getText().equals("IDBEG")) {
+						gestionDecIdbeg(tree.getChild(i).getChild(1),tableParent);
 					}
 				}
 				break;
@@ -917,6 +923,41 @@ public class AnalyseurSemantique {
 					afficherErreurSemantique(tree.getChild(1), "La sequence d'expressions est vide");
 				}
 			}
+		}
+	}
+	
+	public void gestionDecIdbeg(Tree treeIdbeg, TableSymbolesAbs tds) {
+		if(treeIdbeg.getChildCount() == 2) {
+			if (treeIdbeg.getChild(1).getText().equals("RECCREATE")) {
+				RecordType recordType = (RecordType) tds.getRecordType(treeIdbeg.getChild(0).getText());
+				if(recordType == null) {
+					afficherErreurSemantique(treeIdbeg.getChild(0), "Le type du record '"+treeIdbeg.getChild(0).getText()+"' n'est pas déclaré");
+					return;
+				}
+				else {
+					String recordTypeStr = recordType.getName();
+				}
+				
+				// on ajoute toutes les variabes des champs
+				for (int i = 0; i < treeIdbeg.getChild(1).getChildCount(); i++) {
+					Variable var = recordType.getVariableFromIndex(i);
+					if (treeIdbeg.getChild(1).getChild(i).getChild(0).getText().equals(var.getName())) {
+						if(var.getType().getName() == detectionTypeExp(treeIdbeg.getChild(1).getChild(i).getChild(1),tds)) {
+							ajouterVariable(tds, treeIdbeg.getChild(1).getChild(i).getChild(0), var.getType().getName());
+						}
+						else {
+							afficherErreurSemantique(treeIdbeg.getChild(1).getChild(i).getChild(0), "La variable '"+treeIdbeg.getChild(1).getChild(i).getChild(0).getText()+"' doit être de type '"+var.getType().getName()+"'");
+						}
+					}
+					else {
+						afficherErreurSemantique(treeIdbeg.getChild(1).getChild(i).getChild(0), "La variable '"+treeIdbeg.getChild(1).getChild(i).getChild(0).getText()+"' ne correspond pas à '"+var.getName()+"'");
+					}
+					if(treeIdbeg.getChild(1).getChild(i).getChild(1).getText().equals("IDBEG")) {
+						gestionDecIdbeg(treeIdbeg.getChild(1).getChild(i).getChild(1),tds);
+					}
+				}
+			}
+
 		}
 	}
 }
