@@ -489,7 +489,9 @@ public class AnalyseurSemantique {
 							/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
 							 *  !!!!!!!! A verifier !!!!!!!!
 							 */
-							if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
+							ArrayType typeA = (ArrayType) tableParent.getVariableType(tree.getChild(i).getChild(0).getText());
+							System.out.println(typeA.getSousType()+" ------ : "+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText());
+							if(typeA.getNomSousType() != detectionTypeExp(tree.getChild(i).getChild(1), tableParent)) {
 								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
 							}
 							break;
@@ -711,6 +713,7 @@ public class AnalyseurSemantique {
 							ArrayType array = (ArrayType) tds.getVariableType(noeud.getChild(0).getText());
 							RecordType sousType = (RecordType) array.getSousType();
 							typeRes = sousType.getVariable(noeud.getChild(1).getChild(1).getChild(0).getText()).getType().getName();
+							System.out.println("array : "+ array + " -- RecordType" + sousType+ " -- typeres : "+typeRes);
 							break;
 						case "EXPSTOR":
 							if (tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName() == "int") {
@@ -725,13 +728,19 @@ public class AnalyseurSemantique {
 					//TODO : faire les autres cas
 					//typeRes = tds.getVariableType(noeud.getChild(1).getChild(0).getText()).getName();
 					
-					String fieldExp = noeud.getChild(1).getChild(0).getText();
+					String filsFieldExp = noeud.getChild(1).getChild(0).getText();
 					if(noeud.getChild(1).getChildCount() ==1) {
 						RecordType rec = (RecordType)  tds.getVariableType(noeud.getChild(0).getText());
-						typeRes = rec.getVariable(noeud.getChild(1).getChild(0).getText()).getName();
+						typeRes = rec.getVariable(noeud.getChild(1).getChild(0).getText()).getType().getName();
+						break;
+					}
+					else if (noeud.getChild(1).getChildCount()==2) {
+						if(noeud.getChild(1).getChild(1).getText().equals("ASSIGNMENT")) {
+							typeRes = "void";
+						}
 					}
 					else {
-						switch(fieldExp) {
+						switch(filsFieldExp) {
 						case "EXPSTOR":
 							System.err.println("Not yet implemented : expstor");
 							typeRes = "int";
