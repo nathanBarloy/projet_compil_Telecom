@@ -554,7 +554,7 @@ public class AnalyseurSemantique {
 					case "ASSIGNMENT":	
 						//System.err.println("---------" + tree.getChild(i).getText());
 						// Si on est dans un boucle FOR et que on assigne l'increment 
-						if(tree.getChild(i-1).getParent().getText().equals("FOR") && tree.getChild(i-1).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
+						if(tree.getChild(i).getParent().getText().equals("FOR") && tree.getChild(i).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
 							afficherErreurSemantique(tree.getChild(i).getChild(1), "Assigment de l'increment de la boucle FOR");
 						}
 						// Sinon si probleme de concordance de type 
@@ -726,8 +726,10 @@ public class AnalyseurSemantique {
 					String fieldExp = noeud.getChild(1).getChild(0).getText();
 					switch(fieldExp) {
 					case "EXPSTOR":
+						System.err.println("Not yet implemented");
 						break;
 					case "IDSTOR":
+						System.err.println("Not yet implemented");
 						break;
 					}
 
@@ -739,7 +741,8 @@ public class AnalyseurSemantique {
 					typeRes = "void";
 					break;
 				case "CALLEXP":
-					String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					//String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					String typeRetour = detectionTypeExp(noeud.getChild(0), tds);
 					if(typeRetour != null) { // fils gauche est une fonction
 						typeRes =  typeRetour;
 					}
@@ -808,7 +811,7 @@ public class AnalyseurSemantique {
 			typeRes = "int";
 		}
 		if(typeRes == null) {
-			System.err.println("Error : typeRes == null ");
+			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud);
 		}
 		return typeRes;
 	}
