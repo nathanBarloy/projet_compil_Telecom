@@ -504,8 +504,7 @@ public class AnalyseurSemantique {
 						}
 						break;
 					case "FIELDEXP":
-						
-						if (tableParent.getRecordType(tree.getChild(i).getChild(0).getText())==null) {
+						if (tableParent.getVariableType(tree.getChild(i).getChild(0).getText()).getName()==null) {
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'record' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");						
 						}
 						else if (tree.getChild(i).getChild(1).getChildCount() != 1) {
@@ -526,7 +525,9 @@ public class AnalyseurSemantique {
 								}
 								break;
 							case "ASSIGNMENT": // Concordance des types lors de l'assignment
-								if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
+								RecordType assign = (RecordType) tableParent.getVariableType(tree.getChild(i).getChild(0).getText());
+								String typeAssign = assign.getVariable(tree.getChild(i).getChild(1).getChild(0).getText()).getType().getName();
+								if(typeAssign != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)) {
 									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
 								}
 								break;
