@@ -15,8 +15,8 @@ let
         for i := 0 to size - 1 do
             if l[i].to_add then
             (
-                result.x = result.x + l[i].v.x ;
-                result.y = result.y + l[i].v.y
+                result.x := result.x + l[i].v.x ;
+                result.y := result.y + l[i].v.y
             )
 in
     l[0] := d1;

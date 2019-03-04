@@ -599,7 +599,7 @@ public class AnalyseurSemantique {
 				}
 				if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
 					if(typeThen != "void") {
-						afficherErreurSemantique(tree.getChild(i).getChild(0), "La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
+						afficherErreurSemantique(tree.getChild(i).getChild(1), "La clause THEN doit être de type 'void' (actuellement :'"+typeThen+"')");
 					}
 				}
 				else if (nbFils == 3) {		// si ELSE les types doivent correspondre
@@ -734,7 +734,6 @@ public class AnalyseurSemantique {
 						System.err.println("Not yet implemented");
 						break;
 					}
-
 					break;
 				case "RECCREATE":
 					typeRes = tds.getRecordType(noeud.getChild(0).getText()).getName();
