@@ -28,6 +28,14 @@ public class RecordType extends Type {
 		return null;
 	}
 	
+	public Variable getVariableFromIndex(int index) {
+		Variable var = null;
+		if(index < listeVar.size()) {
+			var = listeVar.get(index);
+		}
+		return var;
+	}
+	
 	public boolean existe(String name) {
 		for (Variable var:listeVar) {
 			if (var.getName().equals(name)) {

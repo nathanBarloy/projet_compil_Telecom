@@ -1,0 +1,5 @@
+let
+	type rec = { a : int }
+	var record := rec { a = 2 }
+in
+end
