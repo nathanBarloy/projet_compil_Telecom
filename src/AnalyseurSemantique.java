@@ -478,7 +478,7 @@ public class AnalyseurSemantique {
 							ArrayType typeArray = (ArrayType) tableParent.getArrayType(tree.getChild(i).getChild(0).getText());
 							if (typeArray.getNomSousType() != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)  && tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText() != "nil") {
 											afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+ typeArray.getNomSousType() +"' ou 'nil' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
-										}
+							}
 							break;
 						case "EXPSTOR": // Le fils droit de 'EXPSTOR' doit etre un int
 							if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != "int") {
@@ -509,7 +509,7 @@ public class AnalyseurSemantique {
 						if (tableParent.getRecordType(tree.getChild(i).getChild(0).getText())==null) {
 							afficherErreurSemantique(tree.getChild(i).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(0).getText()+"' est 'record' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent)+"'");						
 						}
-						if (tree.getChild(i).getChild(1).getChildCount() != 1) {
+						else if (tree.getChild(i).getChild(1).getChildCount() != 1) {
 							String filsDroitFieldExp = tree.getChild(i).getChild(1).getChild(1).getText();
 							switch(filsDroitFieldExp) {
 							//TODO : Verifier si c'est le meme cas qu'avec EXPBEG (verifier les indices)
@@ -575,6 +575,7 @@ public class AnalyseurSemantique {
 							}
 							break;
 						}
+						break;
 					}
 				}
 
