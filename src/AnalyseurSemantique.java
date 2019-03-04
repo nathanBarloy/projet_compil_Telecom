@@ -489,14 +489,19 @@ public class AnalyseurSemantique {
 							/* !!!!!!!! Supposition : fils droit de idbeg (IDBEG) existe et a un fils !!!!!!!!
 							 *  !!!!!!!! A verifier !!!!!!!!
 							 */
+<<<<<<< HEAD
 							ArrayType typeA = (ArrayType) tableParent.getVariableType(tree.getChild(i).getChild(0).getText());
 							System.out.println(typeA.getSousType()+" ------ : "+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText());
 							if(typeA.getNomSousType() != detectionTypeExp(tree.getChild(i).getChild(1), tableParent)) {
+=======
+							System.out.println("noeud " +tree.getChild(i).getChild(1).getChild(1).getChild(0));
+							if(detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent)) {
+>>>>>>> 709bab0539e7990e1b5006c154a2a2f433b7d545
 								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
 							}
 							break;
 						case "ASSIGNMENT": // Concordance des types lors de l'assignment
-							if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)) {
+							if(detectionTypeExp(tree.getChild(i).getChild(0), tableParent) != detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)) {
 								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
 							}
 							break;
@@ -681,13 +686,21 @@ public class AnalyseurSemantique {
 		case "IDBEG":
 			// cas d'une variable
 			if (noeud.getChildCount() == 1)
-			{
-				Variable v = (Variable)tds.get(noeud.getChild(0).getText());
-				if(v==null) {
-					afficherErreurSemantique(noeud.getChild(0), "La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
+			{	
+				if(noeud.getChild(0).getText().equals("int")) {
+					typeRes = "int";
+				}
+				else if(noeud.getChild(0).getText().equals("string")) {
+					typeRes = "string";
 				}
 				else {
-					typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+					Variable v = (Variable)tds.get(noeud.getChild(0).getText());
+					if(v==null) {
+						afficherErreurSemantique(noeud.getChild(0), "La variable '"+noeud.getChild(0).getText()+"' n'est pas déclarée");
+					}
+					else {
+						typeRes = tds.getVariableType(noeud.getChild(0).getText()).getName();
+					}
 				}
 			}
 			// cas avec 2 fils
@@ -698,9 +711,10 @@ public class AnalyseurSemantique {
 				switch(filsDroit) {
 
 				case "EXPBEG":
-					String filsGauche = filsDroit;
+					//String filsGauche = filsDroit;
 					String filsGaucheExpbeg = detectionTypeExp(noeud.getChild(1).getChild(0),tds);
 					String filsDroitExpbeg = noeud.getChild(1).getChild(1).getText();
+					System.out.println(filsDroitExpbeg);
 					if (filsGaucheExpbeg == "int" && filsDroitExpbeg != null) {
 						switch(filsDroitExpbeg) {
 						case "ASSIGNMENT":
@@ -713,7 +727,11 @@ public class AnalyseurSemantique {
 							ArrayType array = (ArrayType) tds.getVariableType(noeud.getChild(0).getText());
 							RecordType sousType = (RecordType) array.getSousType();
 							typeRes = sousType.getVariable(noeud.getChild(1).getChild(1).getChild(0).getText()).getType().getName();
+<<<<<<< HEAD
 							System.out.println("array : "+ array + " -- RecordType" + sousType+ " -- typeres : "+typeRes);
+=======
+							System.out.println(typeRes);
+>>>>>>> 709bab0539e7990e1b5006c154a2a2f433b7d545
 							break;
 						case "EXPSTOR":
 							if (tds.getVariableType(noeud.getChild(1).getChild(1).getChild(0).getText()).getName() == "int") {
@@ -732,12 +750,18 @@ public class AnalyseurSemantique {
 					if(noeud.getChild(1).getChildCount() ==1) {
 						RecordType rec = (RecordType)  tds.getVariableType(noeud.getChild(0).getText());
 						typeRes = rec.getVariable(noeud.getChild(1).getChild(0).getText()).getType().getName();
+<<<<<<< HEAD
 						break;
 					}
 					else if (noeud.getChild(1).getChildCount()==2) {
 						if(noeud.getChild(1).getChild(1).getText().equals("ASSIGNMENT")) {
 							typeRes = "void";
 						}
+=======
+						System.out.println(noeud.getChild(1).getChild(0).getText());
+						System.out.println(typeRes);
+						break;
+>>>>>>> 709bab0539e7990e1b5006c154a2a2f433b7d545
 					}
 					else {
 						switch(filsFieldExp) {
@@ -829,7 +853,7 @@ public class AnalyseurSemantique {
 			typeRes = "int";
 		}
 		if(typeRes == null) {
-			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud + " ;fils :"+noeud.getChild(0) + " ;filsd : " + noeud.getChild(1) );
+			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
 		}
 		return typeRes;
 	}
