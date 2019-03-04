@@ -1,5 +1,6 @@
 let
-	var total := total2
+	var total := 3
+	var total2 := total
 in
 
 end
