@@ -490,11 +490,10 @@ public class AnalyseurSemantique {
 							 *  !!!!!!!! A verifier !!!!!!!!
 							 */
 
-							ArrayType typeA = (ArrayType) tableParent.getVariableType(tree.getChild(i).getChild(0).getText());
-							System.out.println(typeA.getSousType()+" ------ : ");
-							if(typeA.getNomSousType() != tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()) {
-
-								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(1).getChild(0), tableParent)+"')");
+							RecordType sousTypeA = (RecordType) ((ArrayType) tableParent.getVariableType(tree.getChild(i).getChild(0).getText())).getSousType();
+							String nomChamp = sousTypeA.getVariable(tree.getChild(i).getChild(1).getChild(1).getChild(0).getText()).getName();
+							if(!sousTypeA.existe(nomChamp)) {
+								afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(1).getChild(0), "Le champ '"+nomChamp+"' n'existe pas");
 							}
 							break;
 						case "ASSIGNMENT": // Concordance des types lors de l'assignment
