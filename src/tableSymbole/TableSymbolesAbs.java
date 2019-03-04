@@ -117,6 +117,7 @@ public abstract class TableSymbolesAbs {
 	public Type getArrayType(String rec) {
 		Type res;
 		Identificateur temp = identificateurs.get(rec);
+		System.out.println("temp : "+temp);
 		if(!(temp instanceof ArrayType)) {
 			res = null;
 		}
@@ -144,10 +145,14 @@ public abstract class TableSymbolesAbs {
 		{
 			return tmp.getType();
 		}
-		else
+		else if (parent != null)
 		{
+			return parent.getVariableType(variable);
+		}
+		else {
 			return null;
 		}
+
 	}
 
 	public Type getFunctionType(String function)
