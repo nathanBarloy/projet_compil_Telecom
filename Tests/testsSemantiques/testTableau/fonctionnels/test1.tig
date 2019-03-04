@@ -1,0 +1,8 @@
+let 
+	type tableau = array of int
+	var tab := tableau [3] of int
+	var a := 3
+in
+	tab[2] := a
+end
+	
