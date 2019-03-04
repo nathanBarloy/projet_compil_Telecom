@@ -117,7 +117,6 @@ public abstract class TableSymbolesAbs {
 	public Type getArrayType(String rec) {
 		Type res;
 		Identificateur temp = identificateurs.get(rec);
-		System.out.println("temp : "+temp);
 		if(!(temp instanceof ArrayType)) {
 			res = null;
 		}

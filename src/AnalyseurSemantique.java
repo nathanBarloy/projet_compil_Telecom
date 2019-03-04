@@ -363,7 +363,6 @@ public class AnalyseurSemantique {
 				else //s'il n'y a que deux fils, alors il faut detecter le type
 				{
 					Tree valeur=tree.getChild(i).getChild(1);//valeur
-					System.out.println("tree : "+valeur.getChild(0).getText());
 					//System.out.println("valeur : "+valeur);
 					String type=detectionTypeExp(valeur,tableParent);
 					if(type.equals("nil")) {
