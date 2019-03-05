@@ -784,10 +784,13 @@ public class AnalyseurSemantique {
 					break;
 				case "CALLEXP":
 					//String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
-					System.out.println(noeud.getChild(0).getText());
-					String typeRetour = ((Fonction) tds.get(noeud.getChild(0).getText())).getTypeRetour().getName();
-					if(typeRetour != null) { // fils gauche est une fonction
+					Fonction fonction = (Fonction) tds.get(noeud.getChild(0).getText());
+					if(fonction != null) {
+						String typeRetour = ((Fonction) tds.get(noeud.getChild(0).getText())).getTypeRetour().getName();
 						typeRes =  typeRetour;
+					}
+					else {
+						System.err.println("Fonction '"+noeud.getChild(0).getText()+"' non trouvée");
 					}
 					break;
 				}
