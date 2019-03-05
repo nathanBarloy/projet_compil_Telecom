@@ -853,15 +853,9 @@ public class AnalyseurSemantique {
 				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
 			typeRes = "int";
 		}
-<<<<<<< HEAD
-		if(typeRes == null) {
-			//System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
-		}
-=======
 		/*if(typeRes == null) {
-			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
+			//System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
 		}*/
->>>>>>> b18b64c0c359c6fc69c65b7ed56de482a3d17781
 		return typeRes;
 	}
 
