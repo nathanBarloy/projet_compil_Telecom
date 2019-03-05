@@ -12,7 +12,11 @@ import tableSymbole.TableSymbolesAbs;
 public class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
+<<<<<<< HEAD
 		String path = "Tests/testsSemantiques/testProf/fonctionnels/prog3.txt";
+=======
+		String path = "Tests/general.tig";
+>>>>>>> fe4647dc8408e4dd8a5083cbc0436b6753266c01
 		//Passe 1 : Analyse lexicale et syntaxique
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
 		TigerLexer lexer = new TigerLexer(input);
