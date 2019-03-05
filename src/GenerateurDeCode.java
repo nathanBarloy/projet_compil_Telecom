@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.Writer;
+
 import org.antlr.runtime.tree.CommonTree;
 
 import tableSymbole.TableSymbolesAbs;
@@ -16,7 +19,7 @@ public class GenerateurDeCode {
 	 * Génère le code assembleur à l'aide de la TDS et de l'AST
 	 * @return chaine de caractère contenant le code assembleur du programme
 	 */
-	public String genererCode()
+	public String genererCode(String nomFichier)
 	{
 		String codeAssembleur="";
 		codeAssembleur+="EXIT_EXC\tEQU\t64\n"; // n° d'exception de EXIT
@@ -34,7 +37,27 @@ public class GenerateurDeCode {
 		codeAssembleur+="\n";//On saute une ligne après avoir défini les alias
 		//TODO parcourir l'AST et utiliser la TDS pour générer le code
 		codeAssembleur+="main_\n";
-		codeAssembleur+=tds.genererCode();
+		codeAssembleur+="\tLDW SP, #STACK_ADRS\n"; // charge SP avec STACK_ADRS
+		codeAssembleur+="\tLDQ NIL, BP\n"; // charge BP avec NIL=0
+		codeAssembleur+="\tSTW BP, -(SP)\n"; // empile le contenu du registre BP
+		codeAssembleur+="\tLDW BP, SP\n"; // charge contenu SP ds BP
+		
+		codeAssembleur+=tds.genererCode();//on génère tout le code 
+		
+		codeAssembleur+="\tLDW SP, BP\n"; // abandon infos locales
+		codeAssembleur+="\tLDW BP, (SP)+\n"; // charge BP avec ancien BP
+		codeAssembleur+="\tTRP #EXIT_EXC\n"; // EXIT: arrête le programme
+		
+		try {
+			Writer writer=new FileWriter(nomFichier);
+			writer.write(codeAssembleur);
+			writer.close();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			// TODO: handle exception
+		}
 		return codeAssembleur;
 	}
 

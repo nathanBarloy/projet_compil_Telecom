@@ -1,7 +1,7 @@
 let
 	var total : int := 0
 	var total : int := 1
-  var texte : string := total
+  	var texte : string := total
 	var oeoe : string := "oeoe"
 	var a := nil
 

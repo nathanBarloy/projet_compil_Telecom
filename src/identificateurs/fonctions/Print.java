@@ -1,6 +1,5 @@
 package identificateurs.fonctions;
 
-import identificateurs.Type;
 import identificateurs.TypePrimitif;
 
 public class Print extends Fonction{
@@ -19,9 +18,4 @@ public class Print extends Fonction{
 		codeAssembleur +="\tTRP WR\n"; // lance la trappe WRITE
 		return codeAssembleur;
 	}
-
-
-
-
-
 }
