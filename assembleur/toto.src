@@ -1,0 +1,129 @@
+EXIT_EXC	EQU	64
+READ_EXC	EQU	65
+WRITE_EXC	EQU	66
+STACK_ADRS	EQU	0x1000
+SP	EQU R15
+WR	EQU R14
+BP	EQU R13
+LDW SP, #STACK_ADRS
+
+main_
+	LDW SP, #STACK_ADRS
+	LDQ NIL, BP
+	STW BP, -(SP)
+	LDW BP, SP
+for6_
+
+if7_
+
+if8_
+
+if9_
+
+if10_
+
+while11_
+
+while12_
+
+maFonction_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+maFonction1_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+add_vector_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+
+getchar_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDQ READ_EXC, WR
+	TRP WR
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+ord_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+printi_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDQ WRITE_EXC, WR
+	TRP WR
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+concat_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+chr_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+substring_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+exit_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDQ EXIT_EXC, WR
+	TRP WR
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+print_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDQ WRITE_EXC, WR
+	TRP WR
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+not_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	NOT R1,R2
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+flush_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+size_ 	
+	STW BP, -(SP)
+	LDW BP, SP
+	LDW SP, BP
+	LDW BP, (SP)+
+	RTS
+
+	LDW SP, BP
+	LDW BP, (SP)+
+	TRP #EXIT_EXC

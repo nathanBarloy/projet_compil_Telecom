@@ -28,7 +28,7 @@ public class Main {
 		//Passe 3 : Génération de code
 		System.out.println("Code généré :");
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
-		String codeAssembleur=gdc.genererCode();
+		String codeAssembleur=gdc.genererCode("assembleur/toto.src");
 		System.out.println(codeAssembleur);
 	}
 
