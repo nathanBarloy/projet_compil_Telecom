@@ -4,6 +4,9 @@ let
    	var texte : string := total
 	var oeoe : string := "oeoe"
 	var a := nil
+	
+	type dataArray = array of int
+	var l := dataArray [4] of nil
 
 	// function type error
 	function maFonction() = 3+4
@@ -16,6 +19,9 @@ let
 
 	// redef function
 	function maFonction1 () : int = 3+4
+
+	
+	function add_vector ( l : dataArray , size : int ) : int = 3 
 
 	// arrayType dec
 	var variable := 2  
@@ -52,7 +58,11 @@ in
 	// negaion string
 	- 4;
 	- "String";
-	- oeoe
+	- oeoe;
+
+	
+
+	
 
 
 	
