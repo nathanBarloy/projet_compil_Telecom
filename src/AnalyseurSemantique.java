@@ -560,11 +560,20 @@ public class AnalyseurSemantique {
 					case "ASSIGNMENT":	
 						//System.err.println("---------" + tree.getChild(i).getText());
 						// Si on est dans un boucle FOR et que on assigne l'increment 
-						if(tree.getChild(i).getParent().getText().equals("FOR") && tree.getChild(i).getParent().getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
-							afficherErreurSemantique(tree.getChild(i).getChild(1), "Assigment de l'increment de la boucle FOR");
+						Tree temp = tree.getChild(i).getParent();
+						Boolean inFor = false;
+			
+						while(temp != null) {
+							if(temp.getText().equals("FOR")){
+								if(temp.getChild(0).getText().equals(tree.getChild(i).getChild(0).getText())) { 
+									afficherErreurSemantique(tree.getChild(i).getChild(0), "Assigment de l'increment de la boucle FOR");
+								}								
+							}
+							temp = temp.getParent();
 						}
+						
 						// Sinon si probleme de concordance de type 
-						else {
+						if(inFor == false) {
 							Variable v = (Variable)tableParent.get(tree.getChild(i).getChild(0).getText());
 							if(v==null) {
 								afficherErreurSemantique(tree.getChild(i).getChild(0), "La variable '"+tree.getChild(i).getChild(0).getText()+"' n'est pas déclarée");
@@ -775,6 +784,7 @@ public class AnalyseurSemantique {
 					break;
 				case "CALLEXP":
 					//String typeRetour = tds.getFunctionType(noeud.getChild(0).getText()).getName();
+					System.out.println(noeud.getChild(0).getText());
 					String typeRetour = ((Fonction) tds.get(noeud.getChild(0).getText())).getTypeRetour().getName();
 					if(typeRetour != null) { // fils gauche est une fonction
 						typeRes =  typeRetour;
@@ -843,9 +853,15 @@ public class AnalyseurSemantique {
 				|| texteNoeud.equals("<=") || texteNoeud.equals("&") || texteNoeud.equals("|")) {
 			typeRes = "int";
 		}
+<<<<<<< HEAD
 		if(typeRes == null) {
 			//System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
 		}
+=======
+		/*if(typeRes == null) {
+			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
+		}*/
+>>>>>>> b18b64c0c359c6fc69c65b7ed56de482a3d17781
 		return typeRes;
 	}
 
@@ -889,14 +905,14 @@ public class AnalyseurSemantique {
 				if(typeDetecteFg.equals("nil") && typeDetecteFd.equals("nil")) {
 					afficherErreurSemantique(fd,"L'expression 'nil' doit être utilisée dans un context où le type record peut être déterminé");
 				}
-				else if(typeDetecteFg.equals("nil") && !typeDetecteFd.equals("record")) {
+				else if(typeDetecteFg.equals("nil") && !typeDetecteFd.equals("rec")) {
 					afficherErreurSemantique(fd.getChild(0),"L'identifiacteur '"+fd.getChild(0).getText()+"' n'est pas de type 'record'");
 				}
-				else if(typeDetecteFd.equals("nil") && !typeDetecteFg.equals("record")) {
+				else if(typeDetecteFd.equals("nil") && !typeDetecteFg.equals("rec")) {
 					afficherErreurSemantique(fg.getChild(0),"L'identifiacteur '"+fg.getChild(0).getText()+"' n'est pas de type 'record'");
 				}
 				// cas où le type de l'operande gauche est different de celui de l'opérande droite
-				else if (!typeDetecteFg.equals(typeDetecteFd)) {
+				else if (!typeDetecteFg.equals(typeDetecteFd) && !typeDetecteFd.equals("nil") && !typeDetecteFg.equals("nil")) {
 					//System.err.println("L'identificateur '"+fg.getChild(0)+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0)+"' (type '"+typeDetecteFd+"')");
 					afficherErreurSemantique(fd.getChild(0), "'"+fg.getChild(0).getText()+"' (type '"+typeDetecteFg+"') n'est pas de même type que '"+fd.getChild(0).getText()+"' (type '"+typeDetecteFd+"')");
 

@@ -83,6 +83,18 @@ public class TestsSemantiques {
 		String rep="testOperationsEgEq/";
 		executeOnDir(REPERTOIRETEST+rep);
 	}
+	@Test
+	public void testsProf() throws IOException
+	{
+		String rep="testProf/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
+	@Test
+	public void testsDecFunc() throws IOException
+	{
+		String rep="testDecFunc/";
+		executeOnDir(REPERTOIRETEST+rep);
+	}
 	public int numberOfFiles(String path)
 	{
 		return new File(path).listFiles().length;
