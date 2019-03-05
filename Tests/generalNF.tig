@@ -1,0 +1,61 @@
+let 
+	var total : int := 0
+	var total : int := 1
+   	var texte : string := total
+	var oeoe : string := "oeoe"
+	var a := nil
+
+	// function type error
+	function maFonction() = 3+4
+
+	// dec function
+	function maFonction1 () : string =
+		(
+			total := 1
+		)
+
+	// redef function
+	function maFonction1 () : int = 3+4
+
+	// arrayType dec
+	var variable := 2  
+	type type1 = array of int
+	type type2 = array of inexistant
+	type type3 = array of variable
+	
+	// recordType dec 
+	type type4 = { a : inexistTyp, b : int}
+
+in 
+	// sup not int  
+	for i := 0 to oeoe do
+	(
+		x := 3
+		
+	);
+	
+	// assigmnent different type
+	oeoe := 0;
+	
+	3 < "ok";
+
+	// not defined
+	char := total; 
+	
+	// if different type
+	if 4
+	then 
+		5
+	else
+		"coucou";
+
+	// negaion string
+	- 4;
+	- "String";
+	- oeoe
+
+
+	
+	
+
+end 
