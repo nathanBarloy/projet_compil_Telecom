@@ -378,6 +378,7 @@ public class AnalyseurSemantique {
 				break;
 
 			case "TYDEC" :
+				
 				Tree tydecTree = tree.getChild(i);
 				Tree nomType = tydecTree.getChild(0);
 				if (i==0 || !tree.getChild(i-1).getText().equals("TYDEC")) { // si le premier element du bloc de declaration
@@ -432,12 +433,14 @@ public class AnalyseurSemantique {
 				}
 
 				//en fin de bloc de déclaration
-				if (i+1<tree.getChildCount() && !tree.getChild(i+1).getText().equals("TYDEC")) {
+				if (i+1>=tree.getChildCount() || !tree.getChild(i+1).getText().equals("TYDEC")) {
 					for (String nomSsType:listeNomsType) {
 						Type ssType = tableParent.getType(nomSsType);
 						if (ssType instanceof ArrayType) {
+							
 							ArrayType ssArrayType = (ArrayType) ssType;
 							if ( ssArrayType.getSousType()==null) {
+								
 								ssArrayType.setSousType(tableParent.getType(ssArrayType.getNomSousType()));
 							}
 						}
@@ -452,7 +455,47 @@ public class AnalyseurSemantique {
 							}
 						}
 					}
+					
 					//TODO vérifier les boucles dans les references de types
+					//création de la liste des nouveaux alias
+					ArrayList<AliasType> newAliasTypes = new ArrayList<AliasType>();
+					for (String str:listeNomsType) {
+						if (tableParent.getType(str) instanceof AliasType) {
+							newAliasTypes.add((AliasType) tableParent.getType(str));
+						}
+					}
+					
+					//parcours de cette liste
+					while(!newAliasTypes.isEmpty()) {
+						ArrayList<AliasType> typesParcourus = new ArrayList<AliasType>();
+						AliasType newAlT = newAliasTypes.get(0);
+						newAliasTypes.remove(newAlT);
+						typesParcourus.add(newAlT);
+						boolean arret=false;
+						boolean ok=true;
+						while(!arret) {
+							Type next = newAlT.getType();
+							if (!(next instanceof AliasType)) { //Si on alias un terminal
+								arret = true;
+							} else {
+								if (newAliasTypes.contains(next)) {//Si on alias un type non verifié
+									newAlT = (AliasType) next;
+								} else { //si on alias un type verifié
+									if (typesParcourus.contains(next)) { //si est dans la boucle actuelle : pas bon
+										arret = true;
+										ok = false;
+									} else { //n'est pas dans la boucle
+										arret = true;
+									}
+								}
+							}
+						}
+						
+						if(!ok) {
+							System.err.println("probleme de cycle dans les types");
+						}
+					}
+					
 				}
 
 				break;

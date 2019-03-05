@@ -33,8 +33,7 @@ public class ArrayType extends Type {
 
 	@Override
 	public int getTaille() {
-		// TODO Auto-generated method stub
-		return 0;
+		return sousType.getTaille();
 	}
 	
 
