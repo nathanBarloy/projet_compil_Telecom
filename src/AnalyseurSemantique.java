@@ -581,7 +581,7 @@ public class AnalyseurSemantique {
 							else {
 								String typeId = tableParent.getVariableType(tree.getChild(i).getChild(0).getText()).getName();
 								if(typeId != detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)) {
-									afficherErreurSemantique(tree.getChild(i).getChild(1).getChild(0), "Le type attendu de '"+tree.getChild(i).getChild(1).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(i).getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)+"')");
+									afficherErreurSemantique(tree.getChild(i).getChild(0), "Erreur de type lors d'un assigmnent : '"+typeId+"' != '"+detectionTypeExp(tree.getChild(i).getChild(1).getChild(0), tableParent)+"'");
 								}
 							}
 							break;
@@ -857,7 +857,7 @@ public class AnalyseurSemantique {
 			typeRes = "int";
 		}
 		/*if(typeRes == null) {
-			System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
+			//System.err.println("Error : typeRes == null. Noeud en cours :"+texteNoeud+"; ligne "+noeud.getLine());
 		}*/
 		return typeRes;
 	}
