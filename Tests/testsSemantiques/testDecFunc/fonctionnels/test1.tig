@@ -1,0 +1,11 @@
+let
+	function maFonction1 (arg1 : int) : int = 
+		(
+			arg1 + 2
+		)
+	function maFonction2 () = 
+		(
+			print("coucou")
+		)
+in
+end

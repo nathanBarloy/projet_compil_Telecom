@@ -1,0 +1,7 @@
+let
+	function maFonction () : int =
+		(
+			print("coucou")
+		)
+in
+end
