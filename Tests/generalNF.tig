@@ -1,10 +1,15 @@
-let 
+let
 	var total : int := 0
 	var total : int := 1
-   	var texte : string := total
+  var texte : string := total
 	var oeoe : string := "oeoe"
 	var a := nil
-	
+
+	type record = { x : int }
+
+	// mauvais type dans une structure
+	var rec := record { x = "coucou" }
+
 	type dataArray = array of int
 	var l := dataArray [4] of nil
 
@@ -20,52 +25,78 @@ let
 	// redef function
 	function maFonction1 () : int = 3+4
 
-	
-	function add_vector ( l : dataArray , size : int ) : int = 3 
+
+	function add_vector ( l : dataArray , size : int ) : int = 3
 
 	// arrayType dec
-	var variable := 2  
+	var variable := 2
 	type type1 = array of int
 	type type2 = array of inexistant
 	type type3 = array of variable
-	
-	// recordType dec 
+
+	// recordType dec
 	type type4 = { a : inexistTyp, b : int}
 
-in 
-	// sup not int  
+in
+	// sup not int
 	for i := 0 to oeoe do
 	(
-		x := 3
-		
+		x := 3;
+		i := 4
 	);
-	
+
 	// assigmnent different type
 	oeoe := 0;
-	
+
 	3 < "ok";
+	3 <> "string";
+	3 + "ok";
 
 	// not defined
-	char := total; 
-	
+	char := total;
+
 	// if different type
 	if 4
-	then 
+	then
 		5
 	else
 		"coucou";
 
-	// negaion string
+	// condition non int
+	if "coucou"
+	then
+		print("coucou");
+
+	// corps de type non void if then
+	if 1
+	then
+		2+3;
+
+	// nil dans if
+	if nil = nil
+	then
+		print("ok");
+
+	// negation string
 	- 4;
 	- "String";
 	- oeoe;
 
-	
+	// break or de for et while
+	break;
 
-	
+	// non int dans condition
+	while "coucou"
+	do
+		(
+			print("ok")
+		);
 
+	// Corps pas de type void while
+	while 1
+	do
+		(
+			3 + 2
+		)
 
-	
-	
-
-end 
+end
