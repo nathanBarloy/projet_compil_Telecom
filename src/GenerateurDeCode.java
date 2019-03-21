@@ -1,14 +1,31 @@
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
 
+import identificateurs.AliasType;
+import identificateurs.ArrayType;
+import identificateurs.RecordType;
+import identificateurs.Type;
+import identificateurs.Variable;
+import identificateurs.fonctions.Fonction;
 import tableSymbole.TableSymbolesAbs;
+import tableSymbole.TableSymbolesFor;
+import tableSymbole.TableSymbolesFunction;
+import tableSymbole.TableSymbolesIf;
+import tableSymbole.TableSymbolesLet;
+import tableSymbole.TableSymbolesWhile;
 
 public class GenerateurDeCode {
 	
 	private TableSymbolesAbs tds;
 	private CommonTree ast;
+	/**
+	 * indique la TDS dans laquelle le generateur se trouve acutellement
+	 */
+	private TableSymbolesAbs courante;
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
@@ -42,11 +59,14 @@ public class GenerateurDeCode {
 		codeAssembleur+="\tSTW BP, -(SP)\n"; // empile le contenu du registre BP
 		codeAssembleur+="\tLDW BP, SP\n"; // charge contenu SP ds BP
 		
-		codeAssembleur+=tds.genererCode();//on génère tout le code 
+		//codeAssembleur+=tds.genererCode();//on génère tout le code
 		
+		codeAssembleur += parcourirArbre(ast);
+		
+		//TODO ce code termine le main, il doit être ajouté avant le code des fonctions
 		codeAssembleur+="\tLDW SP, BP\n"; // abandon infos locales
 		codeAssembleur+="\tLDW BP, (SP)+\n"; // charge BP avec ancien BP
-		codeAssembleur+="\tTRP #EXIT_EXC\n"; // EXIT: arrête le programme
+		codeAssembleur+="\tTRP #EXIT_EXC\n"; // EXIT: arrête le programme*/
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
@@ -56,10 +76,27 @@ public class GenerateurDeCode {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return codeAssembleur;
 	}
+	
+	private String parcourirArbre(Tree tree)
+	{
+		String codeAssembleur ="";
+		for(int i=0;i<tree.getChildCount();i++)
+		{
+			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
+			switch(tree.getChild(i).getText())
+			{
+			default:
+				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
+				break;
+			}
+
+		}
+		return codeAssembleur;
+	}
+	
 
 	
 	
