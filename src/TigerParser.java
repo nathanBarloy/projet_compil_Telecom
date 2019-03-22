@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 src/Tiger.g 2019-02-20 18:19:01
+// $ANTLR 3.5.2 src/Tiger.g 2019-03-22 08:41:34
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -965,7 +965,7 @@ public class TigerParser extends Parser {
 
 			stream_exp.add(exp32.getTree());
 			// AST REWRITE
-			// elements: returnType, fieldDec, exp, ID
+			// elements: fieldDec, ID, returnType, exp
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -1174,7 +1174,7 @@ public class TigerParser extends Parser {
 
 			stream_exp.add(exp39.getTree());
 			// AST REWRITE
-			// elements: ID, exp, vd
+			// elements: vd, exp, ID
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -1412,7 +1412,7 @@ public class TigerParser extends Parser {
 
 					stream_lValue.add(lValue45.getTree());
 					// AST REWRITE
-					// elements: exp, lValue
+					// elements: lValue, exp
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1460,7 +1460,7 @@ public class TigerParser extends Parser {
 
 					stream_lValue.add(lValue48.getTree());
 					// AST REWRITE
-					// elements: lValue, ID
+					// elements: ID, lValue
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -3065,7 +3065,7 @@ public class TigerParser extends Parser {
 
 			stream_exp.add(exp103.getTree());
 			// AST REWRITE
-			// elements: ID, exp
+			// elements: exp, ID
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 
@@ -3405,7 +3405,7 @@ public class TigerParser extends Parser {
 
 			stream_exp.add(exp121.getTree());
 			// AST REWRITE
-			// elements: exp, exp, ID, exp
+			// elements: exp, exp, exp, ID
 			// token labels: 
 			// rule labels: retval
 			// token list labels: 

@@ -29,6 +29,7 @@ public class GenerateurDeCode {
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
+		this.courante = this.tds;
 		this.ast = ast;
 	}
 	
@@ -88,6 +89,14 @@ public class GenerateurDeCode {
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			switch(tree.getChild(i).getText())
 			{
+			case "FUNDEC":
+				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
+				System.out.println(f.getName());
+				courante = f.getTdsFonction();
+				codeAssembleur += f.debutFonction();
+				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(tree.getChildCount()-1));
+				codeAssembleur += f.finFonction();
+				break;
 			default:
 				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;

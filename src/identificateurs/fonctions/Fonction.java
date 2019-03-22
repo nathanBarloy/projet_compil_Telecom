@@ -20,17 +20,26 @@ public abstract class Fonction extends Identificateur {
 	public Type getTypeRetour() {
 		return typeRetour;
 	}
-
-	public String genererCode()
+	
+	public String debutFonction()
 	{
 		String res=nom+"_ \t\n";
 		res+="\tSTW BP, -(SP)\n"; // empile le contenu du registre BP
 		res+="\tLDW BP, SP\n"; // charge contenu SP ds BP
-		res+=codeAssembleurFonction();
-		res+="\tLDW SP, BP\n"; // abandon infos locales
+		return res;
+	}
+	
+	public String finFonction()
+	{
+		String res ="\tLDW SP, BP\n"; // abandon infos locales
 		res+="\tLDW BP, (SP)+\n"; // charge BP avec ancien BP
 		res+="\tRTS"; // retour au programme appelant
 		return res+'\n';
+	}
+
+	public String genererCode()
+	{
+		return "";		
 	}
 	
 	@Override
