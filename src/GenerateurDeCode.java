@@ -90,38 +90,45 @@ public class GenerateurDeCode {
 			switch(tree.getChild(i).getText())
 			{
 			// gérer tous les cas (token) existant dans l'AST 
+			
+			// /!\ Attention il faut voir ou le code se rajoute par rapport au parcours de l'arbre 
+			
 			case "FUNDEC":
-				this.courante.incCompteurTDS();
-				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
 				System.out.println(f.getName());
 				courante = f.getTdsFonction();
 				codeAssembleur += f.debutFonction();
-				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(tree.getChildCount()-1));
+				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1));
 				codeAssembleur += f.finFonction();
 				break;
 			case "LET":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+				codeAssembleur += parcourirArbre(tree.getChild(i));
 				// TODO
 				break;
 			case "WHILE":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(1));
 				// TODO
 				break;
 			case "FOR":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(3));
 				// TODO
 				break;
 			case "VARDEC":
 				//TODO
+				// pas de parcours normalement
 				break;
 			case "TYDEC" :
 				//TODO
+				// pas de parcours normalement
 				break;
 			case "IDBEG":
+				// pas de parcours normalement
 				if (tree.getChild(i).getChildCount()==2)
 				{
 					switch(tree.getChild(i).getChild(1).getText())
@@ -150,14 +157,26 @@ public class GenerateurDeCode {
 				break;
 			case "NEGATION" :
 				//TODO
+				// pas de parcours normalement
+
 				break;
 			case "IFTHEN" :
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+				int nbFils = tree.getChild(i).getChildCount();
+				if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
+					codeAssembleur += parcourirArbre(tree.getChild(i).getChild(1));
+				}
+				if(nbFils == 3) {		// si pas de ELSE le type de THEN doit être void
+					// gerer les sauts conditionnel 
+					codeAssembleur += parcourirArbre(tree.getChild(i).getChild(1));
+					codeAssembleur += parcourirArbre(tree.getChild(i).getChild(2));
+				}
 				// TODO
 				break;
 			case "break" :
 				// TODO
+				// pas de parcours normalement
 				break;
 			default:
 				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
