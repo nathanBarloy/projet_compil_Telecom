@@ -26,11 +26,13 @@ public class GenerateurDeCode {
 	 * indique la TDS dans laquelle le generateur se trouve acutellement
 	 */
 	private TableSymbolesAbs courante;
+	private int compteurTDS; // Permet de savoir a quelle TDS fille de la hashmap on est
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
 		this.courante = this.tds;
 		this.ast = ast;
+		this.compteurTDS = 0;
 	}
 	
 	/**
@@ -89,13 +91,75 @@ public class GenerateurDeCode {
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			switch(tree.getChild(i).getText())
 			{
+			// gérer tous les cas (token) existant dans l'AST 
 			case "FUNDEC":
+				this.courante = this.courante.getFils(this.compteurTDS);
+				this.compteurTDS += 1;
 				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
 				System.out.println(f.getName());
 				courante = f.getTdsFonction();
 				codeAssembleur += f.debutFonction();
 				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(tree.getChildCount()-1));
 				codeAssembleur += f.finFonction();
+				break;
+			case "LET":
+				this.courante = this.courante.getFils(this.compteurTDS);
+				this.compteurTDS += 1;
+				// TODO
+				break;
+			case "WHILE":
+				this.courante = this.courante.getFils(this.compteurTDS);
+				this.compteurTDS += 1;
+				// TODO
+				break;
+			case "FOR":
+				this.courante = this.courante.getFils(this.compteurTDS);
+				this.compteurTDS += 1;
+				// TODO
+				break;
+			case "VARDEC":
+				//TODO
+				break;
+			case "TYDEC" :
+				//TODO
+				break;
+			case "IDBEG":
+				if (tree.getChild(i).getChildCount()==2)
+				{
+					switch(tree.getChild(i).getChild(1).getText())
+					{
+						case "EXPBEG":
+							//TODO
+							break;
+						case "FIELDEXP":
+							// TODO
+							break;
+						case "RECCREATE":
+							//TODO
+							break;
+						case "CALLEXP" :
+							//TODO
+							break;
+						case "ASSIGNMENT":	
+							// TODO
+							break;
+					}
+				}
+				else if(tree.getChild(i).getChildCount()==1)
+				{
+					// cas d'une variable TODO
+				}
+				break;
+			case "NEGATION" :
+				//TODO
+				break;
+			case "IFTHEN" :
+				this.courante = this.courante.getFils(this.compteurTDS);
+				this.compteurTDS += 1;
+				// TODO
+				break;
+			case "break" :
+				// TODO
 				break;
 			default:
 				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
