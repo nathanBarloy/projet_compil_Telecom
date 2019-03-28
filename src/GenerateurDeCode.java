@@ -26,13 +26,11 @@ public class GenerateurDeCode {
 	 * indique la TDS dans laquelle le generateur se trouve acutellement
 	 */
 	private TableSymbolesAbs courante;
-	private int compteurTDS; // Permet de savoir a quelle TDS fille de la hashmap on est
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
 		this.courante = this.tds;
 		this.ast = ast;
-		this.compteurTDS = 0;
 	}
 	
 	/**
@@ -93,8 +91,8 @@ public class GenerateurDeCode {
 			{
 			// gérer tous les cas (token) existant dans l'AST 
 			case "FUNDEC":
-				this.courante = this.courante.getFils(this.compteurTDS);
-				this.compteurTDS += 1;
+				this.courante.incCompteurTDS();
+				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
 				System.out.println(f.getName());
 				courante = f.getTdsFonction();
@@ -103,18 +101,18 @@ public class GenerateurDeCode {
 				codeAssembleur += f.finFonction();
 				break;
 			case "LET":
-				this.courante = this.courante.getFils(this.compteurTDS);
-				this.compteurTDS += 1;
+				this.courante.incCompteurTDS();
+				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				// TODO
 				break;
 			case "WHILE":
-				this.courante = this.courante.getFils(this.compteurTDS);
-				this.compteurTDS += 1;
+				this.courante.incCompteurTDS();
+				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				// TODO
 				break;
 			case "FOR":
-				this.courante = this.courante.getFils(this.compteurTDS);
-				this.compteurTDS += 1;
+				this.courante.incCompteurTDS();
+				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				// TODO
 				break;
 			case "VARDEC":
@@ -154,8 +152,8 @@ public class GenerateurDeCode {
 				//TODO
 				break;
 			case "IFTHEN" :
-				this.courante = this.courante.getFils(this.compteurTDS);
-				this.compteurTDS += 1;
+				this.courante.incCompteurTDS();
+				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				// TODO
 				break;
 			case "break" :
