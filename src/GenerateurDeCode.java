@@ -20,6 +20,7 @@ import tableSymbole.TableSymbolesWhile;
 
 public class GenerateurDeCode {
 	
+	private final static String COMMENTAIRE_CHAR = "//";
 	private TableSymbolesAbs tds;
 	private CommonTree ast;
 	/**
@@ -65,9 +66,12 @@ public class GenerateurDeCode {
 		codeAssembleur += parcourirArbre(ast);
 		
 		//TODO ce code termine le main, il doit être ajouté avant le code des fonctions
-		codeAssembleur+="\tLDW SP, BP\n"; // abandon infos locales
+		/*codeAssembleur+="\tLDW SP, BP\n"; // abandon infos locales
 		codeAssembleur+="\tLDW BP, (SP)+\n"; // charge BP avec ancien BP
 		codeAssembleur+="\tTRP #EXIT_EXC\n"; // EXIT: arrête le programme*/
+		
+		//TODO on ajoute le code des fonctions de base
+		
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
@@ -95,7 +99,6 @@ public class GenerateurDeCode {
 			
 			case "FUNDEC":
 				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
-				System.out.println(f.getName());
 				courante = f.getTdsFonction();
 				codeAssembleur += f.debutFonction();
 				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1));
@@ -121,7 +124,12 @@ public class GenerateurDeCode {
 				break;
 			case "VARDEC":
 				//TODO
-				// pas de parcours normalement
+				Variable var = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
+				codeAssembleur += "\t"+COMMENTAIRE_CHAR+"On déclare "+var.getName()+"\n";
+				//On évalue l'expression à assigner
+				codeAssembleur += traiterExpression(tree.getChild(i).getChild(1));
+				//On range le résulat en sommet de pile
+				codeAssembleur += "\tSTW R0, (SP)-"+var.getType().getTaille()+COMMENTAIRE_CHAR+"On empile le contenu de RO en décalant le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n";
 				break;
 			case "TYDEC" :
 				//TODO
@@ -131,6 +139,7 @@ public class GenerateurDeCode {
 				// pas de parcours normalement
 				if (tree.getChild(i).getChildCount()==2)
 				{
+					//on évalue l'expression
 					switch(tree.getChild(i).getChild(1).getText())
 					{
 						case "EXPBEG":
@@ -147,12 +156,26 @@ public class GenerateurDeCode {
 							break;
 						case "ASSIGNMENT":	
 							// TODO
+							Tree noeudAssignment = tree.getChild(i).getChild(1);
+							codeAssembleur += traiterExpression(noeudAssignment.getChild(0));
 							break;
 					}
+					//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
+					Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
+					codeAssembleur += "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n";
+					codeAssembleur += recupererAdresseVariable(v);
+					//On range le résulat à l'adresse que l'on vient de récupérer
+					codeAssembleur += "\tSTW R0, A2\n";
+
 				}
 				else if(tree.getChild(i).getChildCount()==1)
 				{
 					// cas d'une variable TODO
+					Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
+					//on récupère l'adresse de la variable
+					codeAssembleur += recupererAdresseVariable(v);
+					//on 
+					
 				}
 				break;
 			case "NEGATION" :
@@ -179,10 +202,74 @@ public class GenerateurDeCode {
 				// pas de parcours normalement
 				break;
 			default:
-				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
+				codeAssembleur += parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
 			}
 
+		}
+		return codeAssembleur;
+	}
+	
+	private String recupererAdresseVariable(Variable v)
+	{
+		
+		/*Rappels:
+			Nx:n° d’imbrication du bloc courant
+			Ny:n° d'imbrication du bloc de déclaration
+			Nz:n° d’imbrication de la variable
+		« remonter » (Nx-Ny) chainage statiques
+			MOVE #(Nx,Ny),D0
+			MOVE A0,A2
+		BOU	MOVE (depl_stat,A2),A2
+			SUB #1,D0
+			BNE BOU //branch if not equal
+			LEA (depl,A2),A1*/
+		String codeAssembleur="";
+		int chainageARemonter=nombreDeChainageARemonter(v);
+		codeAssembleur += "\tMOVE #("+chainageARemonter+"),D0\n";
+		codeAssembleur += "\tMOVE A0,A2\n";
+		codeAssembleur += "BOU\tMOVE (-4,A2),A2\n";//-4 correspond toujours à la taille d'une adresse
+		codeAssembleur += "\tSUB #1,D0\n";//on retire 1 à la valeur dans D0
+		codeAssembleur += "\tBNE BOU\n";//si D0 n'est pas égal à 0, on retourne à BOU
+		codeAssembleur += "\tMOVE ("+v.getDeplacement()+",A2),A1\n";//on met dans les registre d'adresse A1 l'adresse pointée par A2 moins le déplacement de la variable
+		return codeAssembleur;
+	}
+	
+	/**
+	 * Cette fonction retourne le nombre de chainage à remonter pour retrouver la variable passée en paramètre 
+	 * @param v
+	 * @return
+	 */
+	private int nombreDeChainageARemonter(Variable v)
+	{
+		int nx = courante.getNiveau();
+		int ny = 0;
+		return nx-ny;
+	}
+	
+	/**
+	 * Permet de générer le code qui évalue l'expression à droite de := lors de ASSIGNMENT ou VARDEC
+	 * @param noeud noeud à partir du quel on évalue l'expression
+	 * @return code assembleur correspondant
+	 */
+	private String traiterExpression(Tree noeud)
+	{
+		String codeAssembleur="";
+		//TODO
+		switch(noeud.getText())
+		{
+		case "+":
+		case "-":
+		case "*":
+		case "/":
+			
+			break;
+		case "INT":
+			codeAssembleur+="\tLDW R0, #"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On stocke la valeur de l'entier dans R0\n";
+			break;
+		case "STRING":
+			//TODO on alloue la chaine dans le tas
+			break;
 		}
 		return codeAssembleur;
 	}

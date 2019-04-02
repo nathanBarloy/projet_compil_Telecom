@@ -182,6 +182,26 @@ public abstract class TableSymbolesAbs {
 		}
 		return res;
 	}
+	
+	/**
+	 * retourne le niveau d'imbrication de la TDS ou v est déclarée
+	 * @param v varible dont on veut récupérer le niveau d'imbrication
+	 * @return niveau d'imbrication
+	 */
+	public int getNiveauDeclaration(Variable v)
+	{
+		if(this.identificateurs.containsKey(v.getName()))
+		{
+			return this.niveau;
+		}
+		else if(parent != null) {
+			return parent.getNiveauDeclaration(v);
+		}
+		else
+		{
+			return -1;
+		}
+	}
 
 	public void addFils(TableSymbolesAbs fils){ // ajoute une tds fils
 		this.fils.add(fils);
