@@ -22,6 +22,7 @@ public abstract class TableSymbolesAbs {
 	protected ArrayList<TableSymbolesAbs> fils; //liste des TDS fils
 	protected HashMap<String,Identificateur> identificateurs;
 	protected int niveau ; //niveau d'imbrication
+	private int compteurTDS; // Permet de savoir a quelle TDS fille de la hashmap on est
 	
 	/**
 	 * Nombre de TDS généré jusqu'a présent
@@ -35,6 +36,7 @@ public abstract class TableSymbolesAbs {
 	public TableSymbolesAbs(TableSymbolesAbs parent) {
 		this();
 		this.parent = parent;
+		this.compteurTDS = 0;
 		niveau = parent.getNiveau()+1;
 	}
 
@@ -42,6 +44,7 @@ public abstract class TableSymbolesAbs {
 	public TableSymbolesAbs() { // table des symboles sans pere
 		nbTDS++;
 		this.parent = null;
+		this.compteurTDS = 0;
 		niveau = 0;
 
 		fils = new ArrayList<TableSymbolesAbs>();
@@ -314,6 +317,15 @@ public abstract class TableSymbolesAbs {
 		}
 		
 		return res+'\n';
+	}
+	public void incCompteurTDS()
+	{
+		this.compteurTDS += 1;
+	}
+	
+	public int getCompteurTDS()
+	{
+		return this.compteurTDS;
 	}
 	
 	protected abstract String nomBloc();
