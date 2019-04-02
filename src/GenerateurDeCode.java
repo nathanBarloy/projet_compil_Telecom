@@ -40,6 +40,7 @@ public class GenerateurDeCode {
 	public String genererCode(String nomFichier)
 	{
 		String codeAssembleur="";
+		codeAssembleur+="LOADA\tEQU\t0xFF10\n"; // adresse mémoire ou le code est chargé
 		codeAssembleur+="EXIT_EXC\tEQU\t64\n"; // n° d'exception de EXIT
 		codeAssembleur+="READ_EXC\tEQU\t65\n"; 		// n° d'exception de READ (lit 1 ligne)
 		codeAssembleur+="WRITE_EXC\tEQU\t66\n"; // n° d'exception de WRITE (affiche 1 ligne)
@@ -48,6 +49,8 @@ public class GenerateurDeCode {
 		codeAssembleur+="SP\tEQU R15\n"; // alias pour R15, pointeur de pile
 		codeAssembleur+="WR\tEQU R14\n"; // Work Register (registre de travail)
 		codeAssembleur+="BP\tEQU R13\n"; // frame Base Pointer (pointage environnement)
+		codeAssembleur+="ORG\tLOADA\n"; // charge le code
+		codeAssembleur+="START\tLOADA\n"; // lance le code
 		 // R12, R11 réservés
 		// R0 pour résultat de fonction
 		// R1 ... R10 disponibles
