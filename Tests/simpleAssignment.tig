@@ -1,0 +1,8 @@
+let 
+	var x := 2
+	var texte := "Ceci est un texte !"
+in
+	(x:= 64;
+	texte := "Ceci est le texte de remplacement")
+
+end

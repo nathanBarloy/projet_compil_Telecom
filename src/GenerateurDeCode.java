@@ -16,6 +16,10 @@ public class GenerateurDeCode {
 	 */
 	private TableSymbolesAbs courante;
 	private int numString;
+	/**
+	 * Ce compteur permet de personnaliser les étiquettes de boucle de remontée de chaînage
+	 */
+	private int nbRemontees;
 	private StringBuilder codeAssembleur;
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
@@ -23,6 +27,7 @@ public class GenerateurDeCode {
 		this.courante = this.tds;
 		this.ast = ast;
 		this.numString=0;
+		this.nbRemontees=0;
 		this.codeAssembleur=new StringBuilder();
 	}
 	
@@ -219,9 +224,10 @@ public class GenerateurDeCode {
 		int chainageARemonter=nombreDeChainageARemonter(v);
 		codeAssembleur .append( "\tMOVE #("+chainageARemonter+"),D0\n");
 		codeAssembleur .append( "\tMOVE A0,A2\n");
-		codeAssembleur .append( "BOU\tMOVE (-4,A2),A2\n");//-4 correspond toujours à la taille d'une adresse
+		codeAssembleur .append( "BOU"+nbRemontees+"\tMOVE (-4,A2),A2\n");//-4 correspond toujours à la taille d'une adresse
 		codeAssembleur .append( "\tSUB #1,D0\n");//on retire 1 à la valeur dans D0
-		codeAssembleur .append( "\tBNE BOU\n");//si D0 n'est pas égal à 0, on retourne à BOU
+		codeAssembleur .append( "\tBNE BOU"+nbRemontees+"\n");//si D0 n'est pas égal à 0, on retourne à BOU
+		nbRemontees++;
 		codeAssembleur .append( "\tMOVE ("+v.getDeplacement()+",A2),A1\n");//on met dans les registre d'adresse A1 l'adresse pointée par A2 moins le déplacement de la variable
 	}
 	
