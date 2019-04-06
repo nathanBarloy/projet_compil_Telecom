@@ -129,7 +129,7 @@ public class GenerateurDeCode {
 				traiterExpression(tree.getChild(i).getChild(1));
 				//On range le résulat en sommet de pile
 				codeAssembleur.append("\tADQ -"+var.getType().getTaille()+",SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
-				codeAssembleur .append( "\tSTW R0, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de RO\n");
+				codeAssembleur .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
 				break;
 			case "TYDEC" :
 				//TODO
@@ -165,16 +165,12 @@ public class GenerateurDeCode {
 					codeAssembleur .append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
 					recupererAdresseVariable(v);
 					//On range le résulat à l'adresse que l'on vient de récupérer
-					codeAssembleur .append( "\tSTW R0, (R1) "+COMMENTAIRE_CHAR+"On stocke le contenu de RO à l'adresse contenue dans R1\n");
+					codeAssembleur .append( "\tSTW R1, (R2) "+COMMENTAIRE_CHAR+"On stocke le contenu de R1 à l'adresse contenue dans R2\n");
 
 				}
 				else if(tree.getChild(i).getChildCount()==1)
 				{
-					// cas d'une variable TODO
-					Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
-					//on récupère l'adresse de la variable
-					recupererAdresseVariable(v);
-					//on 
+					//TODO Est-ce que c'est pas géré dans traiterExpression()?
 					
 				}
 				break;
@@ -187,10 +183,10 @@ public class GenerateurDeCode {
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				int nbFils = tree.getChild(i).getChildCount();
-				if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
+				if(nbFils == 2) {
 					parcourirArbre(tree.getChild(i).getChild(1));
 				}
-				if(nbFils == 3) {		// si pas de ELSE le type de THEN doit être void
+				if(nbFils == 3) {
 					// gerer les sauts conditionnel 
 					parcourirArbre(tree.getChild(i).getChild(1));
 					parcourirArbre(tree.getChild(i).getChild(2));
@@ -211,7 +207,6 @@ public class GenerateurDeCode {
 	
 	private void recupererAdresseVariable(Variable v)
 	{
-		
 		/*Rappels:
 			Nx:n° d’imbrication du bloc courant
 			Ny:n° d'imbrication du bloc de déclaration
@@ -223,7 +218,6 @@ public class GenerateurDeCode {
 			SUB #1,D0
 			BNE BOU //branch if not equal
 			LEA (depl,A2),A1*/
-		
 		int chainageARemonter=nombreDeChainageARemonter(v);
 		if(chainageARemonter>0)
 		{
@@ -233,16 +227,15 @@ public class GenerateurDeCode {
 			codeAssembleur.append( "\tSUB #1,R10\n");//on retire 1 à la valeur dans R10
 			codeAssembleur.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOUnbRemontee
 			nbRemontees++;
-			codeAssembleur.append( "\tLDW R1,(WR)-"+v.getDeplacement()+"\n");//on met dans le registre R1 l'adresse pointée par WR moins le déplacement de la variable
 		}
 		else
 		{
 			//on a pas de remontée à faire, on est dans le bloc local
 			// stocker BP-v.getDeplacement() dans A1
 			codeAssembleur.append("\tLDW WR, BP\n"); // WR = BP
-			codeAssembleur.append("\tADQ "+v.getDeplacement()+", WR\n"); // WR pointe sur le paramètre
-			codeAssembleur.append("\tLDW R1,WR\n");//on met le contenu de WR dans R1
 		}
+		codeAssembleur.append("\tADQ -"+(v.getDeplacement()+2)+", WR\n"); // WR pointe sur le paramètre
+		codeAssembleur.append("\tLDW R2,WR\n");//on met le contenu de WR dans R2
 	}
 	
 	/**
@@ -271,15 +264,54 @@ public class GenerateurDeCode {
 		case "-":
 		case "*":
 		case "/":
-			
+			//on traite la partie gauche, la partie droite
+			traiterExpression(noeud.getChild(0));
+			//on empile R1
+			codeAssembleur.append("\tADQ -2,SP\n");
+			codeAssembleur .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
+			traiterExpression(noeud.getChild(1));
+			//on empile R1
+			codeAssembleur.append("\tADQ -2,SP\n");
+			codeAssembleur .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
+			//on fait l'opération sur les deux elements en sommet de pile
+			//On dépile dans R1 et R2
+			codeAssembleur.append("\tLDW R1,(SP)\n"); // charge le registre R avec le sommet de pile
+			codeAssembleur.append("\tADQ 2, SP\n"); // incrémente le pointeur de pile SP
+			codeAssembleur.append("\tLDW R2,(SP)\n"); // charge le registre R avec le sommet de pile
+			codeAssembleur.append("\tADQ 2, SP\n"); // incrémente le pointeur de pile SP
+			//on fait l'operation
+			switch(noeud.getText())
+			{
+			case "+":
+				codeAssembleur.append("\tADD R1,R2,R1 "+COMMENTAIRE_CHAR+"Somme de R1 et R2, résultat dans R1\n");
+				break;
+			case "-":
+				codeAssembleur.append("\tSUB R1,R2,R1"+COMMENTAIRE_CHAR+"Différence de R1 et R2, résultat dans R1\n");
+				break;
+			case "*":
+				codeAssembleur.append("\tMULT R1,R2,R1"+COMMENTAIRE_CHAR+"Multiplication de R1 et R2, résultat dans R1\n");
+				break;
+			case "/":
+				codeAssembleur.append("\tDIV R1,R2,R1"+COMMENTAIRE_CHAR+"Division de R1 et R2, résultat dans R1\n");
+				break;
+			}
+			break;
+		case "IDBEG":
+			//on récupère l'adresse de la variable du noeud fils
+			//System.err.println(noeud.getChild(0).getText());
+			Variable v = (Variable)courante.get(noeud.getChild(0).getText());
+			//on récupère l'adresse de la variable
+			recupererAdresseVariable(v);
+			//on copie le contenu de R2 dans R1
+			codeAssembleur.append("\tLDW R1,(R2)\n");
 			break;
 		case "INT":
-			codeAssembleur.append("\tLDW R0, #"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On stocke la valeur de l'entier dans R0\n");
+			codeAssembleur.append("\tLDW R1, #"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On stocke la valeur de l'entier dans R1\n");
 			break;
 		case "STRING":
 			//TODO
-			codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On défini des chaines de caractères\n");
-			codeAssembleur.append("\tLDW R0, #STRING"+numString+COMMENTAIRE_CHAR+"On charge l'adresse de la chaîne dans RO\n");
+			codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+noeud.getChild(0).getText()+"\n");
+			codeAssembleur.append("\tLDW R1, #STRING"+numString+COMMENTAIRE_CHAR+"On charge l'adresse de la chaîne dans R1\n");
 			numString++;
 			break;
 		}
