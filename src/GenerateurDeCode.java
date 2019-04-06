@@ -226,10 +226,10 @@ public class GenerateurDeCode {
 		int chainageARemonter=nombreDeChainageARemonter(v);
 		if(chainageARemonter>0)
 		{
-			codeAssembleur.append( "\tLDW R11,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R11
+			codeAssembleur.append( "\tLDW R10,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R10
 			codeAssembleur.append( "\tLDW WR,BP\n");//on met le contenu du BasePointer dans le WorkRegister
 			codeAssembleur.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-4\n");//-4 correspond toujours à la taille d'une adresse
-			codeAssembleur.append( "\tSUB #1,R11\n");//on retire 1 à la valeur dans R11
+			codeAssembleur.append( "\tSUB #1,R10\n");//on retire 1 à la valeur dans R10
 			codeAssembleur.append( "\tBNE BOU"+nbRemontees+"\n");//si R11 n'est pas égal à 0, on retourne à BOUnbRemontee
 			nbRemontees++;
 			codeAssembleur.append( "\tLDW R1,(WR)-"+v.getDeplacement()+"\n");//on met dans le registre R1 l'adresse pointée par WR moins le déplacement de la variable
