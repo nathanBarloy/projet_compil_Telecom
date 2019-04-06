@@ -128,7 +128,8 @@ public class GenerateurDeCode {
 				//On évalue l'expression à assigner
 				traiterExpression(tree.getChild(i).getChild(1));
 				//On range le résulat en sommet de pile
-				codeAssembleur .append( "\tSTW R0, (SP)-"+var.getType().getTaille()+COMMENTAIRE_CHAR+"On empile le contenu de RO en décalant le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
+				codeAssembleur.append("\tADQ -"+var.getType().getTaille()+",SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
+				codeAssembleur .append( "\tSTW R0, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de RO\n");
 				break;
 			case "TYDEC" :
 				//TODO
@@ -230,7 +231,7 @@ public class GenerateurDeCode {
 			codeAssembleur.append( "\tLDW WR,BP\n");//on met le contenu du BasePointer dans le WorkRegister
 			codeAssembleur.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-4\n");//-4 correspond toujours à la taille d'une adresse
 			codeAssembleur.append( "\tSUB #1,R10\n");//on retire 1 à la valeur dans R10
-			codeAssembleur.append( "\tBNE BOU"+nbRemontees+"\n");//si R11 n'est pas égal à 0, on retourne à BOUnbRemontee
+			codeAssembleur.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOUnbRemontee
 			nbRemontees++;
 			codeAssembleur.append( "\tLDW R1,(WR)-"+v.getDeplacement()+"\n");//on met dans le registre R1 l'adresse pointée par WR moins le déplacement de la variable
 		}
