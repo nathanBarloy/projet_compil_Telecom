@@ -1,22 +1,10 @@
 import java.io.FileWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-
-import identificateurs.AliasType;
-import identificateurs.ArrayType;
-import identificateurs.RecordType;
-import identificateurs.Type;
 import identificateurs.Variable;
 import identificateurs.fonctions.Fonction;
 import tableSymbole.TableSymbolesAbs;
-import tableSymbole.TableSymbolesFor;
-import tableSymbole.TableSymbolesFunction;
-import tableSymbole.TableSymbolesIf;
-import tableSymbole.TableSymbolesLet;
-import tableSymbole.TableSymbolesWhile;
 
 public class GenerateurDeCode {
 	
@@ -27,11 +15,15 @@ public class GenerateurDeCode {
 	 * indique la TDS dans laquelle le generateur se trouve acutellement
 	 */
 	private TableSymbolesAbs courante;
+	private int numString;
+	private StringBuilder codeAssembleur;
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
 		this.courante = this.tds;
 		this.ast = ast;
+		this.numString=0;
+		this.codeAssembleur=new StringBuilder();
 	}
 	
 	/**
@@ -40,57 +32,55 @@ public class GenerateurDeCode {
 	 */
 	public String genererCode(String nomFichier)
 	{
-		String codeAssembleur="";
-		codeAssembleur+="LOADA\tEQU\t0xFF10\n"; // adresse mémoire ou le code est chargé
-		codeAssembleur+="EXIT_EXC\tEQU\t64\n"; // n° d'exception de EXIT
-		codeAssembleur+="READ_EXC\tEQU\t65\n"; 		// n° d'exception de READ (lit 1 ligne)
-		codeAssembleur+="WRITE_EXC\tEQU\t66\n"; // n° d'exception de WRITE (affiche 1 ligne)
-		codeAssembleur+="STACK_ADRS\tEQU\t0x1000\n"; // base de pile en 1000h (par exemple)
+		codeAssembleur.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
+		codeAssembleur.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
+		codeAssembleur.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
+		codeAssembleur.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)
+		codeAssembleur.append("STACK_ADRS\tEQU\t0x1000\n"); // base de pile en 1000h (par exemple)
+		codeAssembleur.append("LOAD_ADRS\tEQU\t0xF000\n");// adresse de chargement de l'exécutable
+		codeAssembleur.append("NIL\tEQU\t0\n"); // fin de liste: contenu initial de BP
 		// ces alias permettront de changer les réels registres utilisés
-		codeAssembleur+="SP\tEQU R15\n"; // alias pour R15, pointeur de pile
-		codeAssembleur+="WR\tEQU R14\n"; // Work Register (registre de travail)
-		codeAssembleur+="BP\tEQU R13\n"; // frame Base Pointer (pointage environnement)
-		codeAssembleur+="ORG\tLOADA\n"; // charge le code
-		codeAssembleur+="START\tLOADA\n"; // lance le code
+		codeAssembleur.append("SP\tEQU R15\n"); // alias pour R15, pointeur de pile
+		codeAssembleur.append("WR\tEQU R14\n"); // Work Register (registre de travail)
+		codeAssembleur.append("BP\tEQU R13\n"); // frame Base Pointer (pointage environnement)
+		codeAssembleur.append("ORG\tLOADA\n"); // charge le code
+		codeAssembleur.append("START\tLOADA\n"); // lance le code
 		 // R12, R11 réservés
 		// R0 pour résultat de fonction
 		// R1 ... R10 disponibles
-		codeAssembleur+="LDW SP, #STACK_ADRS\n"; // charge SP avec STACK_ADRS
-		codeAssembleur+="\n";//On saute une ligne après avoir défini les alias
+		codeAssembleur.append("LDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
+		codeAssembleur.append("\n");//On saute une ligne après avoir défini les alias
 		//TODO parcourir l'AST et utiliser la TDS pour générer le code
-		codeAssembleur+="main_\n";
-		codeAssembleur+="\tLDW SP, #STACK_ADRS\n"; // charge SP avec STACK_ADRS
-		codeAssembleur+="\tLDQ NIL, BP\n"; // charge BP avec NIL=0
-		codeAssembleur+="\tSTW BP, -(SP)\n"; // empile le contenu du registre BP
-		codeAssembleur+="\tLDW BP, SP\n"; // charge contenu SP ds BP
+		codeAssembleur.append("main_\n");
+		codeAssembleur.append("\tLDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
+		codeAssembleur.append("\tLDQ NIL, BP\n"); // charge BP avec NIL=0
+		codeAssembleur.append("\tSTW BP, -(SP)\n"); // empile le contenu du registre BP
+		codeAssembleur.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
 		
-		//codeAssembleur+=tds.genererCode();//on génère tout le code
-		
-		codeAssembleur += parcourirArbre(ast);
+		parcourirArbre(ast);
 		
 		//TODO ce code termine le main, il doit être ajouté avant le code des fonctions
-		/*codeAssembleur+="\tLDW SP, BP\n"; // abandon infos locales
-		codeAssembleur+="\tLDW BP, (SP)+\n"; // charge BP avec ancien BP
-		codeAssembleur+="\tTRP #EXIT_EXC\n"; // EXIT: arrête le programme*/
+		codeAssembleur.append("\tLDW SP, BP\n"); // abandon infos locales
+		codeAssembleur.append("\tLDW BP, (SP)+\n"); // charge BP avec ancien BP
+		codeAssembleur.append("\tTRP #EXIT_EXC\n"); // EXIT: arrête le programme*/
 		
 		//TODO on ajoute le code des fonctions de base
 		
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
-			writer.write(codeAssembleur);
+			writer.write(codeAssembleur.toString());
 			writer.close();
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
-		return codeAssembleur;
+		return codeAssembleur.toString();
 	}
 	
-	private String parcourirArbre(Tree tree)
+	private void parcourirArbre(Tree tree)
 	{
-		String codeAssembleur ="";
 		for(int i=0;i<tree.getChildCount();i++)
 		{
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
@@ -103,36 +93,36 @@ public class GenerateurDeCode {
 			case "FUNDEC":
 				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
 				courante = f.getTdsFonction();
-				codeAssembleur += f.debutFonction();
-				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1));
-				codeAssembleur += f.finFonction();
+				codeAssembleur .append( f.debutFonction());
+				parcourirArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1));
+				codeAssembleur .append( f.finFonction());
 				break;
 			case "LET":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				codeAssembleur += parcourirArbre(tree.getChild(i));
+				parcourirArbre(tree.getChild(i));
 				// TODO
 				break;
 			case "WHILE":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(1));
+				parcourirArbre(tree.getChild(i).getChild(1));
 				// TODO
 				break;
 			case "FOR":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				codeAssembleur += parcourirArbre(tree.getChild(i).getChild(3));
+				parcourirArbre(tree.getChild(i).getChild(3));
 				// TODO
 				break;
 			case "VARDEC":
 				//TODO
 				Variable var = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
-				codeAssembleur += "\t"+COMMENTAIRE_CHAR+"On déclare "+var.getName()+"\n";
+				codeAssembleur .append( "\t"+COMMENTAIRE_CHAR+"On déclare "+var.getName()+"\n");
 				//On évalue l'expression à assigner
-				codeAssembleur += traiterExpression(tree.getChild(i).getChild(1));
+				traiterExpression(tree.getChild(i).getChild(1));
 				//On range le résulat en sommet de pile
-				codeAssembleur += "\tSTW R0, (SP)-"+var.getType().getTaille()+COMMENTAIRE_CHAR+"On empile le contenu de RO en décalant le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n";
+				codeAssembleur .append( "\tSTW R0, (SP)-"+var.getType().getTaille()+COMMENTAIRE_CHAR+"On empile le contenu de RO en décalant le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
 				break;
 			case "TYDEC" :
 				//TODO
@@ -160,15 +150,15 @@ public class GenerateurDeCode {
 						case "ASSIGNMENT":	
 							// TODO
 							Tree noeudAssignment = tree.getChild(i).getChild(1);
-							codeAssembleur += traiterExpression(noeudAssignment.getChild(0));
+							traiterExpression(noeudAssignment.getChild(0));
 							break;
 					}
 					//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
 					Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
-					codeAssembleur += "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n";
-					codeAssembleur += recupererAdresseVariable(v);
+					codeAssembleur .append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
+					recupererAdresseVariable(v);
 					//On range le résulat à l'adresse que l'on vient de récupérer
-					codeAssembleur += "\tSTW R0, A2\n";
+					codeAssembleur .append( "\tSTW R0, A2\n");
 
 				}
 				else if(tree.getChild(i).getChildCount()==1)
@@ -176,7 +166,7 @@ public class GenerateurDeCode {
 					// cas d'une variable TODO
 					Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
 					//on récupère l'adresse de la variable
-					codeAssembleur += recupererAdresseVariable(v);
+					recupererAdresseVariable(v);
 					//on 
 					
 				}
@@ -191,12 +181,12 @@ public class GenerateurDeCode {
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				int nbFils = tree.getChild(i).getChildCount();
 				if(nbFils == 2) {		// si pas de ELSE le type de THEN doit être void
-					codeAssembleur += parcourirArbre(tree.getChild(i).getChild(1));
+					parcourirArbre(tree.getChild(i).getChild(1));
 				}
 				if(nbFils == 3) {		// si pas de ELSE le type de THEN doit être void
 					// gerer les sauts conditionnel 
-					codeAssembleur += parcourirArbre(tree.getChild(i).getChild(1));
-					codeAssembleur += parcourirArbre(tree.getChild(i).getChild(2));
+					parcourirArbre(tree.getChild(i).getChild(1));
+					parcourirArbre(tree.getChild(i).getChild(2));
 				}
 				// TODO
 				break;
@@ -205,15 +195,14 @@ public class GenerateurDeCode {
 				// pas de parcours normalement
 				break;
 			default:
-				codeAssembleur += parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
+				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
 			}
 
 		}
-		return codeAssembleur;
 	}
 	
-	private String recupererAdresseVariable(Variable v)
+	private void recupererAdresseVariable(Variable v)
 	{
 		
 		/*Rappels:
@@ -227,15 +216,13 @@ public class GenerateurDeCode {
 			SUB #1,D0
 			BNE BOU //branch if not equal
 			LEA (depl,A2),A1*/
-		String codeAssembleur="";
 		int chainageARemonter=nombreDeChainageARemonter(v);
-		codeAssembleur += "\tMOVE #("+chainageARemonter+"),D0\n";
-		codeAssembleur += "\tMOVE A0,A2\n";
-		codeAssembleur += "BOU\tMOVE (-4,A2),A2\n";//-4 correspond toujours à la taille d'une adresse
-		codeAssembleur += "\tSUB #1,D0\n";//on retire 1 à la valeur dans D0
-		codeAssembleur += "\tBNE BOU\n";//si D0 n'est pas égal à 0, on retourne à BOU
-		codeAssembleur += "\tMOVE ("+v.getDeplacement()+",A2),A1\n";//on met dans les registre d'adresse A1 l'adresse pointée par A2 moins le déplacement de la variable
-		return codeAssembleur;
+		codeAssembleur .append( "\tMOVE #("+chainageARemonter+"),D0\n");
+		codeAssembleur .append( "\tMOVE A0,A2\n");
+		codeAssembleur .append( "BOU\tMOVE (-4,A2),A2\n");//-4 correspond toujours à la taille d'une adresse
+		codeAssembleur .append( "\tSUB #1,D0\n");//on retire 1 à la valeur dans D0
+		codeAssembleur .append( "\tBNE BOU\n");//si D0 n'est pas égal à 0, on retourne à BOU
+		codeAssembleur .append( "\tMOVE ("+v.getDeplacement()+",A2),A1\n");//on met dans les registre d'adresse A1 l'adresse pointée par A2 moins le déplacement de la variable
 	}
 	
 	/**
@@ -255,9 +242,8 @@ public class GenerateurDeCode {
 	 * @param noeud noeud à partir du quel on évalue l'expression
 	 * @return code assembleur correspondant
 	 */
-	private String traiterExpression(Tree noeud)
+	private void traiterExpression(Tree noeud)
 	{
-		String codeAssembleur="";
 		//TODO
 		switch(noeud.getText())
 		{
@@ -268,13 +254,15 @@ public class GenerateurDeCode {
 			
 			break;
 		case "INT":
-			codeAssembleur+="\tLDW R0, #"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On stocke la valeur de l'entier dans R0\n";
+			codeAssembleur.append("\tLDW R0, #"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On stocke la valeur de l'entier dans R0\n");
 			break;
 		case "STRING":
-			//TODO on alloue la chaine dans le tas
+			//TODO
+			codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+noeud.getChild(0).getText()+COMMENTAIRE_CHAR+"On défini des chaines de caractères\n");
+			codeAssembleur.append("\tLDW R0, #STRING"+numString+COMMENTAIRE_CHAR+"On charge l'adresse de la chaîne dans RO\n");
+			numString++;
 			break;
 		}
-		return codeAssembleur;
 	}
 	
 

@@ -1,0 +1,6 @@
+let 
+	var x := 2
+	var texte := "Ceci est un texte !"
+in
+
+end
