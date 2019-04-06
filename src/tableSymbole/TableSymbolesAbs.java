@@ -314,29 +314,14 @@ public abstract class TableSymbolesAbs {
 		}
 		return deplacement;
 	}
-	public String genererCode()
+	
+	public String debutBloc()
 	{
-		String res = "";
-		if(!nomBloc().isEmpty())
-		{
-			res+=nomBloc()+numeroTDS+"_\n";
-		}
-		
-		for(TableSymbolesAbs tables:fils)
-		{
-			res+=tables.genererCode();
-		}
-		//TODO
-		//On ajoute le code des fonctions à la fin
-		for(Identificateur identificateur:identificateurs.values())
-		{
-			if(identificateur instanceof Fonction)
-			{
-				res+=((Fonction) identificateur).genererCode();
-			}
-		}
-		
-		return res+'\n';
+		return nomBloc()+numeroTDS+"_\t";
+	}
+	public String finBloc()
+	{
+		return "fin"+nomBloc()+numeroTDS+"_\t";
 	}
 	public void incCompteurTDS()
 	{

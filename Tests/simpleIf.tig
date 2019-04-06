@@ -1,0 +1,11 @@
+let 
+	var x := 2
+in
+
+	if x < 3
+	then
+		x := 4
+	/*else
+		x := 5*/
+
+end

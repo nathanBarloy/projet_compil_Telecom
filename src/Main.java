@@ -12,7 +12,7 @@ import tableSymbole.TableSymbolesAbs;
 public class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
-		String path = "Tests/simpleAssignment.tig";
+		String path = "Tests/simpleFunction.tig";
 		//Passe 1 : Analyse lexicale et syntaxique
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
 		TigerLexer lexer = new TigerLexer(input);

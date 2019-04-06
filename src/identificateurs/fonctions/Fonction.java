@@ -21,9 +21,14 @@ public abstract class Fonction extends Identificateur {
 		return typeRetour;
 	}
 	
+	public String nomCodeFonction()
+	{
+		return nom+"_ \t\n";
+	}
+	
 	public String debutFonction()
 	{
-		String res=nom+"_ \t\n";
+		String res=nomCodeFonction();
 		res+="\tSTW BP, -(SP)\n"; // empile le contenu du registre BP
 		res+="\tLDW BP, SP\n"; // charge contenu SP ds BP
 		return res;

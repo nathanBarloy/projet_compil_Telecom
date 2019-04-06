@@ -249,10 +249,10 @@ public class AnalyseurSemantique {
 				Tree corps = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1);
 				if (tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getText() == "RETOUR") {
 					// on test si l'avant dernier fils est RETOUR -> donne le type de retour
-					for(int j = 1; j < tree.getChild(i).getChildCount()-2; j++) {
+					for(int j = 1; j < tree.getChild(i).getChildCount()-2; j++)
+					{
 						// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
 						ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
-
 					}
 					Tree retour = tree.getChild(i).getChild(tree.getChild(i).getChildCount()-2).getChild(0);
 					ajouterFonctionAvecRetour(tableParent, nom, retour, nouvelle);
@@ -262,10 +262,10 @@ public class AnalyseurSemantique {
 					}
 				}
 				else {
-					for(int j = 1; j < tree.getChild(i).getChildCount()-1; j++) {
+					for(int j = 1; j < tree.getChild(i).getChildCount()-1; j++)
+					{
 						// on recupere tous les parametres de la fonction et on les ajoute a la TDS de la fonction
 						ajouterParametre(nouvelle, tree.getChild(i).getChild(j).getChild(0),tree.getChild(i).getChild(j).getChild(1));
-
 					}
 					ajouterFonctionSansRetour(tableParent, nom, null, nouvelle);
 					// test si le type du corps correspond au type de retour de la fonction
@@ -273,8 +273,7 @@ public class AnalyseurSemantique {
 						afficherErreurSemantique(nom,"Le type de retour de la fonction ne correspond pas à celui déclaré (void)");
 					}
 				}
-
-				parcoursArbre(tree.getChild(i),nouvelle);
+				parcoursArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1),nouvelle);
 				break;
 
 			case "LET":
