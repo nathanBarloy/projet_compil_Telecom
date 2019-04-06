@@ -55,7 +55,7 @@ public class GenerateurDeCode {
 		// R1 ... R10 disponibles
 		codeAssembleur.append("LDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
 		codeAssembleur.append("\n");//On saute une ligne après avoir défini les alias
-		//TODO parcourir l'AST et utiliser la TDS pour générer le code
+		
 		codeAssembleur.append("main_\n");
 		codeAssembleur.append("\tLDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
 		codeAssembleur.append("\tLDQ NIL, BP\n"); // charge BP avec NIL=0
@@ -70,6 +70,7 @@ public class GenerateurDeCode {
 		codeAssembleur.append("\tTRP #EXIT_EXC\n"); // EXIT: arrête le programme*/
 		
 		//TODO on ajoute le code des fonctions de base
+		
 		
 		
 		try {
@@ -137,7 +138,7 @@ public class GenerateurDeCode {
 				// pas de parcours normalement
 				if (tree.getChild(i).getChildCount()==2)
 				{
-					//on évalue l'expression
+					//on évalue l'expression (fils droit)
 					switch(tree.getChild(i).getChild(1).getText())
 					{
 						case "EXPBEG":
@@ -163,7 +164,7 @@ public class GenerateurDeCode {
 					codeAssembleur .append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
 					recupererAdresseVariable(v);
 					//On range le résulat à l'adresse que l'on vient de récupérer
-					codeAssembleur .append( "\tSTW R0, A2\n");
+					codeAssembleur .append( "\tSTW R0, (R1) "+COMMENTAIRE_CHAR+"On stocke le contenu de RO à l'adresse contenue dans R1\n");
 
 				}
 				else if(tree.getChild(i).getChildCount()==1)
@@ -215,20 +216,32 @@ public class GenerateurDeCode {
 			Ny:n° d'imbrication du bloc de déclaration
 			Nz:n° d’imbrication de la variable
 		« remonter » (Nx-Ny) chainage statiques
-			MOVE #(Nx,Ny),D0
+			MOVE #(Nx-Ny),D0
 			MOVE A0,A2
 		BOU	MOVE (depl_stat,A2),A2
 			SUB #1,D0
 			BNE BOU //branch if not equal
 			LEA (depl,A2),A1*/
+		
 		int chainageARemonter=nombreDeChainageARemonter(v);
-		codeAssembleur .append( "\tMOVE #("+chainageARemonter+"),D0\n");
-		codeAssembleur .append( "\tMOVE A0,A2\n");
-		codeAssembleur .append( "BOU"+nbRemontees+"\tMOVE (-4,A2),A2\n");//-4 correspond toujours à la taille d'une adresse
-		codeAssembleur .append( "\tSUB #1,D0\n");//on retire 1 à la valeur dans D0
-		codeAssembleur .append( "\tBNE BOU"+nbRemontees+"\n");//si D0 n'est pas égal à 0, on retourne à BOU
-		nbRemontees++;
-		codeAssembleur .append( "\tMOVE ("+v.getDeplacement()+",A2),A1\n");//on met dans les registre d'adresse A1 l'adresse pointée par A2 moins le déplacement de la variable
+		if(chainageARemonter>0)
+		{
+			codeAssembleur.append( "\tLDW R11,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R11
+			codeAssembleur.append( "\tLDW WR,BP\n");//on met le contenu du BasePointer dans le WorkRegister
+			codeAssembleur.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-4\n");//-4 correspond toujours à la taille d'une adresse
+			codeAssembleur.append( "\tSUB #1,R11\n");//on retire 1 à la valeur dans R11
+			codeAssembleur.append( "\tBNE BOU"+nbRemontees+"\n");//si R11 n'est pas égal à 0, on retourne à BOUnbRemontee
+			nbRemontees++;
+			codeAssembleur.append( "\tLDW R1,(WR)-"+v.getDeplacement()+"\n");//on met dans le registre R1 l'adresse pointée par WR moins le déplacement de la variable
+		}
+		else
+		{
+			//on a pas de remontée à faire, on est dans le bloc local
+			// stocker BP-v.getDeplacement() dans A1
+			codeAssembleur.append("\tLDW WR, BP\n"); // WR = BP
+			codeAssembleur.append("\tADQ "+v.getDeplacement()+", WR\n"); // WR pointe sur le paramètre
+			codeAssembleur.append("\tLDW R1,WR\n");//on met le contenu de WR dans R1
+		}
 	}
 	
 	/**
@@ -239,7 +252,7 @@ public class GenerateurDeCode {
 	private int nombreDeChainageARemonter(Variable v)
 	{
 		int nx = courante.getNiveau();
-		int ny = 0;
+		int ny = courante.getNiveauDeclaration(v);
 		return nx-ny;
 	}
 	
