@@ -323,7 +323,7 @@ public class GenerateurDeCode {
 				// TODO 
 				/* Ne fonctionne pas
 				builderActuel.append("NOT ");
-				traiterCondition(noeud.getChild(0)); */
+				traiterCondition(noeud.getChild(0)); */ 
 				break;
 			case "INT" :
 				builderActuel.append(noeud.getChild(0).getText());
