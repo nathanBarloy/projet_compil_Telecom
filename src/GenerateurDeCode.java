@@ -213,12 +213,14 @@ public class GenerateurDeCode {
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				builderActuel.append(courante.debutBloc()+"\n");
-				builderActuel.append("\tCMP \n");
-				builderActuel.append("\t");
+				builderActuel.append("\tCMP ");
+			//	builderActuel.append("\t");	
 				traiterCondition(tree.getChild(i).getChild(0));
+				builderActuel.append(" "+courante.debutBloc());
 				builderActuel.append("\n");
 				boolean elsePresent = tree.getChild(i).getChildCount()==3;
 				builderActuel.append("then"+courante.debutBloc()+"\n");
+				// modifier la ligne suivante : ne foncitonne pas
 				parcourirArbre(tree.getChild(i).getChild(1));
 				builderActuel.append("\tJMP "+courante.finBloc()+"\n");
 				if(elsePresent) {
@@ -297,8 +299,10 @@ public class GenerateurDeCode {
 			//on récupère l'opérande gauche et l'operande droite
 			Tree fg=noeud.getChild(0);
 			traiterCondition(fg);
+			builderActuel.append(", ");
 			Tree fd=noeud.getChild(1);
 			traiterCondition(fd);
+			builderActuel.append("\n\t");
 			switch(noeud.getText())
 			{
 			case "=":
@@ -326,7 +330,18 @@ public class GenerateurDeCode {
 			case  "|":
 				
 			break;
+			
+			case "NEGATION":
+				// TODO 
+				/* Ne fonctionne pas
+				builderActuel.append("NOT ");
+				traiterCondition(noeud.getChild(0)); */ 
+				break;
+			case "INT" :
+				builderActuel.append(noeud.getChild(0).getText());
+				break;
 		}
+
 		
 	}
 	/**
