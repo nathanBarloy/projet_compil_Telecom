@@ -4,6 +4,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import identificateurs.Variable;
 import identificateurs.fonctions.Fonction;
+import identificateurs.fonctions.Print;
 import tableSymbole.TableSymbolesAbs;
 
 public class GenerateurDeCode {
@@ -41,40 +42,40 @@ public class GenerateurDeCode {
 	 */
 	public String genererCode(String nomFichier)
 	{
-		codeAssembleur.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
-		codeAssembleur.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
-		codeAssembleur.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
-		codeAssembleur.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)
-		codeAssembleur.append("STACK_ADRS\tEQU\t0x1000\n"); // base de pile en 1000h (par exemple)
-		codeAssembleur.append("LOAD_ADRS\tEQU\t0xF000\n");// adresse de chargement de l'exécutable
-		codeAssembleur.append("NIL\tEQU\t0\n"); // fin de liste: contenu initial de BP
+		builderActuel.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
+		builderActuel.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
+		builderActuel.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
+		builderActuel.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)
+		builderActuel.append("STACK_ADRS\tEQU\t0x1000\n"); // base de pile en 1000h (par exemple)
+		builderActuel.append("LOAD_ADRS\tEQU\t0xF000\n");// adresse de chargement de l'exécutable
+		builderActuel.append("NIL\tEQU\t0\n"); // fin de liste: contenu initial de BP
 		// ces alias permettront de changer les réels registres utilisés
-		codeAssembleur.append("SP\tEQU R15\n"); // alias pour R15, pointeur de pile
-		codeAssembleur.append("WR\tEQU R14\n"); // Work Register (registre de travail)
-		codeAssembleur.append("BP\tEQU R13\n"); // frame Base Pointer (pointage environnement)
-		codeAssembleur.append("ORG\tLOADA\n"); // charge le code
-		codeAssembleur.append("START\tLOADA\n"); // lance le code
+		builderActuel.append("SP\tEQU R15\n"); // alias pour R15, pointeur de pile
+		builderActuel.append("WR\tEQU R14\n"); // Work Register (registre de travail)
+		builderActuel.append("BP\tEQU R13\n"); // frame Base Pointer (pointage environnement)
+		builderActuel.append("ORG\tLOADA\n"); // charge le code
+		builderActuel.append("START\tLOADA\n"); // lance le code
 		 // R12, R11 réservés
 		// R0 pour résultat de fonction
 		// R1 ... R10 disponibles
-		codeAssembleur.append("LDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
-		codeAssembleur.append("\n");//On saute une ligne après avoir défini les alias
+		builderActuel.append("LDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
+		builderActuel.append("\n");//On saute une ligne après avoir défini les alias
 		
-		codeAssembleur.append("main_\n");
-		codeAssembleur.append("\tLDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
-		codeAssembleur.append("\tLDQ NIL, BP\n"); // charge BP avec NIL=0
-		codeAssembleur.append("\tSTW BP, -(SP)\n"); // empile le contenu du registre BP
-		codeAssembleur.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
+		builderActuel.append("main_\n");
+		builderActuel.append("\tLDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
+		builderActuel.append("\tLDQ NIL, BP\n"); // charge BP avec NIL=0
+		builderActuel.append("\tSTW BP, -(SP)\n"); // empile le contenu du registre BP
+		builderActuel.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
 		
 		parcourirArbre(ast);
 		
 		//TODO ce code termine le main, il doit être ajouté avant le code des fonctions
-		codeAssembleur.append("\tLDW SP, BP\n"); // abandon infos locales
-		codeAssembleur.append("\tLDW BP, (SP)+\n"); // charge BP avec ancien BP
-		codeAssembleur.append("\tTRP #EXIT_EXC\n"); // EXIT: arrête le programme*/
+		builderActuel.append("\tLDW SP, BP\n"); // abandon infos locales
+		builderActuel.append("\tLDW BP, (SP)+\n"); // charge BP avec ancien BP
+		builderActuel.append("\tTRP #EXIT_EXC\n"); // EXIT: arrête le programme*/
 		
 		//TODO on ajoute le code des fonctions de base
-		
+		codeFonctions.append(new Print().genererCode());
 		
 		
 		try {
@@ -106,6 +107,7 @@ public class GenerateurDeCode {
 				builderActuel=codeFonctions;
 				builderActuel.append( f.debutFonction());
 				parcourirArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1));
+				//TODO generer le code du corps de la fonction
 				builderActuel.append( f.finFonction());
 				builderActuel=codeAssembleur;
 				break;
@@ -172,7 +174,17 @@ public class GenerateurDeCode {
 						case "CALLEXP" :
 							//TODO
 							/*Tree noeudCallExp = tree.getChild(i).getChild(1);
-							System.err.println(noeudCallExp.getText());*/
+							System.err.println(noeudCallExp.getText());
+							//on empile les paramètres
+							for(int param=0;param<noeudCallExp.getChildCount();i++)
+							{
+								builderActuel.append("\t"+COMMENTAIRE_CHAR+"On empile la valeur de "+noeudCallExp.getChild(param).getChild(0).getText()+"\n");
+								traiterExpression(noeudCallExp.getChild(param));
+								//On empile le contenu de R1
+								//On range le résulat en sommet de pile
+								builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile\n");
+								builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
+							}*/
 							break;
 						case "ASSIGNMENT":	
 							// TODO

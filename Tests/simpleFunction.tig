@@ -10,5 +10,6 @@ let
 in
 	(z := x;
 	z:=3;
-	z := fois(z,2))
+	z := fois(z,2);
+	print(z))
 end
