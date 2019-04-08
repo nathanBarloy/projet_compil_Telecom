@@ -1,10 +1,10 @@
 let 
 	var x := 2
 	var texte := "Ceci est un texte !"
-	var y := x
+	var y := 1
 	var z := x + y + y
 in
-	z := x + y + z
+	z := x + x + x
 	/*y := x
 	(x:= 64;
 	texte := "Ceci est le texte de remplacement")*/

@@ -1,12 +1,13 @@
 let
-	var z := 5
-	var x := 3
+	var z := 2
+	var x := 5
 	function fois ( a : int, b : int) : int =
 	let
-		var test := 5
+		var test := 6
 	in
-		a*b
+		(test := a*b;
+		a*b)
 	end
 in
-	z := fois(z,2)
+	z := fois(z,10)
 end

@@ -197,8 +197,10 @@ public class GenerateurDeCode {
 							break;
 						case "ASSIGNMENT":	
 							// TODO
+							
 							Tree noeudAssignment = tree.getChild(i).getChild(1);
-							//traiterExpression(noeudAssignment.getChild(0));
+							//System.err.println(noeudAssignment.getText());
+							traiterExpression(noeudAssignment.getChild(0));
 							parcourirArbre(noeudAssignment);
 							//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
 							Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
@@ -207,12 +209,6 @@ public class GenerateurDeCode {
 							builderActuel.append( "\tSTW R1, (R2) "+COMMENTAIRE_CHAR+"On stocke le contenu de R1 à l'adresse contenue dans R2\n");
 							break;
 					}
-					
-				}
-				else if(tree.getChild(i).getChildCount()==1)
-				{
-					//TODO Est-ce que c'est pas géré dans traiterExpression()?
-					
 				}
 				break;
 			case "NEGATION" :
@@ -271,7 +267,7 @@ public class GenerateurDeCode {
 		{
 			builderActuel.append( "\tLDW R10,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R10
 			builderActuel.append( "\tLDW WR,BP\n");//on met le contenu du BasePointer dans le WorkRegister
-			builderActuel.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-2\n");//-2 correspond toujours à la taille d'une adresse
+			builderActuel.append( "BOU"+nbRemontees+"\tADQ -2,WR\n");//-2 correspond toujours à la taille d'une adresse
 			builderActuel.append( "\tADQ -1,R10\n");//on retire 1 à la valeur dans R10
 			builderActuel.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOUnbRemontee
 			nbRemontees++;
@@ -281,7 +277,15 @@ public class GenerateurDeCode {
 			//on a pas de remontée à faire, on est dans le bloc local
 			builderActuel.append("\tLDW WR, BP\n"); // WR = BP
 		}
-		builderActuel.append("\tADQ -"+(v.getDeplacement()+2)+", WR\n"); // WR pointe sur le paramètre
+		if(v.getDeplacement()>=0)
+		{
+			builderActuel.append("\tADQ -"+(v.getDeplacement()+2)+", WR\n"); // WR pointe sur le paramètre (+2 pour passer la base)
+		}
+		else
+		{
+			builderActuel.append("\tADQ "+(-v.getDeplacement())+", WR\n"); // WR pointe sur le paramètre
+		}
+		
 		builderActuel.append("\tLDW R2,WR\n");//on met le contenu de WR dans R2
 	}
 	
@@ -456,7 +460,7 @@ public class GenerateurDeCode {
 				builderActuel.append("\tSUB R1,R2,R1"+COMMENTAIRE_CHAR+"Différence de R1 et R2, résultat dans R1\n");
 				break;
 			case "*":
-				builderActuel.append("\tMULT R1,R2,R1"+COMMENTAIRE_CHAR+"Multiplication de R1 et R2, résultat dans R1\n");
+				builderActuel.append("\tMUL R1,R2,R1"+COMMENTAIRE_CHAR+"Multiplication de R1 et R2, résultat dans R1\n");
 				break;
 			case "/":
 				builderActuel.append("\tDIV R1,R2,R1"+COMMENTAIRE_CHAR+"Division de R1 et R2, résultat dans R1\n");
@@ -497,16 +501,7 @@ public class GenerateurDeCode {
 			numString++;
 			break;
 		case "CALLEXP":
-			//on empile les paramètres
-			for(int i=0;i<noeud.getChildCount();i++)
-			{
-				builderActuel.append("\t"+COMMENTAIRE_CHAR+"On empile la valeur de "+noeud.getChild(i).getChild(0).getText()+"\n");
-				traiterExpression(noeud.getChild(i));
-				//On empile le contenu de R1
-				//On range le résulat en sommet de pile
-				builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile\n");
-				builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
-			}
+
 			break;
 		}
 	}
