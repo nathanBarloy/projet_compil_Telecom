@@ -44,7 +44,10 @@ public abstract class Fonction extends Identificateur {
 
 	public String genererCode()
 	{
-		return "";		
+		String res=debutFonction();
+		res+=codeAssembleurFonction();
+		res+=finFonction();
+		return res;		
 	}
 	
 	@Override

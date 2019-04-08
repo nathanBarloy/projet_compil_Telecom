@@ -1,0 +1,5 @@
+let
+	var x := "Ceci est un test"
+in
+	print(x)
+end
