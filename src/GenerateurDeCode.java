@@ -334,6 +334,68 @@ public class GenerateurDeCode {
 
 		
 	}
+	
+	
+	private void traiterConditionInverse(Tree noeud)
+	{
+		switch(noeud.getText())
+		{
+		case "=":
+		case "<>":
+		case  ">":
+		case  "<":
+		case  ">=":
+		case  "<=":
+			//on récupère l'opérande gauche et l'operande droite
+			Tree fg=noeud.getChild(0);
+			traiterCondition(fg);
+			builderActuel.append(", ");
+			Tree fd=noeud.getChild(1);
+			traiterCondition(fd);
+			builderActuel.append("\n\t");
+			switch(noeud.getText())
+			{
+			case "=":
+				builderActuel.append("BNE");
+				break;
+			case "<>":
+				builderActuel.append("BEQ");
+				break;
+			case  ">":
+				builderActuel.append("BLE");
+				break;
+			case  "<":
+				builderActuel.append("BGE");
+				break;
+			case  ">=":
+				builderActuel.append("BLT");
+				break;
+			case  "<=":
+				builderActuel.append("BGT");
+				break;
+			}
+			break;
+			case  "&":
+				
+			case  "|":
+				
+			break;
+			
+			case "NEGATION":
+				// TODO 
+				/* Ne fonctionne pas
+				builderActuel.append("NOT ");
+				traiterCondition(noeud.getChild(0)); */ 
+				break;
+			case "INT" :
+				builderActuel.append(noeud.getChild(0).getText());
+				break;
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Permet de générer le code qui évalue l'expression à droite de := lors de ASSIGNMENT ou VARDEC
 	 * @param noeud noeud à partir du quel on évalue l'expression
