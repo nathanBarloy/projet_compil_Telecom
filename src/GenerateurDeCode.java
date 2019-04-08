@@ -173,10 +173,10 @@ public class GenerateurDeCode {
 							break;
 						case "CALLEXP" :
 							//TODO
-							/*Tree noeudCallExp = tree.getChild(i).getChild(1);
+							Tree noeudCallExp = tree.getChild(i).getChild(1);
 							System.err.println(noeudCallExp.getText());
 							//on empile les paramètres
-							for(int param=0;param<noeudCallExp.getChildCount();i++)
+							for(int param=0;param<noeudCallExp.getChildCount();param++)
 							{
 								builderActuel.append("\t"+COMMENTAIRE_CHAR+"On empile la valeur de "+noeudCallExp.getChild(param).getChild(0).getText()+"\n");
 								traiterExpression(noeudCallExp.getChild(param));
@@ -184,19 +184,26 @@ public class GenerateurDeCode {
 								//On range le résulat en sommet de pile
 								builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile\n");
 								builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
-							}*/
+							}
+							Fonction fonc = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
+							builderActuel.append("\tJSR @"+fonc.nomCodeFonction());
+							int nbParam=noeudCallExp.getChildCount();
+							//on dépile les paramètres
+							builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
+							
 							break;
 						case "ASSIGNMENT":	
 							// TODO
 							Tree noeudAssignment = tree.getChild(i).getChild(1);
 							traiterExpression(noeudAssignment.getChild(0));
+							//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
+							Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
+							recupererAdresseVariable(v);
+							//On range le résulat à l'adresse que l'on vient de récupérer
+							builderActuel.append( "\tSTW R1, (R2) "+COMMENTAIRE_CHAR+"On stocke le contenu de R1 à l'adresse contenue dans R2\n");
 							break;
 					}
-					//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
-					Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
-					recupererAdresseVariable(v);
-					//On range le résulat à l'adresse que l'on vient de récupérer
-					builderActuel.append( "\tSTW R1, (R2) "+COMMENTAIRE_CHAR+"On stocke le contenu de R1 à l'adresse contenue dans R2\n");
+					
 				}
 				else if(tree.getChild(i).getChildCount()==1)
 				{
@@ -402,7 +409,7 @@ public class GenerateurDeCode {
 				//on copie le contenu de R2 dans R1
 				builderActuel.append("\tLDW R1,(R2)\n");
 			}
-			else
+			/*else
 			{
 				Fonction f = (Fonction)courante.get(noeud.getChild(0).getText());
 				traiterExpression(noeud.getChild(1));
@@ -410,7 +417,7 @@ public class GenerateurDeCode {
 				int nbParam=noeud.getChild(1).getChildCount();
 				//on dépile les paramètres
 				builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
-			}
+			}*/
 			
 			
 			break;
