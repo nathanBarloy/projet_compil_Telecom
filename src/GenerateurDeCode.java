@@ -42,13 +42,16 @@ public class GenerateurDeCode {
 	 */
 	public String genererCode(String nomFichier)
 	{
-		builderActuel.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
-		builderActuel.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
-		builderActuel.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
-		builderActuel.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)
-		builderActuel.append("STACK_ADRS\tEQU\t0x1000\n"); // base de pile en 1000h (par exemple)
-		builderActuel.append("LOAD_ADRS\tEQU\t0xF000\n");// adresse de chargement de l'exécutable
-		builderActuel.append("NIL\tEQU\t0\n"); // fin de liste: contenu initial de BP
+
+		codeAssembleur.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
+		codeAssembleur.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
+		codeAssembleur.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
+		codeAssembleur.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)
+		codeAssembleur.append("STACK_ADRS\tEQU\t0x1000\n"); // base de pile en 1000h (par exemple)
+		codeAssembleur.append("LOAD_ADRS\tEQU\t0xF000\n");// adresse de chargement de l'exécutable
+		codeAssembleur.append("NIL\tEQU\t0\n"); // fin de liste: contenu initial de BP
+		codeAssembleur.append("NUL\tEQU\t0\n"); // pointeur nul
+		codeAssembleur.append("NULL\tEQU\t0\n"); // caractere null, fin de chaine de caracteres
 		// ces alias permettront de changer les réels registres utilisés
 		builderActuel.append("SP\tEQU R15\n"); // alias pour R15, pointeur de pile
 		builderActuel.append("WR\tEQU R14\n"); // Work Register (registre de travail)
@@ -195,7 +198,8 @@ public class GenerateurDeCode {
 						case "ASSIGNMENT":	
 							// TODO
 							Tree noeudAssignment = tree.getChild(i).getChild(1);
-							traiterExpression(noeudAssignment.getChild(0));
+							//traiterExpression(noeudAssignment.getChild(0));
+							parcourirArbre(noeudAssignment);
 							//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
 							Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
 							recupererAdresseVariable(v);
@@ -267,7 +271,7 @@ public class GenerateurDeCode {
 		{
 			builderActuel.append( "\tLDW R10,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R10
 			builderActuel.append( "\tLDW WR,BP\n");//on met le contenu du BasePointer dans le WorkRegister
-			builderActuel.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-4\n");//-4 correspond toujours à la taille d'une adresse
+			builderActuel.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-2\n");//-2 correspond toujours à la taille d'une adresse
 			builderActuel.append( "\tADQ -1,R10\n");//on retire 1 à la valeur dans R10
 			builderActuel.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOUnbRemontee
 			nbRemontees++;
@@ -351,6 +355,68 @@ public class GenerateurDeCode {
 
 		
 	}
+	
+	
+	private void traiterConditionInverse(Tree noeud)
+	{
+		switch(noeud.getText())
+		{
+		case "=":
+		case "<>":
+		case  ">":
+		case  "<":
+		case  ">=":
+		case  "<=":
+			//on récupère l'opérande gauche et l'operande droite
+			Tree fg=noeud.getChild(0);
+			traiterCondition(fg);
+			builderActuel.append(", ");
+			Tree fd=noeud.getChild(1);
+			traiterCondition(fd);
+			builderActuel.append("\n\t");
+			switch(noeud.getText())
+			{
+			case "=":
+				builderActuel.append("BNE");
+				break;
+			case "<>":
+				builderActuel.append("BEQ");
+				break;
+			case  ">":
+				builderActuel.append("BLE");
+				break;
+			case  "<":
+				builderActuel.append("BGE");
+				break;
+			case  ">=":
+				builderActuel.append("BLT");
+				break;
+			case  "<=":
+				builderActuel.append("BGT");
+				break;
+			}
+			break;
+			case  "&":
+				
+			case  "|":
+				
+			break;
+			
+			case "NEGATION":
+				// TODO 
+				/* Ne fonctionne pas
+				builderActuel.append("NOT ");
+				traiterCondition(noeud.getChild(0)); */ 
+				break;
+			case "INT" :
+				builderActuel.append(noeud.getChild(0).getText());
+				break;
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Permet de générer le code qui évalue l'expression à droite de := lors de ASSIGNMENT ou VARDEC
 	 * @param noeud noeud à partir du quel on évalue l'expression
