@@ -2,10 +2,10 @@ let
 	var x := 2
 in
 
-	if x < 3
+	if x
 	then
 		x := 4
-	/*else
-		x := 5*/
+	else
+		x := 5
 
 end

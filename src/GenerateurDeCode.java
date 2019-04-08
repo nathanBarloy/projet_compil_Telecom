@@ -154,6 +154,7 @@ public class GenerateurDeCode {
 				// TODO
 				break;
 			case "VARDEC":
+
 				//TODO
 				Variable var = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
 				builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On déclare "+var.getName()+"\n");
@@ -246,10 +247,11 @@ public class GenerateurDeCode {
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				builderActuel.append(courante.debutBloc()+"\n");
-				builderActuel.append("\tCMP ");
-			//	builderActuel.append("\t");	
+				comparaison(tree.getChild(i).getChild(0),false,true);
+				builderActuel.append("\tCMP R1, R3\n");
+				builderActuel.append("\t");	
 				traiterCondition(tree.getChild(i).getChild(0));
-				builderActuel.append(" "+courante.debutBloc());
+				builderActuel.append(" then"+courante.debutBloc());
 				builderActuel.append("\n");
 				boolean elsePresent = tree.getChild(i).getChildCount()==3;
 				builderActuel.append("then"+courante.debutBloc()+"\n");
@@ -328,6 +330,67 @@ public class GenerateurDeCode {
 		return nx-ny;
 	}
 	
+	/* Charge dans les registre R1 et R3 avec les condition (ou 0) avant un CMP. Le boolean permet d'indiquer si on doit charger dans R3, unique indique si on doit mettre 0 dans R3 */
+	private void comparaison(Tree noeud, boolean deuxieme, boolean unique)
+	{
+		if(noeud==null)
+		{
+			builderActuel.append("\tLDW R3, 0"+COMMENTAIRE_CHAR+" On charge 0 dans R3\n");
+		}
+		else
+		{
+			switch(noeud.getText())
+			{
+				case "INT" :
+					if(!deuxieme)
+					{
+						builderActuel.append("\tLDW R1, "+noeud.getChild(0)+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
+						if(unique)
+						{
+							comparaison(null,false,false);
+						}
+					}
+					else
+					{
+						builderActuel.append("\tLDW R3, "+noeud.getChild(0)+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
+					}
+					break;
+				case "IDBEG" :
+					if(noeud.getChildCount()==1)
+					{
+						//on récupère l'adresse de la variable du noeud fils
+						Variable v = (Variable)courante.get(noeud.getChild(0).getText());
+						//on récupère l'adresse de la variable
+						recupererAdresseVariable(v);
+						//on copie le contenu de R2 dans R1
+						if(!deuxieme) {
+							builderActuel.append("\tLDW R1,(R2)\n");
+							if(unique)
+							{
+								comparaison(null,false,false);
+							}
+						}
+						else
+						{
+							builderActuel.append("\tLDW R3,(R2)\n");
+						}
+					}
+					break;
+				case "=":
+				case "<>":
+				case  ">":
+				case  "<":
+				case  ">=":
+				case  "<=":
+					comparaison(noeud.getChild(0),false,false);
+					comparaison(noeud.getChild(1),true,false);
+					break;
+				
+			}
+		}
+		
+	}
+	
 	private void traiterCondition(Tree noeud)
 	{
 		switch(noeud.getText())
@@ -339,12 +402,11 @@ public class GenerateurDeCode {
 		case  ">=":
 		case  "<=":
 			//on récupère l'opérande gauche et l'operande droite
-			Tree fg=noeud.getChild(0);
+			/*Tree fg=noeud.getChild(0);
 			traiterCondition(fg);
 			builderActuel.append(", ");
 			Tree fd=noeud.getChild(1);
-			traiterCondition(fd);
-			builderActuel.append("\n\t");
+			traiterCondition(fd);*/
 			switch(noeud.getText())
 			{
 			case "=":
@@ -379,8 +441,9 @@ public class GenerateurDeCode {
 				builderActuel.append("NOT ");
 				traiterCondition(noeud.getChild(0)); */ 
 				break;
-			case "INT" :
-				builderActuel.append(noeud.getChild(0).getText());
+			case "INT":
+			case "IDBEG":
+				builderActuel.append("BNE");
 				break;
 		}
 
