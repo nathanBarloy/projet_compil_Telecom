@@ -48,6 +48,8 @@ public class GenerateurDeCode {
 		codeAssembleur.append("STACK_ADRS\tEQU\t0x1000\n"); // base de pile en 1000h (par exemple)
 		codeAssembleur.append("LOAD_ADRS\tEQU\t0xF000\n");// adresse de chargement de l'exécutable
 		codeAssembleur.append("NIL\tEQU\t0\n"); // fin de liste: contenu initial de BP
+		codeAssembleur.append("NUL\tEQU\t0\n"); // pointeur nul
+		codeAssembleur.append("NULL\tEQU\t0\n"); // caractere null, fin de chaine de caracteres
 		// ces alias permettront de changer les réels registres utilisés
 		codeAssembleur.append("SP\tEQU R15\n"); // alias pour R15, pointeur de pile
 		codeAssembleur.append("WR\tEQU R14\n"); // Work Register (registre de travail)
