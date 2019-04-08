@@ -257,7 +257,7 @@ public class GenerateurDeCode {
 				builderActuel.append("then"+courante.debutBloc()+"\n");
 				// modifier la ligne suivante : ne foncitonne pas
 				parcourirArbre(tree.getChild(i).getChild(1));
-				builderActuel.append("\tJMP "+courante.finBloc()+"\n");
+				builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
 				if(elsePresent) {
 					// gerer les sauts conditionnel
 					builderActuel.append("else"+courante.debutBloc()+"\n");
@@ -335,7 +335,7 @@ public class GenerateurDeCode {
 	{
 		if(noeud==null)
 		{
-			builderActuel.append("\tLDW R3, 0"+COMMENTAIRE_CHAR+" On charge 0 dans R3\n");
+			builderActuel.append("\tLDW R3, #0\t"+COMMENTAIRE_CHAR+"On charge 0 dans R3\n");
 		}
 		else
 		{
@@ -344,7 +344,7 @@ public class GenerateurDeCode {
 				case "INT" :
 					if(!deuxieme)
 					{
-						builderActuel.append("\tLDW R1, "+noeud.getChild(0)+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
+						builderActuel.append("\tLDW R1, #"+noeud.getChild(0)+"\t"+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
 						if(unique)
 						{
 							comparaison(null,false,false);
@@ -352,7 +352,7 @@ public class GenerateurDeCode {
 					}
 					else
 					{
-						builderActuel.append("\tLDW R3, "+noeud.getChild(0)+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
+						builderActuel.append("\tLDW R3, #"+noeud.getChild(0)+"\t"+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
 					}
 					break;
 				case "IDBEG" :
@@ -364,7 +364,7 @@ public class GenerateurDeCode {
 						recupererAdresseVariable(v);
 						//on copie le contenu de R2 dans R1
 						if(!deuxieme) {
-							builderActuel.append("\tLDW R1,(R2)\n");
+							builderActuel.append("\tLDW R1, (R2)\n");
 							if(unique)
 							{
 								comparaison(null,false,false);
@@ -372,7 +372,7 @@ public class GenerateurDeCode {
 						}
 						else
 						{
-							builderActuel.append("\tLDW R3,(R2)\n");
+							builderActuel.append("\tLDW R3, (R2)\n");
 						}
 					}
 					break;
