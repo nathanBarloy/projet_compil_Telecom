@@ -1,0 +1,10 @@
+let
+    var a := 0
+	var i := 0
+in
+	while i<10
+	do
+	    a := a + i
+	    i := i+1
+	end
+end
