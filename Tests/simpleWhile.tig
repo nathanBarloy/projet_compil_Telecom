@@ -3,8 +3,8 @@ let
 	var i := 0
 in
 	while i<10
-	do
-	    a := a + i
-	    i := i+1
-	end
+	do (
+	    a := i + a;
+	    i := i + 1
+	)
 end

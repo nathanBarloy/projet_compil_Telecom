@@ -123,6 +123,12 @@ public class GenerateurDeCode {
 			case "WHILE":
 				this.courante.incCompteurTDS();
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+				builderActuel.append(courante.debutBloc()+"\n");
+				builderActuel.append("\tCMP ");
+			//	builderActuel.append("\t");	
+				traiterCondition(tree.getChild(i).getChild(0));
+				builderActuel.append(" "+courante.debutBloc());
+				builderActuel.append("\n");
 				//debut while
 				builderActuel.append(courante.debutBloc()+"\n");
 				parcourirArbre(tree.getChild(i).getChild(1));
