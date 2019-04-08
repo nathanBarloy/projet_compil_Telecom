@@ -208,6 +208,7 @@ public class GenerateurDeCode {
 							{
 								builderActuel.append("\tLDW R10,#"+chainageARemonter+"\n");
 								builderActuel.append("BOU"+nbRemontees+"\tADQ -2,WR\n");
+								builderActuel.append("\tLDW WR,(WR)\n");
 								builderActuel.append("\tADQ -1,R10\n");
 								builderActuel.append("\tBNE BOU"+nbRemontees+"\n");
 							}
@@ -288,19 +289,20 @@ public class GenerateurDeCode {
 			LEA (depl,A2),A1*/
 		int chainageARemonter=nombreDeChainageARemonter(v);
 		builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
+		//on a pas de remontée à faire, on est dans le bloc local
+		builderActuel.append("\tLDW WR, BP\n"); // WR = BP
 		if(chainageARemonter>0)
 		{
 			builderActuel.append( "\tLDW R10,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R10
-			builderActuel.append( "\tLDW WR,BP\n");//on met le contenu du BasePointer dans le WorkRegister
 			builderActuel.append( "BOU"+nbRemontees+"\tADQ -2,WR\n");//-2 correspond toujours à la taille d'une adresse
+			builderActuel.append("\tLDW WR,(WR)\n");
 			builderActuel.append( "\tADQ -1,R10\n");//on retire 1 à la valeur dans R10
-			builderActuel.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOUnbRemontee
+			builderActuel.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOU
 			nbRemontees++;
 		}
 		else
 		{
-			//on a pas de remontée à faire, on est dans le bloc local
-			builderActuel.append("\tLDW WR, BP\n"); // WR = BP
+			
 		}
 		if(v.getDeplacement()>=0)
 		{

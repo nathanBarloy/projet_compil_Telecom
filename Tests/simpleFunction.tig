@@ -5,7 +5,7 @@ let
 	let
 		var test := 6
 	in
-		(test := a*b;
+		(test := z*b;
 		a*b)
 	end
 in
