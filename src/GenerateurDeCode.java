@@ -245,12 +245,13 @@ public class GenerateurDeCode {
 				break;
 			case "IFTHEN" :
 				this.courante.incCompteurTDS();
-				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				builderActuel.append(courante.debutBloc()+"\n");
+				
+				builderActuel.append(courante.getFils(this.courante.getCompteurTDS()-1).debutBloc()+"\n");
 				comparaison(tree.getChild(i).getChild(0),false,true);
 				builderActuel.append("\tCMP R1, R3\n");
 				builderActuel.append("\t");	
 				traiterCondition(tree.getChild(i).getChild(0));
+				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 				builderActuel.append(" then"+courante.debutBloc());
 				builderActuel.append("\n");
 				boolean elsePresent = tree.getChild(i).getChildCount()==3;
