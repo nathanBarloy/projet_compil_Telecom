@@ -29,15 +29,15 @@ public abstract class Fonction extends Identificateur {
 	public String debutFonction()
 	{
 		String res=nomCodeFonction();
-		res+="\tSTW BP, -(SP)\n"; // empile le contenu du registre BP
-		res+="\tLDW BP, SP\n"; // charge contenu SP ds BP
+		res+="\tSTW BP, -(SP) //empile le contenu du registre BP\n"; // empile le contenu du registre BP
+		res+="\tLDW BP, SP //charge contenu SP ds BP\n"; // charge contenu SP ds BP
 		return res;
 	}
 	
 	public String finFonction()
 	{
-		String res ="\tLDW SP, BP\n"; // abandon infos locales
-		res+="\tLDW BP, (SP)+\n"; // charge BP avec ancien BP
+		String res ="\tLDW SP, BP //abandon infos locales\n"; // abandon infos locales
+		res+="\tLDW BP, (SP)+ //charge BP avec ancien BP\n"; // charge BP avec ancien BP
 		res+="\tRTS"; // retour au programme appelant
 		return res+'\n';
 	}
