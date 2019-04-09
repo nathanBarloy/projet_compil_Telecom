@@ -25,6 +25,8 @@ public class GenerateurDeCode {
 	private StringBuilder codeAssembleur;
 	private StringBuilder codeFonctions;
 	private StringBuilder builderActuel;
+	private boolean appelFonction;
+	private boolean decFonction;
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
@@ -35,6 +37,8 @@ public class GenerateurDeCode {
 		this.codeAssembleur=new StringBuilder();
 		this.codeFonctions=new StringBuilder();
 		builderActuel=codeAssembleur;
+		this.appelFonction = false;
+		this.decFonction = false;
 	}
 	
 	/**
@@ -101,7 +105,14 @@ public class GenerateurDeCode {
 		for(int i=0;i<tree.getChildCount();i++)
 		{
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
-			switchNoeud(tree.getChild(i));
+			if(decFonction && (i == tree.getChildCount()-1))
+			{
+				traiterExpression(tree.getChild(i));
+			}
+			else {
+			
+				switchNoeud(tree.getChild(i));
+			}
 		}
 	}
 	
@@ -114,6 +125,7 @@ public class GenerateurDeCode {
 		// /!\ Attention il faut voir ou le code se rajoute par rapport au parcours de l'arbre 
 		
 		case "FUNDEC":
+			this.decFonction = true;
 			Fonction f = (Fonction)courante.get(tree.getChild(0).getText());
 			courante = f.getTdsFonction();
 			builderActuel=codeFonctions;
@@ -123,6 +135,7 @@ public class GenerateurDeCode {
 			builderActuel.append( f.finFonction());
 			builderActuel=codeAssembleur;
 			courante=courante.getParent();
+			this.decFonction = false;
 			break;
 		case "LET":
 			this.courante.incCompteurTDS();
@@ -193,6 +206,7 @@ public class GenerateurDeCode {
 						break;
 					case "CALLEXP" :
 						//TODO
+						this.appelFonction = true;
 						Tree noeudCallExp = tree.getChild(1);
 						//System.err.println(noeudCallExp.getText());
 						//on empile les paramètres
@@ -227,7 +241,7 @@ public class GenerateurDeCode {
 						int nbParam=noeudCallExp.getChildCount();
 						//on dépile les paramètres
 						builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
-						
+						this.appelFonction = false;
 						break;
 					case "ASSIGNMENT":	
 						// TODO
@@ -332,10 +346,14 @@ public class GenerateurDeCode {
 	 */
 	private int nombreDeChainageARemonter(Variable v)
 	{
-		int nx = courante.getNiveau();
-		int ny = courante.getNiveauDeclaration(v);
-		System.err.println(v+":\n"+nx+"\n"+ny+"\n");
-		return nx-ny;
+
+		if(appelFonction) {
+			int nx = courante.getNiveau();
+			int ny = courante.getNiveauDeclaration(v);
+			return nx-ny;
+		}
+		return 0;
+
 	}
 	
 	/* Charge dans les registre R1 et R3 avec les condition (ou 0) avant un CMP. Le boolean permet d'indiquer si on doit charger dans R3, unique indique si on doit mettre 0 dans R3 */
@@ -427,7 +445,7 @@ public class GenerateurDeCode {
 				builderActuel.append("BGT");
 				break;
 			case  "<":
-				builderActuel.append("BLT");
+				builderActuel.append("BLW");
 				break;
 			case  ">=":
 				builderActuel.append("BGE");
@@ -491,7 +509,7 @@ public class GenerateurDeCode {
 				builderActuel.append("BGE");
 				break;
 			case  ">=":
-				builderActuel.append("BLT");
+				builderActuel.append("BLW");
 				break;
 			case  "<=":
 				builderActuel.append("BGT");
@@ -567,7 +585,7 @@ public class GenerateurDeCode {
 			break;
 		case "IDBEG":
 			
-			System.err.println(noeud.getChild(0).getText());
+			//System.err.println(noeud.getChild(0).getText());
 			if(noeud.getChildCount()==1)
 			{
 				//on récupère l'adresse de la variable du noeud fils
@@ -599,6 +617,5 @@ public class GenerateurDeCode {
 	{
 		codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+texte+"\n");
 	}
-	
 	
 }
