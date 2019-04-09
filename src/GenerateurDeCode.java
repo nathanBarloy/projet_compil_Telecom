@@ -77,7 +77,9 @@ public class GenerateurDeCode {
 		builderActuel.append("\tLDQ NIL, WR\n"); // charge BP avec NIL=0
 		builderActuel.append("\tSTW WR, -(SP) //On empile le dynamique\n"); // empile le contenu du registre BP
 		builderActuel.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
+		builderActuel.append("\tLDW WR, SP\n"); // charge contenu SP ds WR
 		builderActuel.append("\tSTW WR, -(SP) //On empile le statique\n"); // empile le contenu du registre BP
+
 		
 		
 		parcourirArbre(ast);
@@ -301,12 +303,14 @@ public class GenerateurDeCode {
 			break;
 		case "IFTHEN" :
 			this.courante.incCompteurTDS();
-			builderActuel.append(courante.getFils(this.courante.getCompteurTDS()-1).debutBloc()+"\n");
+			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			builderActuel.append(courante.debutBloc()+"\n");
+			debutBloc();
 			comparaison(tree.getChild(0),false,true);
 			builderActuel.append("\tCMP R1, R3\n");
 			builderActuel.append("\t");	
 			traiterConditionInverse(tree.getChild(0));
-			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			//this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 			builderActuel.append(" else"+courante.debutBloc()+"-$-2\n");
 			boolean elsePresent = tree.getChildCount()==3;
 			builderActuel.append("then"+courante.debutBloc()+"\n");
@@ -329,6 +333,7 @@ public class GenerateurDeCode {
 				}
 				else
 				{
+					finBloc();
 					traiterExpression(tree.getChild(2));
 				}
 			}
@@ -359,6 +364,7 @@ public class GenerateurDeCode {
 			BNE BOU //branch if not equal
 			LEA (depl,A2),A1*/
 		int chainageARemonter=nombreDeChainageARemonter(v);
+		System.err.println("Nb chainage : "+chainageARemonter);
 		builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
 		//on a pas de remontée à faire, on est dans le bloc local
 		builderActuel.append("\tLDW WR, BP\n"); // WR = BP
@@ -394,12 +400,12 @@ public class GenerateurDeCode {
 	 */
 	private int nombreDeChainageARemonter(Variable v)
 	{
-		if(appelFonction || decFonction) {
+		//if(appelFonction || decFonction) {
 			int nx = courante.getNiveau();
 			int ny = courante.getNiveauDeclaration(v);
 			return nx-ny;
-		}
-		return 0;
+		//}
+		//return 0;
 		
 	}
 	
@@ -691,9 +697,10 @@ public class GenerateurDeCode {
 	}
 	private void finBloc()
 	{
-		builderActuel.append("\tADQ 2,SP\n//On retire le statique");
+		builderActuel.append("\tADQ 2,SP //On retire le statique");
 		builderActuel.append("\tLDW SP, BP //abandon infos locales\n"); // abandon infos locales
 		builderActuel.append("\tLDW BP, (SP)+ //charge BP avec ancien BP\n"); // charge BP avec ancien BP
+
 	}
 	
 	private void calculerStatiqueAppele()
