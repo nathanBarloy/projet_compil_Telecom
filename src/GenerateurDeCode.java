@@ -187,7 +187,7 @@ public class GenerateurDeCode {
 						case "CALLEXP" :
 							//TODO
 							Tree noeudCallExp = tree.getChild(i).getChild(1);
-							System.err.println(noeudCallExp.getText());
+							//System.err.println(noeudCallExp.getText());
 							//on empile les paramètres
 							for(int param=0;param<noeudCallExp.getChildCount();param++)
 							{
@@ -211,7 +211,7 @@ public class GenerateurDeCode {
 								builderActuel.append("BOU"+nbRemontees+"\tADQ -2,WR\n");
 								builderActuel.append("\tLDW WR,(WR)\n");
 								builderActuel.append("\tADQ -1,R10\n");
-								builderActuel.append("\tBNE BOU"+nbRemontees+"\n");
+								builderActuel.append("\tBNE BOU"+nbRemontees+"-$-2\n");
 							}
 							
 							nbRemontees++;
@@ -300,7 +300,7 @@ public class GenerateurDeCode {
 			builderActuel.append( "BOU"+nbRemontees+"\tADQ -2,WR\n");//-2 correspond toujours à la taille d'une adresse
 			builderActuel.append("\tLDW WR,(WR)\n");
 			builderActuel.append( "\tADQ -1,R10\n");//on retire 1 à la valeur dans R10
-			builderActuel.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOU
+			builderActuel.append( "\tBNE BOU"+nbRemontees+"-$-2\n");//si R10 n'est pas égal à 0, on retourne à BOU
 			nbRemontees++;
 		}
 		else

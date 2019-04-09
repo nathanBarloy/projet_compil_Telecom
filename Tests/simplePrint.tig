@@ -1,5 +1,6 @@
 let
 	var x := "Ceci est un test"
+	//var x := 5
 in
 	print(x)
 end

@@ -5,9 +5,10 @@ let
 	let
 		var test := 6
 	in
-		(test := z*b;
+		(test := a*b;
 		a*b)
 	end
 in
-	z := fois(z,10)
+	(z := fois(z,10);
+	print(z))
 end
