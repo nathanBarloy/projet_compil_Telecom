@@ -311,6 +311,7 @@ public class GenerateurDeCode {
 	{
 		int nx = courante.getNiveau();
 		int ny = courante.getNiveauDeclaration(v);
+		System.err.println(v+":\n"+nx+"\n"+ny+"\n");
 		return nx-ny;
 	}
 	
