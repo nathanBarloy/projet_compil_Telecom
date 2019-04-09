@@ -3,6 +3,7 @@ import java.io.Writer;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import identificateurs.Variable;
+import identificateurs.fonctions.Exit;
 import identificateurs.fonctions.Fonction;
 import identificateurs.fonctions.Print;
 import tableSymbole.TableSymbolesAbs;
@@ -81,7 +82,7 @@ public class GenerateurDeCode {
 		
 		//TODO on ajoute le code des fonctions de base
 		codeFonctions.append(new Print().genererCode());
-		
+		codeFonctions.append(new Exit().genererCode());
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
@@ -252,8 +253,7 @@ public class GenerateurDeCode {
 				builderActuel.append("\t");	
 				traiterCondition(tree.getChild(i).getChild(0));
 				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				builderActuel.append(" then"+courante.debutBloc());
-				builderActuel.append("\n");
+				builderActuel.append(" then"+courante.debutBloc()+"-$-2\n");
 				boolean elsePresent = tree.getChild(i).getChildCount()==3;
 				builderActuel.append("then"+courante.debutBloc()+"\n");
 				// modifier la ligne suivante : ne foncitonne pas

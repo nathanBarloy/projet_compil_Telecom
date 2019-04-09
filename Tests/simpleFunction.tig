@@ -5,10 +5,10 @@ let
 	let
 		var test := 6
 	in
-		(test := a*b;
-		a*b)
+		a*b
 	end
 in
 	(z := fois(z,10);
-	print(z))
+	exit();
+	z := z * x )
 end
