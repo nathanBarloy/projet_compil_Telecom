@@ -1,13 +1,14 @@
 package identificateurs.fonctions;
 
 import identificateurs.Type;
+import tableSymbole.TableSymboleFonctionBase;
 import tableSymbole.TableSymboles;
 import tableSymbole.TableSymbolesAbs;
 
 public class FonctionBase extends Fonction {
 
 	public FonctionBase(String name, Type retour) {
-		super(name, retour, new TableSymboles());
+		super(name, retour, new TableSymboleFonctionBase());
 		// TODO Auto-generated constructor stub
 	}
 

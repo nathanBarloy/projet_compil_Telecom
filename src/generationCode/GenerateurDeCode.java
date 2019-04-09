@@ -1,3 +1,4 @@
+package generationCode;
 import java.io.FileWriter;
 import java.io.Writer;
 import org.antlr.runtime.tree.CommonTree;
@@ -78,7 +79,7 @@ public class GenerateurDeCode {
 		builderActuel.append("\tLDQ NIL, WR\n"); // charge BP avec NIL=0
 		builderActuel.append("\tSTW WR, -(SP) //On empile le dynamique\n"); // empile le contenu du registre BP
 		builderActuel.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
-		builderActuel.append("\tLDW WR, SP\n"); // charge contenu SP ds WR
+		//builderActuel.append("\tLDW WR, SP\n"); // charge contenu SP ds WR
 		builderActuel.append("\tSTW WR, -(SP) //On empile le statique\n"); // empile le contenu du registre BP
 
 		
@@ -124,7 +125,6 @@ public class GenerateurDeCode {
 	
 	private void switchNoeud(Tree tree)
 	{
-		System.err.println(tree.getText());
 		switch(tree.getText())
 		{
 		// gérer tous les cas (token) existant dans l'AST 
@@ -179,12 +179,13 @@ public class GenerateurDeCode {
 			break;
 		case "FOR":
 			this.courante.incCompteurTDS();
-			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			TableSymbolesAbs tableBlocFor = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			debutBloc(tableBlocFor);
+			this.courante = tableBlocFor;
 			//debut for
 			/*//on empile registre de boucle avant de l'utiliser 
 			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille du registre de boucle\n");
 			builderActuel .append( "\tSTW "+REGISTREBOUCLEFOR+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du registre de boucle\n");*/
-			debutBloc();
 			//on déclare la variable de boucle
 			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille de variable qui porte la boucle\n");
 			//builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du résultat de l'évaluation de l'expression (DEBUT BOUCLE)\n");
@@ -207,6 +208,7 @@ public class GenerateurDeCode {
 			builderActuel.append("\tCMP "+REGISTREBOUCLEFOR+","+REGISTREMAXBOUCLEFOR+"\n");
 			//builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//REGISTREBOUCLEFOR contient l'indice de boucle
 			builderActuel.append("\tBNE "+courante.debutBloc()+"-$-2\n");
+			builderActuel.append("\tADQ 2,SP//On dépile la variable qui porte la boucle\n");
 			
 			
 			//fin for
@@ -265,18 +267,9 @@ public class GenerateurDeCode {
 						int nx = courante.getNiveau();
 						int ny = fonc.getTdsFonction().getNiveau();
 						int chainageARemonter=nx-ny+1;
-						builderActuel.append("\t//On calcule le chainage statique de l'appelé\n");
-						builderActuel.append("\tLDW WR,BP\n");
-						if(chainageARemonter>0)
-						{
-							builderActuel.append("\tLDW R10,#"+chainageARemonter+"\n");
-							builderActuel.append("BOU"+nbRemontees+"\tADQ -2,WR\n");
-							builderActuel.append("\tLDW WR,(WR)\n");
-							builderActuel.append("\tADQ -1,R10\n");
-							builderActuel.append("\tBNE BOU"+nbRemontees+"-$-2\n");
-						}
-						
-						nbRemontees++;
+						System.err.println("Nx :"+nx+"\n"+courante.toString());
+						System.err.println("Ny :"+ny+"\n"+fonc.getTdsFonction().toString());
+						calculerChainageStatique(chainageARemonter);
 						
 						builderActuel.append("\tJSR @"+fonc.nomCodeFonction());
 						int nbParam=noeudCallExp.getChildCount();
@@ -307,9 +300,11 @@ public class GenerateurDeCode {
 			break;
 		case "IFTHEN" :
 			this.courante.incCompteurTDS();
-			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			TableSymbolesAbs tableBlocIf = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			debutBloc(tableBlocIf);
+			this.courante = tableBlocIf;
 			builderActuel.append(courante.debutBloc()+"\n");
-			debutBloc();
+			
 			comparaison(tree.getChild(0),false,true);
 			builderActuel.append("\tCMP R1, R3\n");
 			builderActuel.append("\t");	
@@ -337,11 +332,11 @@ public class GenerateurDeCode {
 				}
 				else
 				{
-					finBloc();
 					traiterExpression(tree.getChild(2));
 				}
 			}
 			builderActuel.append(courante.finBloc()+"\n");
+			finBloc();
 			courante=courante.getParent();
 			break;
 		case "break" :
@@ -413,6 +408,20 @@ public class GenerateurDeCode {
 		
 	}
 	
+	private void calculerChainageStatique(int chainageARemonter)
+	{
+		builderActuel.append("\tLDW WR,BP //On calcule le chainage statique de l'appelé\n");
+		if(chainageARemonter>0)
+		{
+			builderActuel.append("\tLDW R10,#"+chainageARemonter+"\n");
+			builderActuel.append("BOU"+nbRemontees+"\tADQ -2,WR\n");
+			builderActuel.append("\tLDW WR,(WR)\n");
+			builderActuel.append("\tADQ -1,R10\n");
+			builderActuel.append("\tBNE BOU"+nbRemontees+"-$-2\n");
+		}
+		
+		nbRemontees++;
+	}
 	/* Charge dans les registre R1 et R3 avec les condition (ou 0) avant un CMP. Le boolean permet d'indiquer si on doit charger dans R3, unique indique si on doit mettre 0 dans R3 */
 	private void comparaison(Tree noeud, boolean deuxieme, boolean unique)
 	{
@@ -692,31 +701,41 @@ public class GenerateurDeCode {
 		}
 	}
 	
-	private void debutBloc()
+	private void debutBloc(TableSymbolesAbs tdsBloc)
 	{
-		sauvegarderRegistres();
+		int nx = courante.getNiveau();
+		//System.err.println("Nx :"+nx+"\n"+courante.toString());
+		int ny = tdsBloc.getNiveau();
+		//System.err.println("Ny :"+ny+"\n"+tdsBloc.toString());
+		int chainageARemonter=nx-ny+1;
+		calculerChainageStatique(chainageARemonter);
+		builderActuel.append(sauvegarderRegistres());
 		builderActuel.append("\tSTW BP, -(SP) //empile le contenu du registre BP(dynamique)\n");
 		builderActuel.append("\tLDW R1,SP\n");
-		builderActuel.append("\tSTW BP, -(SP) //empile le contenu du registre BP(statique)\n"); // empile le contenu du registre BP
+		builderActuel.append("\tSTW WR, -(SP) //empile le contenu du registre BP(statique)\n"); // empile le contenu du registre BP
 		builderActuel.append("\tLDW BP, R1 //charge contenu SP ds BP\n"); // charge contenu SP ds BP
 		
 	}
 	
 	
-	public void sauvegarderRegistres()
+	public static String sauvegarderRegistres()
 	{
+		String res = "";
 		for(int i=1;i<=10;i++)
 		{
-			builderActuel.append("\tSTW R"+i+",-(SP)\n");
+			res+="\tSTW R"+i+",-(SP)\n";
 		}
+		return res;
 	}
 	
-	public void restaurerRegistres()
+	public static String restaurerRegistres()
 	{
+		String res = "";
 		for(int i=10;i>0;i--)
 		{
-			builderActuel.append("\tLDW R"+i+",(SP)+\n");
+			res +="\tLDW R"+i+",(SP)+\n";
 		}
+		return res;
 		
 	}
 	private void finBloc()
@@ -725,7 +744,7 @@ public class GenerateurDeCode {
 		builderActuel.append("\tADQ 2,SP//On retire le statique\n");
 		builderActuel.append("\tLDW SP, BP //abandon infos locales\n"); // abandon infos locales
 		builderActuel.append("\tLDW BP, (SP)+ //charge BP avec ancien BP\n"); // charge BP avec ancien BP
-		restaurerRegistres();
+		builderActuel.append(restaurerRegistres());
 		
 	}
 	private void ajouterString(String texte)

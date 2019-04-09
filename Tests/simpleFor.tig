@@ -1,8 +1,14 @@
 let
-	var b := 10
+	var a := 5
+	var b := 7
 	var texte := "Ceci est un test"
 in
-	for x := 5 to b
+	for x := a to b
 	do
-		print(texte)
+		for z := 1 to 2
+		do
+			print(texte)
+	/*for x := a to b
+	do
+		print(texte)*/
 end
