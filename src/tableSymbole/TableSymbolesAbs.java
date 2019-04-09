@@ -294,7 +294,7 @@ public abstract class TableSymbolesAbs {
 		int deplacement=0;
 		for(Identificateur identificateur:identificateurs.values())
 		{
-			if(identificateur instanceof Variable)//TODO voir pour remédier à l'usage d'instance of
+			if(identificateur instanceof Variable && !(identificateur instanceof Parametre))//TODO voir pour remédier à l'usage d'instance of
 			{
 				deplacement+=((Variable) identificateur).getType().getTaille();
 			}
@@ -309,7 +309,8 @@ public abstract class TableSymbolesAbs {
 		{
 			if(identificateur instanceof Parametre)
 			{
-				deplacement -= ((Parametre) identificateur).getType().getTaille();
+				Parametre p = ((Parametre) identificateur);
+				p.setDeplacement(p.getDeplacement()-t.getTaille());//SALE
 			}
 		}
 		return deplacement;

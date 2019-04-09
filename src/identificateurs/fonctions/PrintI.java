@@ -4,10 +4,10 @@ import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import tableSymbole.TableSymbolesAbs;
 
-public class PrintI extends Fonction {
+public class PrintI extends FonctionBase {
 
 	public PrintI() {
-		super("printi", TypePrimitif.VOID, null);
+		super("printi", TypePrimitif.VOID);
 		// TODO Auto-generated constructor stub
 	}
 	

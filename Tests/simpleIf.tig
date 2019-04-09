@@ -1,11 +1,12 @@
 let 
 	var x := 2
+	var y := 3
 in
 
-	if x < 3
+	if 3 > 2
 	then
 		x := 4
-	/*else
-		x := 5*/
+	else
+		x := 5
 
 end

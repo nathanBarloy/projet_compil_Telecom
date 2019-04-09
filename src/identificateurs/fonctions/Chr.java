@@ -4,10 +4,10 @@ import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import tableSymbole.TableSymbolesAbs;
 
-public class Chr extends Fonction {
+public class Chr extends FonctionBase {
 
 	public Chr() {
-		super("chr", TypePrimitif.STRING, null);
+		super("chr", TypePrimitif.STRING);
 		// TODO Auto-generated constructor stub
 	}
 

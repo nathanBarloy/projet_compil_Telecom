@@ -31,12 +31,14 @@ public abstract class Fonction extends Identificateur {
 		String res=nomCodeFonction();
 		res+="\tSTW BP, -(SP) //empile le contenu du registre BP\n"; // empile le contenu du registre BP
 		res+="\tLDW BP, SP //charge contenu SP ds BP\n"; // charge contenu SP ds BP
+		res+="\tSTW WR, -(SP) //On empile le chainage statique contenu dans WR\n";//on empile le statique
 		return res;
 	}
 	
 	public String finFonction()
 	{
-		String res ="\tLDW SP, BP //abandon infos locales\n"; // abandon infos locales
+		String res = "\tADQ 2,SP\n";
+		res+="\tLDW SP, BP //abandon infos locales\n"; // abandon infos locales
 		res+="\tLDW BP, (SP)+ //charge BP avec ancien BP\n"; // charge BP avec ancien BP
 		res+="\tRTS"; // retour au programme appelant
 		return res+'\n';

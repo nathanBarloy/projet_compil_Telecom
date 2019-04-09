@@ -27,6 +27,14 @@ public class Variable extends Identificateur{
 	public int getDeplacement() {
 		return deplacement;
 	}
+
+
+
+	public void setDeplacement(int deplacement) {
+		this.deplacement = deplacement;
+	}
+	
+	
 	
 		
 

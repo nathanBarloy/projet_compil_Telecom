@@ -3,10 +3,10 @@ package identificateurs.fonctions;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 
-public class Size extends Fonction {
+public class Size extends FonctionBase {
 
 	public Size() {
-		super("size", TypePrimitif.INT, null);
+		super("size", TypePrimitif.INT);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -4,7 +4,7 @@ import identificateurs.Type;
 import tableSymbole.TableSymbolesAbs;
 
 /**
- * Représente une fonction définie dans le code (à distringuer des fonctions de base)
+ * Représente une fonction définie dans le code (à distinguer des fonctions de base)
  *
  */
 public class FonctionDefinie extends Fonction {
@@ -16,8 +16,8 @@ public class FonctionDefinie extends Fonction {
 
 	@Override
 	protected String codeAssembleurFonction() {
-		//TODO
-		return getTdsFonction().genererCode();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

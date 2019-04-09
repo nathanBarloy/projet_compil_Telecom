@@ -3,6 +3,7 @@ import java.io.Writer;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import identificateurs.Variable;
+import identificateurs.fonctions.Exit;
 import identificateurs.fonctions.Fonction;
 import identificateurs.fonctions.Print;
 import tableSymbole.TableSymbolesAbs;
@@ -43,7 +44,7 @@ public class GenerateurDeCode {
 	public String genererCode(String nomFichier)
 	{
 
-		codeAssembleur.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
+		codeAssembleur.append("LOADA\tEQU\t0xF010\n"); // adresse mémoire ou le code est chargé
 		codeAssembleur.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
 		codeAssembleur.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
 		codeAssembleur.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)
@@ -66,9 +67,11 @@ public class GenerateurDeCode {
 		
 		builderActuel.append("main_\n");
 		builderActuel.append("\tLDW SP, #STACK_ADRS\n"); // charge SP avec STACK_ADRS
-		builderActuel.append("\tLDQ NIL, BP\n"); // charge BP avec NIL=0
-		builderActuel.append("\tSTW BP, -(SP)\n"); // empile le contenu du registre BP
+		builderActuel.append("\tLDQ NIL, WR\n"); // charge BP avec NIL=0
+		builderActuel.append("\tSTW WR, -(SP) //On empile le dynamique\n"); // empile le contenu du registre BP
 		builderActuel.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
+		builderActuel.append("\tSTW WR, -(SP) //On empile le statique\n"); // empile le contenu du registre BP
+		
 		
 		parcourirArbre(ast);
 		
@@ -79,7 +82,7 @@ public class GenerateurDeCode {
 		
 		//TODO on ajoute le code des fonctions de base
 		codeFonctions.append(new Print().genererCode());
-		
+		codeFonctions.append(new Exit().genererCode());
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
@@ -98,159 +101,185 @@ public class GenerateurDeCode {
 		for(int i=0;i<tree.getChildCount();i++)
 		{
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
-			switch(tree.getChild(i).getText())
-			{
-			// gérer tous les cas (token) existant dans l'AST 
+			switchNoeud(tree.getChild(i));
+		}
+	}
+	
+	private void switchNoeud(Tree tree)
+	{
+		switch(tree.getText())
+		{
+		// gérer tous les cas (token) existant dans l'AST 
+		
+		// /!\ Attention il faut voir ou le code se rajoute par rapport au parcours de l'arbre 
+		
+		case "FUNDEC":
+			Fonction f = (Fonction)courante.get(tree.getChild(0).getText());
+			courante = f.getTdsFonction();
+			builderActuel=codeFonctions;
+			builderActuel.append( f.debutFonction());
+			parcourirArbre(tree.getChild(tree.getChildCount()-1));
+			//TODO generer le code du corps de la fonction
+			builderActuel.append( f.finFonction());
+			builderActuel=codeAssembleur;
+			courante=courante.getParent();
+			break;
+		case "LET":
+			this.courante.incCompteurTDS();
+			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			parcourirArbre(tree);
+			// TODO
+			break;
+		case "WHILE":
+			this.courante.incCompteurTDS();
+			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			builderActuel.append(courante.debutBloc()+"\n");
+			builderActuel.append("\tCMP ");
+		//	builderActuel.append("\t");	
+			traiterCondition(tree.getChild(0));
+			builderActuel.append(" "+courante.debutBloc());
+			builderActuel.append("\n");
+			//debut while
+			builderActuel.append(courante.debutBloc()+"\n");
+			parcourirArbre(tree.getChild(1));
+			builderActuel.append(courante.finBloc()+"\n");
+			//fin du while
+			// TODO
+			break;
+		case "FOR":
+			this.courante.incCompteurTDS();
+			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			//debut for
+			//on récupère la variable
 			
-			// /!\ Attention il faut voir ou le code se rajoute par rapport au parcours de l'arbre 
+			//on met la valeur de debut de boucle dedans
 			
-			case "FUNDEC":
-				Fonction f = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
-				courante = f.getTdsFonction();
-				builderActuel=codeFonctions;
-				builderActuel.append( f.debutFonction());
-				parcourirArbre(tree.getChild(i).getChild(tree.getChild(i).getChildCount()-1));
-				//TODO generer le code du corps de la fonction
-				builderActuel.append( f.finFonction());
-				builderActuel=codeAssembleur;
-				break;
-			case "LET":
-				this.courante.incCompteurTDS();
-				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				parcourirArbre(tree.getChild(i));
-				// TODO
-				break;
-			case "WHILE":
-				this.courante.incCompteurTDS();
-				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				builderActuel.append(courante.debutBloc()+"\n");
-				builderActuel.append("\tCMP ");
-			//	builderActuel.append("\t");	
-				traiterCondition(tree.getChild(i).getChild(0));
-				builderActuel.append(" "+courante.debutBloc());
-				builderActuel.append("\n");
-				//debut while
-				builderActuel.append(courante.debutBloc()+"\n");
-				parcourirArbre(tree.getChild(i).getChild(1));
-				builderActuel.append(courante.finBloc()+"\n");
-				//fin du while
-				// TODO
-				break;
-			case "FOR":
-				this.courante.incCompteurTDS();
-				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				//debut for
-				//on récupère la variable
-				
-				//on met la valeur de debut de boucle dedans
-				
-				builderActuel.append(courante.debutBloc()+"\n");
-				parcourirArbre(tree.getChild(i).getChild(3));
-				
-				//fin for
-				// TODO
-				break;
-			case "VARDEC":
-				//TODO
-				Variable var = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
-				builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On déclare "+var.getName()+"\n");
-				//On évalue l'expression à assigner
-				traiterExpression(tree.getChild(i).getChild(1));
-				//On range le résulat en sommet de pile
-				builderActuel.append("\tADQ -"+var.getType().getTaille()+",SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
-				builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
-				break;
-			case "TYDEC" :
-				//TODO
-				// pas de parcours normalement
-				break;
-			case "IDBEG":
-				// pas de parcours normalement
-				if (tree.getChild(i).getChildCount()==2)
-				{
-					//on évalue l'expression (fils droit)
-					switch(tree.getChild(i).getChild(1).getText())
-					{
-						case "EXPBEG":
-							//TODO
-							break;
-						case "FIELDEXP":
-							// TODO
-							break;
-						case "RECCREATE":
-							//TODO
-							break;
-						case "CALLEXP" :
-							//TODO
-							Tree noeudCallExp = tree.getChild(i).getChild(1);
-							System.err.println(noeudCallExp.getText());
-							//on empile les paramètres
-							for(int param=0;param<noeudCallExp.getChildCount();param++)
-							{
-								builderActuel.append("\t"+COMMENTAIRE_CHAR+"On empile la valeur de "+noeudCallExp.getChild(param).getChild(0).getText()+"\n");
-								traiterExpression(noeudCallExp.getChild(param));
-								//On empile le contenu de R1
-								//On range le résulat en sommet de pile
-								builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile\n");
-								builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
-							}
-							Fonction fonc = (Fonction)courante.get(tree.getChild(i).getChild(0).getText());
-							builderActuel.append("\tJSR @"+fonc.nomCodeFonction());
-							int nbParam=noeudCallExp.getChildCount();
-							//on dépile les paramètres
-							builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
-							
-							break;
-						case "ASSIGNMENT":	
-							// TODO
-							
-							Tree noeudAssignment = tree.getChild(i).getChild(1);
-							//System.err.println(noeudAssignment.getText());
-							traiterExpression(noeudAssignment.getChild(0));
-							parcourirArbre(noeudAssignment);
-							//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
-							Variable v = (Variable)courante.get(tree.getChild(i).getChild(0).getText());
-							recupererAdresseVariable(v);
-							//On range le résulat à l'adresse que l'on vient de récupérer
-							builderActuel.append( "\tSTW R1, (R2) "+COMMENTAIRE_CHAR+"On stocke le contenu de R1 à l'adresse contenue dans R2\n");
-							break;
-					}
-				}
-				break;
-			case "NEGATION" :
-				//TODO
-				// pas de parcours normalement
+			builderActuel.append(courante.debutBloc()+"\n");
+			parcourirArbre(tree.getChild(3));
+			
+			//fin for
+			// TODO
+			break;
+		case "VARDEC":
 
-				break;
-			case "IFTHEN" :
-				this.courante.incCompteurTDS();
-				this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-				builderActuel.append(courante.debutBloc()+"\n");
-				builderActuel.append("\tCMP ");
-			//	builderActuel.append("\t");	
-				traiterCondition(tree.getChild(i).getChild(0));
-				builderActuel.append(" "+courante.debutBloc());
-				builderActuel.append("\n");
-				boolean elsePresent = tree.getChild(i).getChildCount()==3;
-				builderActuel.append("then"+courante.debutBloc()+"\n");
-				// modifier la ligne suivante : ne foncitonne pas
-				parcourirArbre(tree.getChild(i).getChild(1));
-				builderActuel.append("\tJMP "+courante.finBloc()+"\n");
-				if(elsePresent) {
-					// gerer les sauts conditionnel
-					builderActuel.append("else"+courante.debutBloc()+"\n");
-					parcourirArbre(tree.getChild(i).getChild(2));
+			//TODO
+			Variable var = (Variable)courante.get(tree.getChild(0).getText());
+			builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On déclare "+var.getName()+"\n");
+			//On évalue l'expression à assigner
+			traiterExpression(tree.getChild(1));
+			//On range le résulat en sommet de pile
+			builderActuel.append("\tADQ -"+var.getType().getTaille()+",SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
+			builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
+			break;
+		case "TYDEC" :
+			//TODO
+			// pas de parcours normalement
+			break;
+		case "IDBEG":
+			// pas de parcours normalement
+			if (tree.getChildCount()==2)
+			{
+				//on évalue l'expression (fils droit)
+				switch(tree.getChild(1).getText())
+				{
+					case "EXPBEG":
+						//TODO
+						break;
+					case "FIELDEXP":
+						// TODO
+						break;
+					case "RECCREATE":
+						//TODO
+						break;
+					case "CALLEXP" :
+						//TODO
+						Tree noeudCallExp = tree.getChild(1);
+						//System.err.println(noeudCallExp.getText());
+						//on empile les paramètres
+						for(int param=0;param<noeudCallExp.getChildCount();param++)
+						{
+							builderActuel.append("\t"+COMMENTAIRE_CHAR+"On empile la valeur de "+noeudCallExp.getChild(param).getChild(0).getText()+"\n");
+							traiterExpression(noeudCallExp.getChild(param));
+							//On empile le contenu de R1
+							//On range le résulat en sommet de pile
+							builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile\n");
+							builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
+						}
+						//calculer chaînage STAT
+						Fonction fonc = (Fonction)courante.get(tree.getChild(0).getText());
+						int nx = courante.getNiveau();
+						int ny = fonc.getTdsFonction().getNiveau();
+						int chainageARemonter=nx-ny+1;
+						builderActuel.append("\t//On calcule le chainage statique de l'appelé\n");
+						builderActuel.append("\tLDW WR,BP\n");
+						if(chainageARemonter>0)
+						{
+							builderActuel.append("\tLDW R10,#"+chainageARemonter+"\n");
+							builderActuel.append("BOU"+nbRemontees+"\tADQ -2,WR\n");
+							builderActuel.append("\tLDW WR,(WR)\n");
+							builderActuel.append("\tADQ -1,R10\n");
+							builderActuel.append("\tBNE BOU"+nbRemontees+"-$-2\n");
+						}
+						
+						nbRemontees++;
+						
+						builderActuel.append("\tJSR @"+fonc.nomCodeFonction());
+						int nbParam=noeudCallExp.getChildCount();
+						//on dépile les paramètres
+						builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
+						
+						break;
+					case "ASSIGNMENT":	
+						// TODO
+						
+						Tree noeudAssignment = tree.getChild(1);
+						//System.err.println(noeudAssignment.getText());
+						traiterExpression(noeudAssignment.getChild(0));
+						parcourirArbre(noeudAssignment);
+						//On récupère enfin l'adresse de la variable dans laquelle on veut ranger la valeur
+						Variable v = (Variable)courante.get(tree.getChild(0).getText());
+						recupererAdresseVariable(v);
+						//On range le résulat à l'adresse que l'on vient de récupérer
+						builderActuel.append( "\tSTW R1, (R2) "+COMMENTAIRE_CHAR+"On stocke le contenu de R1 à l'adresse contenue dans R2\n");
+						break;
 				}
-				builderActuel.append(courante.finBloc()+"\n");
-				break;
-			case "break" :
-				// TODO
-				// pas de parcours normalement
-				break;
-			default:
-				parcourirArbre(tree.getChild(i));//si on est pas dans les cas précédents,on crée une nouvelle table
-				break;
 			}
+			break;
+		case "NEGATION" :
+			//TODO
+			// pas de parcours normalement
+
+			break;
+		case "IFTHEN" :
+			this.courante.incCompteurTDS();
+			
+			builderActuel.append(courante.getFils(this.courante.getCompteurTDS()-1).debutBloc()+"\n");
+			comparaison(tree.getChild(0),false,true);
+			builderActuel.append("\tCMP R3, R1\n");
+			builderActuel.append("\t");	
+			traiterCondition(tree.getChild(0));
+			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			builderActuel.append(" else"+courante.debutBloc()+"-$-2\n");
+			boolean elsePresent = tree.getChildCount()==3;
+			builderActuel.append("then"+courante.debutBloc()+"\n");
+			// modifier la ligne suivante : ne foncitonne pas
+			switchNoeud(tree.getChild(1));
+			builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
+			if(elsePresent) {
+				// gerer les sauts conditionnel
+				builderActuel.append("else"+courante.debutBloc()+"\n");
+				switchNoeud(tree.getChild(2));
+			}
+			builderActuel.append(courante.finBloc()+"\n");
+			courante=courante.getParent();
+			break;
+		case "break" :
+			// TODO
+			// pas de parcours normalement
+			break;
+		default:
+			parcourirArbre(tree);//si on est pas dans les cas précédents,on crée une nouvelle table
+			break;
 		}
 	}
 	
@@ -269,37 +298,31 @@ public class GenerateurDeCode {
 			LEA (depl,A2),A1*/
 		int chainageARemonter=nombreDeChainageARemonter(v);
 		builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
+		//on a pas de remontée à faire, on est dans le bloc local
+		builderActuel.append("\tLDW WR, BP\n"); // WR = BP
 		if(chainageARemonter>0)
 		{
-			builderActuel.append( "\tLDW R10,#("+chainageARemonter+")//on met le nombre de chainage à remonter dans R10\n");//on met le nombre de chainage à remonter dans R10
-			builderActuel.append( "\tLDW WR,BP//on met le contenu du BasePointer dans le WorkRegister\n");//on met le contenu du BasePointer dans le WorkRegister
-			builderActuel.append( "BOU"+nbRemontees+"\tLDW WR,(WR)-2//On remonte de 2 à partir de l'adresse contenue dans le WorkRegister, résultat dans WR\n");//-2 correspond toujours à la taille d'une adresse
+			builderActuel.append( "\tLDW R10,#("+chainageARemonter+")\n");//on met le nombre de chainage à remonter dans R10
+			builderActuel.append( "BOU"+nbRemontees+"\tADQ -2,WR\n");//-2 correspond toujours à la taille d'une adresse
+			builderActuel.append("\tLDW WR,(WR)\n");
 			builderActuel.append( "\tADQ -1,R10\n");//on retire 1 à la valeur dans R10
-			builderActuel.append( "\tBNE BOU"+nbRemontees+"\n");//si R10 n'est pas égal à 0, on retourne à BOUnbRemontee
+			builderActuel.append( "\tBNE BOU"+nbRemontees+"-$-2\n");//si R10 n'est pas égal à 0, on retourne à BOU
 			nbRemontees++;
 		}
 		else
 		{
-			//on a pas de remontée à faire, on est dans le bloc local
-			builderActuel.append("\tLDW WR, BP\n"); // WR = BP
+			
 		}
-		/*if(v.getDeplacement()>=0)
-		{
-			builderActuel.append("\tADQ -"+(v.getDeplacement()+2)+", WR //On ajoute le déplacement au WR\n"); // WR pointe sur le paramètre (+2 pour passer la base)
-		}
-		else
-		{
-			builderActuel.append("\tADQ "+(-v.getDeplacement())+", WR //On ajoute le déplacement au WR\n"); // WR pointe sur le paramètre
-		}*/
 		if(v.getDeplacement()>=0)
 		{
-			builderActuel.append("\tLDW WR,(WR)-"+(v.getDeplacement()+2)+" //On ajoute le déplacement au WR\n"); // WR pointe sur le paramètre (+2 pour passer la base)
+			builderActuel.append("\tADQ -"+(v.getDeplacement()+4)+", WR\n"); // WR pointe sur la variable locale (+4 pour passer DYN et STAT)
 		}
 		else
 		{
-			builderActuel.append("\tLDW WR,(WR)"+(-v.getDeplacement())+"//On ajoute le déplacement au WR\n"); // WR pointe sur le paramètre
+			builderActuel.append("\tADQ "+(-v.getDeplacement()+2)+", WR\n"); // WR pointe sur le paramètre (
 		}
-		builderActuel.append("\tLDW R2,WR//On met l'adresse obtenue qui se trouve dans WR dans R2\n");//on met le contenu de WR dans R2
+		
+		builderActuel.append("\tLDW R2,WR\n");//on met le contenu de WR dans R2
 	}
 	
 	/**
@@ -315,6 +338,67 @@ public class GenerateurDeCode {
 		return nx-ny;
 	}
 	
+	/* Charge dans les registre R1 et R3 avec les condition (ou 0) avant un CMP. Le boolean permet d'indiquer si on doit charger dans R3, unique indique si on doit mettre 0 dans R3 */
+	private void comparaison(Tree noeud, boolean deuxieme, boolean unique)
+	{
+		if(noeud==null)
+		{
+			builderActuel.append("\tLDW R3, #0\t"+COMMENTAIRE_CHAR+"On charge 0 dans R3\n");
+		}
+		else
+		{
+			switch(noeud.getText())
+			{
+				case "INT" :
+					if(!deuxieme)
+					{
+						builderActuel.append("\tLDW R1, #"+noeud.getChild(0)+"\t"+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
+						if(unique)
+						{
+							comparaison(null,false,false);
+						}
+					}
+					else
+					{
+						builderActuel.append("\tLDW R3, #"+noeud.getChild(0)+"\t"+COMMENTAIRE_CHAR+" On charge la valeur dans R1\n");
+					}
+					break;
+				case "IDBEG" :
+					if(noeud.getChildCount()==1)
+					{
+						//on récupère l'adresse de la variable du noeud fils
+						Variable v = (Variable)courante.get(noeud.getChild(0).getText());
+						//on récupère l'adresse de la variable
+						recupererAdresseVariable(v);
+						//on copie le contenu de R2 dans R1
+						if(!deuxieme) {
+							builderActuel.append("\tLDW R1, (R2)\n");
+							if(unique)
+							{
+								comparaison(null,false,false);
+							}
+						}
+						else
+						{
+							builderActuel.append("\tLDW R3, (R2)\n");
+						}
+					}
+					break;
+				case "=":
+				case "<>":
+				case  ">":
+				case  "<":
+				case  ">=":
+				case  "<=":
+					comparaison(noeud.getChild(0),false,false);
+					comparaison(noeud.getChild(1),true,false);
+					break;
+				
+			}
+		}
+		
+	}
+	
 	private void traiterCondition(Tree noeud)
 	{
 		switch(noeud.getText())
@@ -326,12 +410,11 @@ public class GenerateurDeCode {
 		case  ">=":
 		case  "<=":
 			//on récupère l'opérande gauche et l'operande droite
-			Tree fg=noeud.getChild(0);
+			/*Tree fg=noeud.getChild(0);
 			traiterCondition(fg);
 			builderActuel.append(", ");
 			Tree fd=noeud.getChild(1);
-			traiterCondition(fd);
-			builderActuel.append("\n\t");
+			traiterCondition(fd);*/
 			switch(noeud.getText())
 			{
 			case "=":
@@ -366,8 +449,9 @@ public class GenerateurDeCode {
 				builderActuel.append("NOT ");
 				traiterCondition(noeud.getChild(0)); */ 
 				break;
-			case "INT" :
-				builderActuel.append(noeud.getChild(0).getText());
+			case "INT":
+			case "IDBEG":
+				builderActuel.append("BNE");
 				break;
 		}
 
@@ -483,7 +567,7 @@ public class GenerateurDeCode {
 			break;
 		case "IDBEG":
 			
-			//System.err.println(noeud.getChild(0).getText());
+			System.err.println(noeud.getChild(0).getText());
 			if(noeud.getChildCount()==1)
 			{
 				//on récupère l'adresse de la variable du noeud fils
@@ -493,15 +577,6 @@ public class GenerateurDeCode {
 				//on copie le contenu de R2 dans R1
 				builderActuel.append("\tLDW R1,(R2)\n");
 			}
-			/*else
-			{
-				Fonction f = (Fonction)courante.get(noeud.getChild(0).getText());
-				traiterExpression(noeud.getChild(1));
-				builderActuel.append("\tJSR @"+f.nomCodeFonction());
-				int nbParam=noeud.getChild(1).getChildCount();
-				//on dépile les paramètres
-				builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
-			}*/
 			
 			
 			break;
@@ -522,7 +597,7 @@ public class GenerateurDeCode {
 	
 	private void ajouterString(String texte)
 	{
-		builderActuel.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+texte+"\n");
+		codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+texte+"\n");
 	}
 	
 	
