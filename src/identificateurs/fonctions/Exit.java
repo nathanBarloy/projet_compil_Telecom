@@ -2,10 +2,10 @@ package identificateurs.fonctions;
 
 import identificateurs.TypePrimitif;
 
-public class Exit extends Fonction {
+public class Exit extends FonctionBase {
 
 	public Exit() {
-		super("exit", TypePrimitif.VOID, null);
+		super("exit", TypePrimitif.VOID);
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class GenerateurDeCode {
 	public String genererCode(String nomFichier)
 	{
 
-		codeAssembleur.append("LOADA\tEQU\t0xFF10\n"); // adresse mémoire ou le code est chargé
+		codeAssembleur.append("LOADA\tEQU\t0xF010\n"); // adresse mémoire ou le code est chargé
 		codeAssembleur.append("EXIT_EXC\tEQU\t64\n"); // n° d'exception de EXIT
 		codeAssembleur.append("READ_EXC\tEQU\t65\n"); 		// n° d'exception de READ (lit 1 ligne)
 		codeAssembleur.append("WRITE_EXC\tEQU\t66\n"); // n° d'exception de WRITE (affiche 1 ligne)

@@ -2,10 +2,10 @@ package identificateurs.fonctions;
 
 import identificateurs.TypePrimitif;
 
-public class Ord extends Fonction {
+public class Ord extends FonctionBase {
 
 	public Ord() {
-		super("ord", TypePrimitif.INT, null);
+		super("ord", TypePrimitif.INT);
 		// TODO Auto-generated constructor stub
 	}
 

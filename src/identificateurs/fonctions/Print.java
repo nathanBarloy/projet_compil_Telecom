@@ -2,10 +2,10 @@ package identificateurs.fonctions;
 
 import identificateurs.TypePrimitif;
 
-public class Print extends Fonction{
+public class Print extends FonctionBase{
 
 	public Print() {
-		super("print", TypePrimitif.VOID, null);
+		super("print", TypePrimitif.VOID);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -4,10 +4,10 @@ import identificateurs.Type;
 import identificateurs.TypePrimitif;
 import tableSymbole.TableSymbolesAbs;
 
-public class Flush extends Fonction{
+public class Flush extends FonctionBase{
 
 	public Flush() {
-		super("flush", TypePrimitif.VOID, null);
+		super("flush", TypePrimitif.VOID);
 	}
 
 	@Override

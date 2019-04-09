@@ -3,12 +3,12 @@ package identificateurs.fonctions;
 import identificateurs.Type;
 import identificateurs.TypePrimitif;
 
-public class Not extends Fonction {
+public class Not extends FonctionBase {
 
 	private final static String REGISTRESOURCE = "R1";
 	private final static String REGISTREDESTINATION = "R2";
 	public Not() {
-		super("not", TypePrimitif.INT, null);
+		super("not", TypePrimitif.INT);
 	}
 
 	@Override
