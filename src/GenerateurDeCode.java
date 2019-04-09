@@ -255,22 +255,23 @@ public class GenerateurDeCode {
 			
 			builderActuel.append(courante.getFils(this.courante.getCompteurTDS()-1).debutBloc()+"\n");
 			comparaison(tree.getChild(0),false,true);
-			builderActuel.append("\tCMP R1, R3\n");
+			builderActuel.append("\tCMP R3, R1\n");
 			builderActuel.append("\t");	
 			traiterCondition(tree.getChild(0));
 			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-			builderActuel.append(" then"+courante.debutBloc()+"-$-2\n");
+			builderActuel.append(" else"+courante.debutBloc()+"-$-2\n");
 			boolean elsePresent = tree.getChildCount()==3;
 			builderActuel.append("then"+courante.debutBloc()+"\n");
 			// modifier la ligne suivante : ne foncitonne pas
-			parcourirArbre(tree.getChild(1));
+			switchNoeud(tree.getChild(1));
 			builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
 			if(elsePresent) {
 				// gerer les sauts conditionnel
 				builderActuel.append("else"+courante.debutBloc()+"\n");
-				parcourirArbre(tree.getChild(2));
+				switchNoeud(tree.getChild(2));
 			}
 			builderActuel.append(courante.finBloc()+"\n");
+			courante=courante.getParent();
 			break;
 		case "break" :
 			// TODO
@@ -565,7 +566,7 @@ public class GenerateurDeCode {
 			break;
 		case "IDBEG":
 			
-			//System.err.println(noeud.getChild(0).getText());
+			System.err.println(noeud.getChild(0).getText());
 			if(noeud.getChildCount()==1)
 			{
 				//on récupère l'adresse de la variable du noeud fils
@@ -575,15 +576,6 @@ public class GenerateurDeCode {
 				//on copie le contenu de R2 dans R1
 				builderActuel.append("\tLDW R1,(R2)\n");
 			}
-			/*else
-			{
-				Fonction f = (Fonction)courante.get(noeud.getChild(0).getText());
-				traiterExpression(noeud.getChild(1));
-				builderActuel.append("\tJSR @"+f.nomCodeFonction());
-				int nbParam=noeud.getChild(1).getChildCount();
-				//on dépile les paramètres
-				builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dépile les paramètres\n");
-			}*/
 			
 			
 			break;
@@ -604,7 +596,7 @@ public class GenerateurDeCode {
 	
 	private void ajouterString(String texte)
 	{
-		builderActuel.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+texte+"\n");
+		codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+texte+"\n");
 	}
 	
 	
