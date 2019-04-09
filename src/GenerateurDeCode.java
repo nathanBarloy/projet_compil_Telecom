@@ -12,6 +12,7 @@ public class GenerateurDeCode {
 	
 	private final static String COMMENTAIRE_CHAR = "//";
 	
+	private final static String REGISTREMAXBOUCLEFOR = "R8";
 	private final static String REGISTREBOUCLEFOR = "R7";
 	private final static String REGISTRERETOUREXPRESSION = "R1";
 	private TableSymbolesAbs tds;
@@ -174,33 +175,36 @@ public class GenerateurDeCode {
 			this.courante.incCompteurTDS();
 			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 			//debut for
-			//on déclare la variable
-			tree.getChild(0).getText();
-			//on stocke la valeur 
-			
-			//on met la valeur de debut de boucle dedans
-			
-			//on empile registre de boucle avant de l'utiliser 
+			/*//on empile registre de boucle avant de l'utiliser 
 			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille du registre de boucle\n");
-			builderActuel .append( "\tSTW "+REGISTREBOUCLEFOR+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du registre de boucle\n");
-			//On met la valeur de fin de boucle dans R7
-			switchNoeud(tree.getChild(2));//va mettre la valeur de fin de boucle dans REGISTRERETOUR
-			builderActuel.append("\tLDW "+REGISTREBOUCLEFOR+",R1\n");
+			builderActuel .append( "\tSTW "+REGISTREBOUCLEFOR+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du registre de boucle\n");*/
+			debutBloc();
+			//on déclare la variable de boucle
+			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On décale le sommet de pile de la taille de variable qui porte la boucle\n");
+			//builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du résultat de l'évaluation de l'expression (DEBUT BOUCLE)\n");
+			//on met la valeur de debut de boucle dans le registre de boucle
+			traiterExpression(tree.getChild(1)); //on stocke la valeur initiale de la variable de boucle dans REGISTRERETOUREXPRESSION
+			builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+","+REGISTREBOUCLEFOR+COMMENTAIRE_CHAR+"On met dans le registre de boucle la valeur de départ\n");
+			//On met la valeur de fin de boucle dans R8
+			traiterExpression(tree.getChild(2));
+			builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+","+REGISTREMAXBOUCLEFOR+COMMENTAIRE_CHAR+"On met l'indice de fin de boucle dans un registre\n");
 			builderActuel.append(courante.debutBloc()+"\n");
+			//on met à jour l'indice de boucle avec le registre de boucle
+			builderActuel.append("\tSTW "+REGISTREBOUCLEFOR+",(BP)-4\n");//on met le contenu du registre de boucle dans l'indice de boucle
+			//on génère le code "normal" de l'intérieur du for
 			switchNoeud(tree.getChild(tree.getChildCount()-1));
 			//on incrémente l'indice de boucle
 			builderActuel.append("\tADQ 1,"+REGISTREBOUCLEFOR+"\n");
 			//on met l'indice de boucle dans un registre
 			
 			//on compare l'indice de boucle avec la valeur max de boucle
-			builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//R1 contient l'indice de boucle
+			builderActuel.append("\tCMP "+REGISTREBOUCLEFOR+","+REGISTREMAXBOUCLEFOR+"\n");
+			//builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//REGISTREBOUCLEFOR contient l'indice de boucle
 			builderActuel.append("\tBNE "+courante.debutBloc()+"-$-2\n");
 			
 			
 			//fin for
-			//on restaure le registre de la boucle
-			builderActuel.append("\tLDW "+REGISTREBOUCLEFOR+", (SP)\n//On restaure le registre de boucle");
-			builderActuel.append("\tADQ 2,SP\n");
+			finBloc();
 			this.courante=courante.getParent();
 			// TODO
 			break;
@@ -730,20 +734,38 @@ public class GenerateurDeCode {
 	
 	private void debutBloc()
 	{
+		sauvegarderRegistres();
 		builderActuel.append("\tSTW BP, -(SP) //empile le contenu du registre BP(dynamique)\n");
+		builderActuel.append("\tLDW R1,SP\n");
 		builderActuel.append("\tSTW BP, -(SP) //empile le contenu du registre BP(statique)\n"); // empile le contenu du registre BP
-		builderActuel.append("\tLDW BP, SP //charge contenu SP ds BP\n"); // charge contenu SP ds BP
-		builderActuel.append("\tSTW WR, -(SP) //On empile le chainage statique contenu dans WR\n");//on empile le statique
+		builderActuel.append("\tLDW BP, R1 //charge contenu SP ds BP\n"); // charge contenu SP ds BP
+		
+	}
+	
+	
+	public void sauvegarderRegistres()
+	{
+		for(int i=1;i<=10;i++)
+		{
+			builderActuel.append("\tSTW R"+i+",-(SP)\n");
+		}
+	}
+	
+	public void restaurerRegistres()
+	{
+		for(int i=10;i>0;i--)
+		{
+			builderActuel.append("\tLDW R"+i+",(SP)+\n");
+		}
+		
 	}
 	private void finBloc()
 	{
-		builderActuel.append("\tADQ 2,SP\n//On retire le statique");
+		
+		builderActuel.append("\tADQ 2,SP//On retire le statique\n");
 		builderActuel.append("\tLDW SP, BP //abandon infos locales\n"); // abandon infos locales
 		builderActuel.append("\tLDW BP, (SP)+ //charge BP avec ancien BP\n"); // charge BP avec ancien BP
-	}
-	
-	private void calculerStatiqueAppele()
-	{
+		restaurerRegistres();
 		
 	}
 	private void ajouterString(String texte)
