@@ -108,7 +108,7 @@ public class GenerateurDeCode {
 			if(decFonction && (i == tree.getChildCount()-1))
 			{
 				System.err.println("gestion retour avec" + tree.getChild(i));
-				gestionRetourFontion(tree.getChild(i));
+				traiterExpression(tree.getChild(i));
 			}
 			else {
 			
@@ -619,14 +619,4 @@ public class GenerateurDeCode {
 		codeAssembleur.insert(codeAssembleur.lastIndexOf("main_"), "STRING"+numString+"\tstring\t"+texte+"\n");
 	}
 	
-	private void gestionRetourFontion(Tree noeud)
-	{
-		switch(noeud.getText())
-		{
-			case "INT":
-				builderActuel.append("\tLDW R0, #"+noeud.getChild(0).getText()+"\t"+COMMENTAIRE_CHAR+"Stockage dans R0 de la valeur de retour\n");
-				break;
-		}
-
-	}
 }
