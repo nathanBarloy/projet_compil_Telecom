@@ -107,7 +107,6 @@ public class GenerateurDeCode {
 			//System.out.println("tree.getChild("+i+").getText() : "+tree.getChild(i).getText());
 			if(decFonction && (i == tree.getChildCount()-1))
 			{
-				System.err.println("gestion retour avec" + tree.getChild(i));
 				traiterExpression(tree.getChild(i));
 			}
 			else {
@@ -131,7 +130,6 @@ public class GenerateurDeCode {
 			courante = f.getTdsFonction();
 			builderActuel=codeFonctions;
 			builderActuel.append( f.debutFonction());
-			System.err.println(tree.getChild(tree.getChildCount()-1));
 			parcourirArbre(tree.getChild(tree.getChildCount()-1));
 			//TODO generer le code du corps de la fonction
 			builderActuel.append( f.finFonction());
@@ -446,7 +444,7 @@ public class GenerateurDeCode {
 				builderActuel.append("BGT");
 				break;
 			case  "<":
-				builderActuel.append("BLT");
+				builderActuel.append("BLW");
 				break;
 			case  ">=":
 				builderActuel.append("BGE");
@@ -510,7 +508,7 @@ public class GenerateurDeCode {
 				builderActuel.append("BGE");
 				break;
 			case  ">=":
-				builderActuel.append("BLT");
+				builderActuel.append("BLW");
 				break;
 			case  "<=":
 				builderActuel.append("BGT");
