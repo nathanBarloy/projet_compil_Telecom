@@ -346,7 +346,7 @@ public class GenerateurDeCode {
 	 */
 	private int nombreDeChainageARemonter(Variable v)
 	{
-		if(appelFonction) {
+		if(appelFonction || decFonction) {
 			int nx = courante.getNiveau();
 			int ny = courante.getNiveauDeclaration(v);
 			return nx-ny;
