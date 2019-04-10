@@ -29,6 +29,7 @@ public class GenerateurDeCode {
 	private int nbRemontees;
 	private StringBuilder codeAssembleur;
 	private StringBuilder codeFonctions;
+	private int compteurEntreeFonctions;
 	private StringBuilder builderActuel;
 	//private boolean appelFonction;
 	//private boolean decFonction;
@@ -41,6 +42,7 @@ public class GenerateurDeCode {
 		this.nbRemontees=0;
 		this.codeAssembleur=new StringBuilder();
 		this.codeFonctions=new StringBuilder();
+		compteurEntreeFonctions = 0;
 		builderActuel=codeAssembleur;
 	//	this.appelFonction = false;
 	//	this.decFonction = false;
@@ -134,6 +136,7 @@ public class GenerateurDeCode {
 			Fonction f = (Fonction)courante.get(tree.getChild(0).getText());
 			courante = f.getTdsFonction();
 			builderActuel=codeFonctions;
+			compteurEntreeFonctions++;
 			builderActuel.append( f.debutFonction());
 	/*		if(isLetOrSeqexp(tree.getChild(tree.getChildCount()-1)))
 			{
@@ -148,7 +151,11 @@ public class GenerateurDeCode {
 			//}
 			//TODO generer le code du corps de la fonction
 			builderActuel.append( f.finFonction());
-			builderActuel=codeAssembleur;
+			compteurEntreeFonctions--;
+			if(compteurEntreeFonctions==0)
+			{
+				builderActuel=codeAssembleur;
+			}
 			courante=courante.getParent();
 			//this.decFonction = false;
 			break;
