@@ -156,7 +156,9 @@ public class GenerateurDeCode {
 			break;
 		case "LET":
 			this.courante.incCompteurTDS();
-			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			TableSymbolesAbs tableBlocLet = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			debutBloc(tableBlocLet);
+			this.courante = tableBlocLet;
 			for(int i = 0; i < tree.getChildCount(); i++)
 			{
 				if(i == tree.getChildCount()-1)
@@ -169,6 +171,8 @@ public class GenerateurDeCode {
 				
 			}
 			// TODO
+			finBloc();
+			this.courante=courante.getParent();
 			break;
 		case "WHILE":
 			this.courante.incCompteurTDS();
