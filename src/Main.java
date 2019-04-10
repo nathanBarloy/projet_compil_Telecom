@@ -13,8 +13,8 @@ import tableSymbole.TableSymbolesAbs;
 public class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
-		//String path = "Tests/testsSyntaxiques/testProf/fonctionnels/prog2.txt";
-		String path = "Tests/simpleFor.tig";
+		String path = "Tests/testsSyntaxiques/testProf/fonctionnels/prog2.txt";
+		//String path = "Tests/simpleFor.tig";
 		//Passe 1 : Analyse lexicale et syntaxique
 		ANTLRInputStream input = new ANTLRInputStream(new FileInputStream(path));
 		TigerLexer lexer = new TigerLexer(input);
@@ -32,6 +32,8 @@ public class Main {
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
 		String codeAssembleur=gdc.genererCode("assembleur/toto.src");
 		System.out.println(codeAssembleur);
+		/*Runtime.getRuntime().exec("java -jar assembleur/microPIUPK.jar -ass assembleur/toto.src");
+		Runtime.getRuntime().exec("java -jar assembleur/microPIUPK.jar -sim");*/
 	}
 
 

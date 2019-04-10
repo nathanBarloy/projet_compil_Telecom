@@ -205,7 +205,7 @@ public class GenerateurDeCode {
 			//on met l'indice de boucle dans un registre
 			
 			//on compare l'indice de boucle avec la valeur max de boucle
-			builderActuel.append("\tCMP "+REGISTREBOUCLEFOR+","+REGISTREMAXBOUCLEFOR+"\n");
+			builderActuel.append("\tCMP "+REGISTREMAXBOUCLEFOR+","+REGISTREBOUCLEFOR+"\n");
 			//builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//REGISTREBOUCLEFOR contient l'indice de boucle
 			builderActuel.append("\tBNE "+courante.debutBloc()+"-$-2\n");
 			builderActuel.append("\tADQ 2,SP//On dépile la variable qui porte la boucle\n");
@@ -363,7 +363,7 @@ public class GenerateurDeCode {
 			BNE BOU //branch if not equal
 			LEA (depl,A2),A1*/
 		int chainageARemonter=nombreDeChainageARemonter(v);
-		System.err.println("Nb chainage : "+chainageARemonter);
+		//System.err.println("Nb chainage : "+chainageARemonter);
 		builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
 		//on a pas de remontée à faire, on est dans le bloc local
 		builderActuel.append("\tLDW WR, BP\n"); // WR = BP
@@ -714,9 +714,7 @@ public class GenerateurDeCode {
 		builderActuel.append("\tLDW R1,SP\n");
 		builderActuel.append("\tSTW WR, -(SP) //empile le contenu du registre BP(statique)\n"); // empile le contenu du registre BP
 		builderActuel.append("\tLDW BP, R1 //charge contenu SP ds BP\n"); // charge contenu SP ds BP
-		
 	}
-	
 	
 	public static String sauvegarderRegistres()
 	{
