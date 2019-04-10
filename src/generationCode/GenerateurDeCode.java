@@ -146,7 +146,7 @@ public class GenerateurDeCode {
 			{
 				System.err.println("switch noeud "+tree.getChild(tree.getChildCount()-1));
 */
-				parcourirArbre(tree.getChild(tree.getChildCount()-1));
+			parcourirArbre(tree.getChild(tree.getChildCount()-1));
 			//}
 			//TODO generer le code du corps de la fonction
 			builderActuel.append( f.finFonction());
@@ -159,7 +159,13 @@ public class GenerateurDeCode {
 			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 			for(int i = 0; i < tree.getChildCount(); i++)
 			{
-				parcourirArbre(tree.getChild(i));
+				if(i == tree.getChildCount()-1)
+				{
+					traiterExpression(tree.getChild(i));
+				}
+				else {
+					parcourirArbre(tree.getChild(i));
+				}
 				
 			}
 			// TODO
@@ -286,7 +292,7 @@ public class GenerateurDeCode {
 						Tree noeudAssignment = tree.getChild(1);
 						//System.err.println(noeudAssignment.getText());
 						traiterExpression(noeudAssignment.getChild(0));
-						parcourirArbre(noeudAssignment);
+						parcourirArbre(noeudAssignment.getChild(0));
 						//On rÃ©cupÃ¨re enfin l'adresse de la variable dans laquelle on veut ranger la valeur
 						Variable v = (Variable)courante.get(tree.getChild(0).getText());
 						recupererAdresseVariable(v);
@@ -357,7 +363,13 @@ public class GenerateurDeCode {
 		case "SEQEXP":
 			for(int i = 0; i < tree.getChildCount(); i++)
 			{
-				parcourirArbre(tree.getChild(i));
+				if(i == tree.getChildCount()-1)
+				{
+					traiterExpression(tree.getChild(i));
+				}
+				else {
+					parcourirArbre(tree.getChild(i));
+				}
 				
 			}
 			break;
@@ -692,7 +704,7 @@ public class GenerateurDeCode {
 						Tree noeudAssignment = noeud.getChild(1);
 						//System.err.println(noeudAssignment.getText());
 						traiterExpression(noeudAssignment.getChild(0));
-						parcourirArbre(noeudAssignment);
+						parcourirArbre(noeudAssignment.getChild(0));
 						//On rÃ©cupÃ¨re enfin l'adresse de la variable dans laquelle on veut ranger la valeur
 						Variable v = (Variable)courante.get(noeud.getChild(0).getText());
 						recupererAdresseVariable(v);
