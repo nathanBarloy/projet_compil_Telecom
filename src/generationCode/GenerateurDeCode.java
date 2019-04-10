@@ -82,8 +82,6 @@ public class GenerateurDeCode {
 		//builderActuel.append("\tLDW WR, SP\n"); // charge contenu SP ds WR
 		builderActuel.append("\tSTW WR, -(SP) //On empile le statique\n"); // empile le contenu du registre BP
 
-		
-		
 		parcourirArbre(ast);
 		
 		//TODO ce code termine le main, il doit Ãªtre ajoutÃ© avant le code des fonctions
