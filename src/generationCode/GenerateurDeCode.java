@@ -30,8 +30,8 @@ public class GenerateurDeCode {
 	private StringBuilder codeAssembleur;
 	private StringBuilder codeFonctions;
 	private StringBuilder builderActuel;
-	private boolean appelFonction;
-	private boolean decFonction;
+	//private boolean appelFonction;
+	//private boolean decFonction;
 	
 	public GenerateurDeCode(TableSymbolesAbs tds, CommonTree ast) {
 		this.tds = tds;
@@ -42,8 +42,8 @@ public class GenerateurDeCode {
 		this.codeAssembleur=new StringBuilder();
 		this.codeFonctions=new StringBuilder();
 		builderActuel=codeAssembleur;
-		this.appelFonction = false;
-		this.decFonction = false;
+	//	this.appelFonction = false;
+	//	this.decFonction = false;
 	}
 	
 	/**
@@ -130,7 +130,7 @@ public class GenerateurDeCode {
 		// /!\ Attention il faut voir ou le code se rajoute par rapport au parcours de l'arbre 
 		
 		case "FUNDEC":
-			this.decFonction = true;
+			//this.decFonction = true;
 			Fonction f = (Fonction)courante.get(tree.getChild(0).getText());
 			courante = f.getTdsFonction();
 			builderActuel=codeFonctions;
@@ -150,7 +150,7 @@ public class GenerateurDeCode {
 			builderActuel.append( f.finFonction());
 			builderActuel=codeAssembleur;
 			courante=courante.getParent();
-			this.decFonction = false;
+			//this.decFonction = false;
 			break;
 		case "LET":
 			this.courante.incCompteurTDS();
@@ -276,7 +276,7 @@ public class GenerateurDeCode {
 						break;
 					case "CALLEXP" :
 						//TODO
-						this.appelFonction = true;
+					//	this.appelFonction = true;
 						Tree noeudCallExp = tree.getChild(1);
 						//System.err.println(noeudCallExp.getText());
 						//on empile les paramÃ¨tres
@@ -302,7 +302,7 @@ public class GenerateurDeCode {
 						//on dÃ©pile les paramÃ¨tres
 						builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dÃ©pile les paramÃ¨tres\n");
 						builderActuel.append("\tLDW R1, R0\t"+COMMENTAIRE_CHAR+"On met le retour dans R1\n");
-						this.appelFonction = false;
+					//	this.appelFonction = false;
 						break;
 					case "ASSIGNMENT":	
 						// TODO
@@ -996,7 +996,7 @@ public class GenerateurDeCode {
 						break;
 					case "CALLEXP" :
 						//TODO
-						this.appelFonction = true;
+					//	this.appelFonction = true;
 						Tree noeudCallExp = noeud.getChild(1);
 						//System.err.println(noeudCallExp.getText());
 						//on empile les paramÃ¨tres
@@ -1022,7 +1022,7 @@ public class GenerateurDeCode {
 						//on dÃ©pile les paramÃ¨tres
 						builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dÃ©pile les paramÃ¨tres\n");
 						builderActuel.append("\tLDW R1, R0\t"+COMMENTAIRE_CHAR+"On met le retour dans R1\n");
-						this.appelFonction = false;
+						//this.appelFonction = false;
 						break;
 				}
 			}

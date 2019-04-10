@@ -239,7 +239,7 @@ public class AnalyseurSemantique {
 	
 	public TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent, int i)
 	{
-		//System.err.println("SEMANTIQUE :"+tree.getText());
+		//System.out.println("SEMANTIQUE :"+tree.getText());
 		TableSymbolesAbs nouvelle;
 		//	afficherTDS(tableParent);
 		//	System.out.println("Nb de fils : "+tree.getChildCount());
