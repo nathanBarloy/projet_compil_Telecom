@@ -52,7 +52,7 @@ public class AnalyseurSemantique {
 			ajouterTypesBase(blocOrig);
 			ajouterFonctionBase(blocOrig);
 			//System.out.println("///////////////////////////////////////");
-			return parcoursArbre(ast, blocOrig);
+			return parcoursArbre(ast, blocOrig,0);
 		}
 		catch(Exception e)
 		{
@@ -227,7 +227,7 @@ public class AnalyseurSemantique {
 	 * @param path chemin du fichier sur lequel l'AST à été construit
 	 * @return
 	 */
-	public TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent)
+	/*public TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent)
 	{
 		for(int i=0;i<tree.getChildCount();i++)
 		{
@@ -235,10 +235,11 @@ public class AnalyseurSemantique {
 		}
 		return tableParent;
 			
-	}
+	}*/
 	
-	public TableSymbolesAbs switchNoeud(Tree tree,TableSymbolesAbs tableParent, int i)
+	public TableSymbolesAbs parcoursArbre(Tree tree,TableSymbolesAbs tableParent, int i)
 	{
+		//System.err.println("SEMANTIQUE :"+tree.getText());
 		TableSymbolesAbs nouvelle;
 		//	afficherTDS(tableParent);
 		//	System.out.println("Nb de fils : "+tree.getChildCount());
@@ -281,21 +282,23 @@ public class AnalyseurSemantique {
 						afficherErreurSemantique(nom,"Le type de retour de la fonction ne correspond pas à celui déclaré (void)");
 					}
 				}
-				if(isLetOrSeqexp(tree.getChild(tree.getChildCount()-1)))
-				{
-					parcoursArbre(tree.getChild(tree.getChildCount()-1),nouvelle);
+				parcoursArbre(tree.getChild(tree.getChildCount()-1),nouvelle,0);
 
-				}
+			/*	}
 				else
 				{
 					switchNoeud(tree.getChild(tree.getChildCount()-1),nouvelle,0);
-				}
+				}*/
 				break;
 
 			case "LET":
 				nouvelle = new TableSymbolesLet(tableParent);
 				tableParent.addFils(nouvelle);
-				parcoursArbre(tree,nouvelle);
+				for(int k = 0; k < tree.getChildCount(); k++)
+				{
+					parcoursArbre(tree.getChild(k),nouvelle, k);
+
+				}
 				break;
 
 			case "WHILE":
@@ -313,7 +316,7 @@ public class AnalyseurSemantique {
 					//System.err.println("Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
 					afficherErreurSemantique(tree.getChild(1), "Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
 				}
-				parcoursArbre(tree,nouvelle);
+				parcoursArbre(tree.getChild(0),nouvelle,0);
 				break;
 
 			case "FOR":
@@ -333,7 +336,7 @@ public class AnalyseurSemantique {
 				if(typeCorps != "void") {
 					afficherErreurSemantique(tree.getChild(3), "Le corps du FOR doit être de type 'void'");
 				}
-				parcoursArbre(tree,nouvelle);
+				parcoursArbre(tree.getChild(3),nouvelle,0);
 				break;
 
 				// cas ne creant pas de nouveau blocOrig
@@ -684,15 +687,27 @@ public class AnalyseurSemantique {
 				}
 				nouvelle = new TableSymbolesIf(tableParent);
 				tableParent.addFils(nouvelle);
-				parcoursArbre(tree,nouvelle);
+				parcoursArbre(tree.getChild(1),nouvelle,0);
+				if(nbFils == 3)
+				{
+					parcoursArbre(tree.getChild(2),nouvelle,0);
+				}
 				break;
 			case "break" :
 				if(!tableParent.isBreakable()) {
 					afficherErreurSemantique(tree, "Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 				}
 				break;
+			case "SEQEXP":
+				for (int k = 0; k < tree.getChildCount(); k++)
+				{
+					parcoursArbre(tree.getChild(k),tableParent,0);
+				}
+				break;
+			case "ROOT":
+				parcoursArbre(tree.getChild(0),tableParent,0);
 			default:
-				parcoursArbre(tree,tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
+			//	parcoursArbre(tree,tableParent);//si on est pas dans les cas précédents,on crée une nouvelle table
 				break;
 			}
 
