@@ -5,7 +5,7 @@ let
 in
 	for x := a to b
 	do
-		for z := 1 to 2
+		for z := 1 to 3
 		do
 			print(texte)
 	/*for x := a to b
