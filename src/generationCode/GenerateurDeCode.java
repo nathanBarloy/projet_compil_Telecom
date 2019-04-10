@@ -164,6 +164,7 @@ public class GenerateurDeCode {
 				if(i == tree.getChildCount()-1)
 				{
 					traiterExpression(tree.getChild(i));
+					builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0");
 				}
 				else {
 					parcourirArbre(tree.getChild(i));
@@ -340,8 +341,8 @@ public class GenerateurDeCode {
 			}
 			else
 			{
-				System.err.println("traiter exp avec "+tree.getChild(1));
 				traiterExpression(tree.getChild(1));
+				builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0");
 			}
 			builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
 			if(elsePresent) {
@@ -354,6 +355,8 @@ public class GenerateurDeCode {
 				else
 				{
 					traiterExpression(tree.getChild(2));
+					builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0");
+
 				}
 			}
 			builderActuel.append(courante.finBloc()+"\n");
@@ -370,6 +373,7 @@ public class GenerateurDeCode {
 				if(i == tree.getChildCount()-1)
 				{
 					traiterExpression(tree.getChild(i));
+					builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0");
 				}
 				else {
 					parcourirArbre(tree.getChild(i));
