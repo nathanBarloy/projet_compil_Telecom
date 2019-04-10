@@ -7,6 +7,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 
+import generationCode.GenerateurDeCode;
 import tableSymbole.TableSymbolesAbs;
 
 public class Main {

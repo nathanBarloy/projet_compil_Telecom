@@ -318,11 +318,11 @@ public abstract class TableSymbolesAbs {
 	
 	public String debutBloc()
 	{
-		return nomBloc()+numeroTDS+"_\t";
+		return nomBloc()+numeroTDS+"_";
 	}
 	public String finBloc()
 	{
-		return "fin"+nomBloc()+numeroTDS+"_\t";
+		return "fin"+nomBloc()+numeroTDS+"_";
 	}
 	public void incCompteurTDS()
 	{
