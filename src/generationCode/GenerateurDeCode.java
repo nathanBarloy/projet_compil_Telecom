@@ -221,7 +221,8 @@ public class GenerateurDeCode {
 			//on compare l'indice de boucle avec la valeur max de boucle
 			builderActuel.append("\tCMP "+REGISTREMAXBOUCLEFOR+","+REGISTREBOUCLEFOR+"\n");
 			//builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//REGISTREBOUCLEFOR contient l'indice de boucle
-			builderActuel.append("\tBNE "+courante.debutBloc()+"-$-2\n");
+			builderActuel.append("\tBEQ 4\n");
+			builderActuel.append("\tJEA @"+courante.debutBloc()+"\n");
 			builderActuel.append("\tADQ 2,SP//On dÃ©pile la variable qui porte la boucle\n");
 			
 			
