@@ -4,6 +4,7 @@ let
 in
 	while i<10
 	do (
+		print("ok  ");
 	    a := i + a;
 	    i := i + 1
 	)

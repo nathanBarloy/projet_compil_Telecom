@@ -175,23 +175,45 @@ public class GenerateurDeCode {
 			this.courante=courante.getParent();
 			break;
 		case "WHILE":
+			
 			this.courante.incCompteurTDS();
-			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			TableSymbolesAbs tableBlocWhile = this.courante.getFils(this.courante.getCompteurTDS()-1);
+			debutBloc(tableBlocWhile);
+			this.courante = tableBlocWhile;
 			builderActuel.append(courante.debutBloc()+"\n");
-			builderActuel.append("\tCMP ");
-		//	builderActuel.append("\t");	
-			traiterCondition(tree.getChild(0));
-			builderActuel.append(" "+courante.debutBloc());
-			builderActuel.append("\n");
-			//debut while
-			builderActuel.append(courante.debutBloc()+"\n");
-			parcourirArbre(tree.getChild(1));
+			
+			comparaison(tree.getChild(0),false,true);
+			builderActuel.append("\tCMP R1, R3\n");
+			builderActuel.append("\t");	
+			traiterConditionInverse(tree.getChild(0));
+			//this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
+
+			builderActuel.append(" "+courante.finBloc()+"\n");
+
+			builderActuel.append("then"+courante.debutBloc()+"\n");
+			// modifier la ligne suivante : ne foncitonne pas
+			if(isLetOrSeqexp(tree.getChild(1)))
+			{
+				parcourirArbre(tree.getChild(1));
+			}
+			else
+			{
+			//	traiterExpression(tree.getChild(1));
+				parcourirArbre(tree.getChild(1));
+				builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0\n");
+			}
+			builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
+
+			
+			
+			builderActuel.append("\tJEA @"+courante.debutBloc()+"\n");
 			builderActuel.append(courante.finBloc()+"\n");
-			//fin du while
-			this.courante=courante.getParent();
-			// TODO
+			finBloc();
+			courante=courante.getParent();
 			break;
+			
 		case "FOR":
+			
 			this.courante.incCompteurTDS();
 			TableSymbolesAbs tableBlocFor = this.courante.getFils(this.courante.getCompteurTDS()-1);
 			debutBloc(tableBlocFor);
