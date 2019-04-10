@@ -32,8 +32,8 @@ public class Main {
 		GenerateurDeCode gdc = new GenerateurDeCode(tdsRes, tree);
 		String codeAssembleur=gdc.genererCode("assembleur/toto.src");
 		System.out.println(codeAssembleur);
-		/*Runtime.getRuntime().exec("java -jar assembleur/microPIUPK.jar -ass assembleur/toto.src");
-		Runtime.getRuntime().exec("java -jar assembleur/microPIUPK.jar -sim");*/
+		Runtime.getRuntime().exec("java -jar assembleur/microPIUPK.jar -ass assembleur/toto.src");
+		Runtime.getRuntime().exec("java -jar assembleur/microPIUPK.jar -sim");
 	}
 
 

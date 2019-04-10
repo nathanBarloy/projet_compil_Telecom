@@ -3,12 +3,12 @@ let
 	var b := 7
 	var texte := "Ceci est un test"
 in
-	/*for x := a to b
+	for x := a to b
 	do
 		for z := 1 to 3
 		do
-			print(texte)*/
-	for x := a to b
+			print(texte)
+	/*for x := a to b
 	do
-		print(texte)
+		print(texte)*/
 end

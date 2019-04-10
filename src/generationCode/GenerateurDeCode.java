@@ -818,10 +818,7 @@ public class GenerateurDeCode {
 			TableSymbolesAbs tableBlocFor = this.courante.getFils(this.courante.getCompteurTDS()-1);
 			debutBloc(tableBlocFor);
 			this.courante = tableBlocFor;
-			//debut for
-			/*//on empile registre de boucle avant de l'utiliser 
-			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On dÃ©cale le sommet de pile de la taille du registre de boucle\n");
-			builderActuel .append( "\tSTW "+REGISTREBOUCLEFOR+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du registre de boucle\n");*/
+			/*//debut for
 			//on dÃ©clare la variable de boucle
 			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On dÃ©cale le sommet de pile de la taille de variable qui porte la boucle\n");
 			//builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du rÃ©sultat de l'Ã©valuation de l'expression (DEBUT BOUCLE)\n");
@@ -844,8 +841,8 @@ public class GenerateurDeCode {
 			builderActuel.append("\tCMP "+REGISTREMAXBOUCLEFOR+","+REGISTREBOUCLEFOR+"\n");
 			//builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//REGISTREBOUCLEFOR contient l'indice de boucle
 			builderActuel.append("\tBNE "+courante.debutBloc()+"-$-2\n");
-			builderActuel.append("\tADQ 2,SP//On dÃ©pile la variable qui porte la boucle\n");
-			
+			builderActuel.append("\tADQ 2,SP//On dÃ©pile la variable qui porte la boucle\n");*/
+			parcourirArbre(noeud);
 			
 			//fin for
 			finBloc();
