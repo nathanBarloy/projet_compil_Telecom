@@ -418,9 +418,9 @@ public class GenerateurDeCode {
 			builderActuel.append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
 			//on fait l'opÃ©ration sur les deux elements en sommet de pile
 			//On dÃ©pile dans R1 et R2
-			builderActuel.append("\tLDW R1,(SP)\n"); // charge le registre R avec le sommet de pile
-			builderActuel.append("\tADQ 2, SP\n"); // incrÃ©mente le pointeur de pile SP
 			builderActuel.append("\tLDW R2,(SP)\n"); // charge le registre R avec le sommet de pile
+			builderActuel.append("\tADQ 2, SP\n"); // incrÃ©mente le pointeur de pile SP
+			builderActuel.append("\tLDW R1,(SP)\n"); // charge le registre R avec le sommet de pile
 			builderActuel.append("\tADQ 2, SP\n"); // incrÃ©mente le pointeur de pile SP
 			//on fait l'operation
 			switch(tree.getText())

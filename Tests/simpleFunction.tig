@@ -5,8 +5,10 @@ let
 	let
 		var test := 6
 	in
-		z*b
+		a*b
 	end
 in
-	z := fois(z,10)
+	z := fois(z-1,10)
 end
+
+0fe2

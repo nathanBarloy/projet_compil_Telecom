@@ -1,12 +1,12 @@
-let 
+let
 	var n := 3
 	var resultat := 0
 	function factorielle ( a : int) : int =
 	if a = 1
-		then 
+		then
 			1
 		else
-			a * factorielle (a-1)	
-in 
+			a * factorielle (a-1)
+in
 	resultat := factorielle(n)
 end
