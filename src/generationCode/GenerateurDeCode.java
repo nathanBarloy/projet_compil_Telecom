@@ -106,7 +106,7 @@ public class GenerateurDeCode {
 		}
 		return codeAssembleur.toString()+codeFonctions.toString();
 	}
-	
+	/*
 	private void parcourirArbre(Tree tree)
 	{
 		for(int i=0;i<tree.getChildCount();i++)
@@ -116,15 +116,15 @@ public class GenerateurDeCode {
 			{
 				traiterExpression(tree.getChild(i));
 			}
-			else {
-			
+			else {	
 				switchNoeud(tree.getChild(i));
 			}
 		}
-	}
+	}*/
 	
-	private void switchNoeud(Tree tree)
+	private void parcourirArbre(Tree tree)
 	{
+		System.err.println(tree.getText());
 		switch(tree.getText())
 		{
 		// gÃ©rer tous les cas (token) existant dans l'AST 
@@ -137,7 +137,7 @@ public class GenerateurDeCode {
 			courante = f.getTdsFonction();
 			builderActuel=codeFonctions;
 			builderActuel.append( f.debutFonction());
-			if(isLetOrSeqexp(tree.getChild(tree.getChildCount()-1)))
+	/*		if(isLetOrSeqexp(tree.getChild(tree.getChildCount()-1)))
 			{
 				System.err.println("parcours arbre "+tree.getChild(tree.getChildCount()-1));
 				parcourirArbre(tree.getChild(tree.getChildCount()-1));
@@ -145,9 +145,9 @@ public class GenerateurDeCode {
 			else
 			{
 				System.err.println("switch noeud "+tree.getChild(tree.getChildCount()-1));
-
-				switchNoeud(tree.getChild(tree.getChildCount()-1));
-			}
+*/
+				parcourirArbre(tree.getChild(tree.getChildCount()-1));
+			//}
 			//TODO generer le code du corps de la fonction
 			builderActuel.append( f.finFonction());
 			builderActuel=codeAssembleur;
@@ -157,7 +157,11 @@ public class GenerateurDeCode {
 		case "LET":
 			this.courante.incCompteurTDS();
 			this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
-			parcourirArbre(tree);
+			for(int i = 0; i < tree.getChildCount(); i++)
+			{
+				parcourirArbre(tree.getChild(i));
+				
+			}
 			// TODO
 			break;
 		case "WHILE":
@@ -199,7 +203,7 @@ public class GenerateurDeCode {
 			//on met Ã  jour l'indice de boucle avec le registre de boucle
 			builderActuel.append("\tSTW "+REGISTREBOUCLEFOR+",(BP)-4\n");//on met le contenu du registre de boucle dans l'indice de boucle
 			//on gÃ©nÃ¨re le code "normal" de l'intÃ©rieur du for
-			switchNoeud(tree.getChild(tree.getChildCount()-1));
+			parcourirArbre(tree.getChild(tree.getChildCount()-1));
 			//on incrÃ©mente l'indice de boucle
 			builderActuel.append("\tADQ 1,"+REGISTREBOUCLEFOR+"\n");
 			//on met l'indice de boucle dans un registre
@@ -351,8 +355,18 @@ public class GenerateurDeCode {
 			// TODO
 			// pas de parcours normalement
 			break;
+		case "SEQEXP":
+			for(int i = 0; i < tree.getChildCount(); i++)
+			{
+				parcourirArbre(tree.getChild(i));
+				
+			}
+			break;
+		case "ROOT":
+			parcourirArbre(tree.getChild(0));
+			break;
 		default:
-			parcourirArbre(tree);//si on est pas dans les cas prÃ©cÃ©dents,on crÃ©e une nouvelle table
+			//parcourirArbre(tree);//si on est pas dans les cas prÃ©cÃ©dents,on crÃ©e une nouvelle table
 			break;
 		}
 	}
