@@ -16,6 +16,13 @@ public class PrintI extends FonctionBase {
 	protected String codeAssembleurFonction() {
 		//TODO : déplacer l'adresse de la variable à afficher dans R0
 		//R0 contient l'adresse de la chaîne de caractères se terminant par NUL ;
+		
+		/* Realiser des divisions entiere par 10 successives 
+		 * Stocke le reste en haut de la pile
+		 * S'arrete quand le nombre a diviser est inferieur a 10
+		 * Affiche ensuite a partir du haut de la pile chaque chiffre un par un
+		 * Stocke dans R3 le nombre de chiffre a afficher
+		 * */
 		String codeAssembleur="";
 		codeAssembleur+="\tLDW WR,BP\t// On recupere la base\n";
 		codeAssembleur+="\tADQ 4,WR\t//On recupere l'adresse du parametre\n";
