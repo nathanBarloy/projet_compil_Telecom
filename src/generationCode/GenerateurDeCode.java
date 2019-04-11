@@ -278,7 +278,14 @@ public class GenerateurDeCode {
 			builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On dÃ©clare "+var.getName()+"\n");
 			//On Ã©value l'expression Ã  assigner
 			//traiterExpression(tree.getChild(1));
-			parcourirArbre(tree.getChild(1));
+			if(tree.getChildCount() == 2)
+			{
+				parcourirArbre(tree.getChild(1));
+			}
+			else
+			{
+				parcourirArbre(tree.getChild(2));
+			}
 			//On range le rÃ©sulat en sommet de pile
 			builderActuel.append("\tADQ -"+var.getType().getTaille()+",SP "+COMMENTAIRE_CHAR+"On dÃ©cale le sommet de pile de la taille du type de "+var.getName()+"("+var.getType().getName()+")\n");
 			builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
@@ -431,7 +438,7 @@ public class GenerateurDeCode {
 				{
 					//traiterExpression(tree.getChild(i));
 					parcourirArbre(tree.getChild(i));
-					builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0");
+					builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0\n");
 				}
 				else {
 					parcourirArbre(tree.getChild(i));
