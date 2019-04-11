@@ -198,12 +198,13 @@ public class GenerateurDeCode {
 			comparaison(tree.getChild(0),false,true);
 			builderActuel.append("\tCMP R1, R3\n");
 			builderActuel.append("\t");	
-			traiterConditionInverse(tree.getChild(0));
+			traiterCondition(tree.getChild(0));
 			//this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 
-			builderActuel.append(" "+courante.finBloc()+"\n");
+			builderActuel.append(" 4\n");
+			builderActuel.append("\tJEA@"+courante.finBloc()+"\n");
 
-			builderActuel.append("then"+courante.debutBloc()+"\n");
+			builderActuel.append("do"+courante.debutBloc()+"\n");
 			// modifier la ligne suivante : ne foncitonne pas
 			if(isLetOrSeqexp(tree.getChild(1)))
 			{

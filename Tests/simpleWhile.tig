@@ -2,10 +2,11 @@ let
     var a := 0
 	var i := 0
 in
-	while i<10
+	(while i<10
 	do (
 		print("ok  ");
 	    a := i + a;
 	    i := i + 1
-	)
+	);
+	print("Fin while"))
 end
