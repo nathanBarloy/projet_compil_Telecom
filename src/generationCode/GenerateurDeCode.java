@@ -7,6 +7,7 @@ import identificateurs.Variable;
 import identificateurs.fonctions.Exit;
 import identificateurs.fonctions.Fonction;
 import identificateurs.fonctions.Print;
+import identificateurs.fonctions.PrintI;
 import tableSymbole.TableSymbolesAbs;
 
 public class GenerateurDeCode {
@@ -95,6 +96,7 @@ public class GenerateurDeCode {
 		//TODO on ajoute le code des fonctions de base
 		codeFonctions.append(new Print().genererCode());
 		codeFonctions.append(new Exit().genererCode());
+		codeFonctions.append(new PrintI().genererCode());
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
