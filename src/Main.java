@@ -14,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
 
-		String path = "Tests/simpleRecursion.tig";
+		String path = "Tests/simpleIf3.tig";
 		//String path = "Tests/simpleFor.tig";
 
 		//Passe 1 : Analyse lexicale et syntaxique

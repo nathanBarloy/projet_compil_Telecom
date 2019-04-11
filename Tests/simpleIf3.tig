@@ -1,0 +1,25 @@
+let
+	var x := 2
+  var vrai := "vrai"
+  var faux := "faux"
+	function condition ( a : int) : int =
+  if a = 2
+    then
+      1
+    else
+      0
+in
+  (
+  if condition(x)
+	then
+		print(vrai)
+	else
+		print(faux);
+  if condition(x) = condition(x-1)
+  then
+    print(vrai)
+  else
+    print(faux)
+  )
+
+end

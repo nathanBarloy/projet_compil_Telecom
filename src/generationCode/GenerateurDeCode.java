@@ -603,6 +603,54 @@ public class GenerateurDeCode {
 							builderActuel.append("\tLDW R3, (R2)\n");
 						}
 					}
+					else if (noeud.getChildCount()==2)
+					{
+						//on Ã©value l'expression (fils droit)
+						switch(noeud.getChild(1).getText())
+						{
+							case "CALLEXP" :
+								//TODO
+							//	this.appelFonction = true;
+								Tree noeudCallExp = noeud.getChild(1);
+								//System.err.println(noeudCallExp.getText());
+								//on empile les paramÃ¨tres
+								for(int param=0;param<noeudCallExp.getChildCount();param++)
+								{
+									builderActuel.append("\t"+COMMENTAIRE_CHAR+"On empile la valeur de "+noeudCallExp.getChild(param).getChild(0).getText()+"\n");
+									//traiterExpression(noeudCallExp.getChild(param));
+									parcourirArbre(noeudCallExp.getChild(param));
+									//On empile le contenu de R1
+									//On range le rÃ©sulat en sommet de pile
+									builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On dÃ©cale le sommet de pile\n");
+									builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
+								}
+								//calculer chaÃ®nage STAT
+								Fonction fonc = (Fonction)courante.get(noeud.getChild(0).getText());
+								int nx = courante.getNiveau();
+								int ny = fonc.getTdsFonction().getNiveau();
+								int chainageARemonter=nx-ny+1;
+								calculerChainageStatique(chainageARemonter);
+								
+								builderActuel.append("\tJSR @"+fonc.nomCodeFonction());
+								int nbParam=noeudCallExp.getChildCount();
+								//on dÃ©pile les paramÃ¨tres
+								builderActuel.append("\tADQ "+(nbParam*2)+",SP "+COMMENTAIRE_CHAR+"On dÃ©pile les paramÃ¨tres\n");
+								if(!deuxieme)
+								{
+									builderActuel.append("\tLDW R1, R0\t"+COMMENTAIRE_CHAR+" On charge la valeur de retour dans R1\n");
+									if(unique)
+									{
+										comparaison(null,false,false);
+									}
+								}	
+								else
+								{
+									builderActuel.append("\tLDW R3, R0\t"+COMMENTAIRE_CHAR+" On charge la valeur de retour dans R3\n");
+								}
+								break;
+						
+						}
+					}
 					break;
 				case "=":
 				case "<>":
