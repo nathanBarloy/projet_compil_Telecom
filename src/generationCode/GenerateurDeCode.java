@@ -371,16 +371,20 @@ public class GenerateurDeCode {
 			comparaison(tree.getChild(0),false,true);
 			builderActuel.append("\tCMP R1, R3\n");
 			builderActuel.append("\t");	
-			traiterConditionInverse(tree.getChild(0));
+			traiterCondition(tree.getChild(0));
 			//this.courante = this.courante.getFils(this.courante.getCompteurTDS()-1);
 			boolean elsePresent = tree.getChildCount()==3;
 			if(elsePresent)
 			{
-				builderActuel.append(" else"+courante.debutBloc()+"-$-2\n");
+				//builderActuel.append(" else"+courante.debutBloc()+"-$-2\n");
+				builderActuel.append(" 4\n");
+				builderActuel.append("\tJEA @else"+courante.debutBloc()+"\n");
 			}
 			else
 			{
-				builderActuel.append(" "+courante.finBloc()+"\n");
+				builderActuel.append(" 4\n");
+				builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
+				//builderActuel.append(" "+courante.finBloc()+"\n");
 			}
 			builderActuel.append("then"+courante.debutBloc()+"\n");
 			// modifier la ligne suivante : ne foncitonne pas

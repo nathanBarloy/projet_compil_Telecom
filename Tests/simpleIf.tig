@@ -3,7 +3,7 @@ let
 	var y := 3
 in
 
-	if x < y
+	if x > y
 	then
 		x := 4
 	else
