@@ -72,6 +72,7 @@ public class GenerateurDeCode {
 		builderActuel.append("SP\tEQU R15\n"); // alias pour R15, pointeur de pile
 		builderActuel.append("WR\tEQU R14\n"); // Work Register (registre de travail)
 		builderActuel.append("BP\tEQU R13\n"); // frame Base Pointer (pointage environnement)
+		builderActuel.append("HP\tEQU R12\n"); // Heap pointer (pointeur du tas)
 		builderActuel.append("ORG\tLOADA\n"); // charge le code
 		builderActuel.append("START\tLOADA\n"); // lance le code
 		 // R12, R11 reÌ�serveÌ�s
@@ -85,6 +86,7 @@ public class GenerateurDeCode {
 		builderActuel.append("\tLDQ NIL, WR\n"); // charge BP avec NIL=0
 		builderActuel.append("\tSTW WR, -(SP) //On empile le dynamique\n"); // empile le contenu du registre BP
 		builderActuel.append("\tLDW BP, SP\n"); // charge contenu SP ds BP
+		builderActuel.append("\tLDW HP, #0\t//Initialisation du tas a 0\n");
 		//builderActuel.append("\tLDW WR, SP\n"); // charge contenu SP ds WR
 		builderActuel.append("\tSTW WR, -(SP) //On empile le statique\n"); // empile le contenu du registre BP
 
