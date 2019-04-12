@@ -9,12 +9,11 @@ import org.antlr.runtime.tree.CommonTree;
 
 import generationCode.GenerateurDeCode;
 import tableSymbole.TableSymbolesAbs;
-
-public class Main {
+class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
 
-		String path = "Tests/not.tig";
+		String path = "Tests/getChar.tig";
 		//String path = "Tests/simpleIf.tig";
 
 		//Passe 1 : Analyse lexicale et syntaxique

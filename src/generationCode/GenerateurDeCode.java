@@ -6,6 +6,7 @@ import org.antlr.runtime.tree.Tree;
 import identificateurs.Variable;
 import identificateurs.fonctions.Exit;
 import identificateurs.fonctions.Fonction;
+import identificateurs.fonctions.GetChar;
 import identificateurs.fonctions.Not;
 import identificateurs.fonctions.Print;
 import identificateurs.fonctions.PrintI;
@@ -99,6 +100,7 @@ public class GenerateurDeCode {
 		codeFonctions.append(new Exit().genererCode());
 		codeFonctions.append(new PrintI().genererCode());
 		codeFonctions.append(new Not().genererCode());
+		codeFonctions.append(new GetChar().genererCode());
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);

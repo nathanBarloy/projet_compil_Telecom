@@ -1,0 +1,8 @@
+let
+  var char : string := "A"
+in
+  (
+  char := getchar();
+  print(char)
+  )
+  end
