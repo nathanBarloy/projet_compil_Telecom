@@ -4,6 +4,7 @@ import java.io.Writer;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import identificateurs.Variable;
+import identificateurs.fonctions.Chr;
 import identificateurs.fonctions.Exit;
 import identificateurs.fonctions.Fonction;
 import identificateurs.fonctions.GetChar;
@@ -103,6 +104,8 @@ public class GenerateurDeCode {
 		codeFonctions.append(new PrintI().genererCode());
 		codeFonctions.append(new Not().genererCode());
 		codeFonctions.append(new GetChar().genererCode());
+		codeFonctions.append(new Chr().genererCode());
+
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);

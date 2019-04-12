@@ -42,7 +42,7 @@ public class PrintI extends FonctionBase {
 		codeAssembleur+="\tSTW R0, -(SP)\t//On empile le reste\n";
 		codeAssembleur+="\tLDW R0,R2\t//On met le resultat dans R0\n";
 		codeAssembleur+="\tJEA @division\t//On repete l'operation\n";
-		codeAssembleur+="\tADQ 48, R0\t//On convertit en ASCII et on ajoute 255\n";	
+		codeAssembleur+="\tADQ 48, R0\t//On convertit en ASCII\n";	
 		codeAssembleur+="\tMUL R0, R5, R0\t//On decale de 8 bits\n";
 		codeAssembleur+="\tSTW R0, -(SP)\t//On empile le reste\n";
 		codeAssembleur+="affichage\n";

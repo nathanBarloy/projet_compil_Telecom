@@ -1,0 +1,8 @@
+let
+  var string : string := "Coucou"
+in
+(
+  string := chr(4);
+  print(string)
+)
+end
