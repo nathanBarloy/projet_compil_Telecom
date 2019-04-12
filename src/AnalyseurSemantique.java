@@ -91,6 +91,8 @@ public class AnalyseurSemantique {
 		tds.ajouterIdentificateur(new Concat());
 		tds.ajouterIdentificateur(new Not());
 		tds.ajouterIdentificateur(new Exit());
+		tds.ajouterIdentificateur(new Read());
+
 	}
 
 	public void ajouterTypeAlias(TableSymbolesAbs tds,Tree name, Tree aliasedType)

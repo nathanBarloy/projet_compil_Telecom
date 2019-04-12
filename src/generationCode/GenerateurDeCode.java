@@ -11,6 +11,7 @@ import identificateurs.fonctions.GetChar;
 import identificateurs.fonctions.Not;
 import identificateurs.fonctions.Print;
 import identificateurs.fonctions.PrintI;
+import identificateurs.fonctions.Read;
 import tableSymbole.TableSymbolesAbs;
 
 public class GenerateurDeCode {
@@ -105,6 +106,7 @@ public class GenerateurDeCode {
 		codeFonctions.append(new Not().genererCode());
 		codeFonctions.append(new GetChar().genererCode());
 		codeFonctions.append(new Chr().genererCode());
+		codeFonctions.append(new Read().genererCode());
 
 		
 		try {

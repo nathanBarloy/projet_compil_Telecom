@@ -8,7 +8,7 @@ public class Not extends FonctionBase {
 	private final static String REGISTRESOURCE = "R0";
 	private final static String REGISTREDESTINATION = "R0";
 	public Not() {
-		super("not", TypePrimitif.INT);
+		super("not", TypePrimitif.INT); 
 	}
 
 	@Override
