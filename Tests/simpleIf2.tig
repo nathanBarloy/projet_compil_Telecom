@@ -1,9 +1,13 @@
-let 
+let
 	var x := 1
 in
 
 	if x < 3
 	then
-		x := 2
-	
+		if 1 = 0
+		then
+			x := 0
+		else
+			x := 3
+
 end

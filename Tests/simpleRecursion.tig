@@ -1,0 +1,14 @@
+let
+	function factorielle_recursive ( n : int ) : int =
+    let
+        function computation ( n : int , acc : int ) : int =
+            if n = 0 then
+                acc
+            else
+                computation ( n - 1 , acc * n )
+    in
+        computation (n , 1)
+    end
+in
+	factorielle_recursive(5)
+end

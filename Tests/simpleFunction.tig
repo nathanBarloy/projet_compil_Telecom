@@ -8,7 +8,7 @@ let
 		a*b
 	end
 in
-	(z := fois(z,10);
-	exit();
-	z := z * x )
+	z := fois(z-1,10)
 end
+
+0fe2
