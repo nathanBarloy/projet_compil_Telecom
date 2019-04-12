@@ -6,6 +6,7 @@ import org.antlr.runtime.tree.Tree;
 import identificateurs.Variable;
 import identificateurs.fonctions.Exit;
 import identificateurs.fonctions.Fonction;
+import identificateurs.fonctions.Not;
 import identificateurs.fonctions.Print;
 import identificateurs.fonctions.PrintI;
 import tableSymbole.TableSymbolesAbs;
@@ -97,6 +98,7 @@ public class GenerateurDeCode {
 		codeFonctions.append(new Print().genererCode());
 		codeFonctions.append(new Exit().genererCode());
 		codeFonctions.append(new PrintI().genererCode());
+		codeFonctions.append(new Not().genererCode());
 		
 		try {
 			Writer writer=new FileWriter(nomFichier);
@@ -300,6 +302,7 @@ public class GenerateurDeCode {
 			{
 				//on rÃ©cupÃ¨re l'adresse de la variable du noeud fils
 				Variable v = (Variable)courante.get(tree.getChild(0).getText());
+				System.err.println(tree.getChild(0).getText());
 				//on rÃ©cupÃ¨re l'adresse de la variable
 				recupererAdresseVariable(v);
 				//on copie le contenu de R2 dans R1

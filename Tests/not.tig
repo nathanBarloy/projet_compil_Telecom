@@ -1,0 +1,9 @@
+let
+  var true : int := 1
+  var false : int := 0
+in
+  (
+  printi(not(true));
+  printi(not(false))
+  )
+end
