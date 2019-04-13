@@ -1285,12 +1285,14 @@ public class GenerateurDeCode {
 		{
 			res+="\tSTW R"+i+",-(SP)\n";
 		}
+		res+="\tSTW R12, -(SP)\n";
 		return res;
 	}
 	
 	public static String restaurerRegistres()
 	{
 		String res = "";
+		res+="\tLDW R12, (SP)+\n";
 		for(int i=10;i>0;i--)
 		{
 			res +="\tLDW R"+i+",(SP)+\n";

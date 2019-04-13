@@ -1,0 +1,10 @@
+let
+  var a := 2
+  type tableau = array of int
+in
+  let
+    var tab := tableau[3] of int
+  in
+    tab[2] := a
+  end
+end
