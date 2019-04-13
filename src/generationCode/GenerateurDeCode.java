@@ -714,7 +714,57 @@ public class GenerateurDeCode {
 					comparaison(noeud.getChild(0),false,false);
 					comparaison(noeud.getChild(1),true,false);
 					break;
-				
+				case "|" :
+					comparaison(noeud.getChild(0),false,true);
+					builderActuel.append("\tCMP R1, R3\n");
+					builderActuel.append("\t");	
+					traiterCondition(noeud.getChild(0));
+					builderActuel.append(" 6\n");
+					builderActuel.append("\tLDW R1, #0\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 0 dans la pile\n");
+					builderActuel.append("\tBMP 4\n");
+					builderActuel.append("\tLDW R1, #1\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 1 dans la pile\n");
+					comparaison(noeud.getChild(1),false,true);
+					builderActuel.append("\tCMP R1, R3\n");
+					builderActuel.append("\t");	
+					traiterCondition(noeud.getChild(1));
+					builderActuel.append(" 6\n");
+					builderActuel.append("\tLDW R1, #0\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 0 dans la pile\n");
+					builderActuel.append("\tBMP 4\n");
+					builderActuel.append("\tLDW R1, #1\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 1 dans la pile\n");
+					builderActuel.append("\tLDW R1, (SP)+\t//On depile dans R1\n");
+					builderActuel.append("\tLDW R2, (SP)+\t//On depile dans R2\n");
+					builderActuel.append("\tOR R1, R2, R1\t//On realise le OU, resultat dans R1\n");
+					builderActuel.append("\tLDW R3, #0\t//On met R3 a 0 pour la comparaison\n");
+					break;
+				case "&" :
+					comparaison(noeud.getChild(0),false,true);
+					builderActuel.append("\tCMP R1, R3\n");
+					builderActuel.append("\t");	
+					traiterCondition(noeud.getChild(0));
+					builderActuel.append(" 6\n");
+					builderActuel.append("\tLDW R1, #0\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 0 dans la pile\n");
+					builderActuel.append("\tBMP 4\n");
+					builderActuel.append("\tLDW R1, #1\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 1 dans la pile\n");
+					comparaison(noeud.getChild(1),false,true);
+					builderActuel.append("\tCMP R1, R3\n");
+					builderActuel.append("\t");	
+					traiterCondition(noeud.getChild(1));
+					builderActuel.append(" 6\n");
+					builderActuel.append("\tLDW R1, #0\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 0 dans la pile\n");
+					builderActuel.append("\tBMP 4\n");
+					builderActuel.append("\tLDW R1, #1\n");
+					builderActuel.append("\tSTW R1, -(SP)\t//On met 1 dans la pile\n");
+					builderActuel.append("\tLDW R1, (SP)+\t//On depile dans R1\n");
+					builderActuel.append("\tLDW R2, (SP)+\t//On depile dans R2\n");
+					builderActuel.append("\tAND R1, R2, R1\t//On realise le OU, resultat dans R1\n");
+					builderActuel.append("\tLDW R3, #0\t//On met R3 a 0 pour la comparaison\n");
 			}
 		}
 		
@@ -759,8 +809,9 @@ public class GenerateurDeCode {
 			}
 			break;
 			case  "&":
-				
+				builderActuel.append("BGT");
 			case  "|":
+				builderActuel.append("BGT");
 				
 			break;
 			

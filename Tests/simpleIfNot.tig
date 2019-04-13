@@ -1,9 +1,0 @@
-let 
-	var x := 0
-in
-
-	if -2
-	then
-		x := 2
-	
-end
