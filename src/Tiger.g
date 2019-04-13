@@ -109,21 +109,18 @@ assignment
 	;
 
 exp
-	: e (options{greedy=true;}: logop^ e)*
+	: e1 (options{greedy=true;}: '&'^ e1)*
 	;
-/*	: 'nil'
-	| INTLIT
-	| STRINGLIT
-	| seqExp
-	| negation
-	| ID idBegin
-	| ifThen
-	| whileExp
-	| forExp
-	| 'break'
-	| letExp		*/
 
-e
+e1
+	: e2 (options{greedy=true;}: '|'^ e2)*
+	;
+
+e2
+	: e3 (options{greedy=true;}: logop^ e3)*
+	;
+
+e3
 	: multExp (options{greedy=true;}: addop^ multExp)*  //-> ^(multExp (addop multExp)*)
 	;
 
@@ -208,8 +205,6 @@ logop	: '='
 	| '<'
 	| '>='
 	| '<='
-	| '&'
-	| '|'
 	;
 
 //definition des expressions regulieres reconnaissant les tokens

@@ -2,7 +2,7 @@ let
 	var x := 5
 in
 
-	if x<=4 | x = 5
+	if x>1 & x<=4 | x = 6
 	then
 		print("oui")
 	else

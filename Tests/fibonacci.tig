@@ -1,0 +1,17 @@
+let
+    function fibonacci ( generations : int ) : int =
+    let
+        function computation ( generations : int , previous : int , pprevious : int ) : int =
+            if generations = 0 then
+                previous
+        else
+            computation ( generations - 1 , previous + pprevious , previous )
+    in
+        if generations = 0 | generations = 1 then
+            generations
+        else
+            computation ( generations - 2 , 1 , 0)
+    end
+in
+  printi(fibonacci(12))
+end
