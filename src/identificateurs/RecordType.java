@@ -3,7 +3,7 @@ package identificateurs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecordType extends Type {
+public class RecordType extends Type{
 	private List<Variable> listeVar;
 
 	public RecordType(String nom) {

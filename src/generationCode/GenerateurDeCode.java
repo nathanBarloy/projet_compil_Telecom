@@ -165,7 +165,6 @@ public class GenerateurDeCode {
 */
 			parcourirArbre(tree.getChild(tree.getChildCount()-1));
 			//}
-			//TODO generer le code du corps de la fonction
 			builderActuel.append( f.finFonction());
 			compteurEntreeFonctions--;
 			codeFonctions.append(builderActuel);
@@ -196,7 +195,6 @@ public class GenerateurDeCode {
 				}
 				
 			}
-			// TODO
 			finBloc();
 			this.courante=courante.getParent();
 			break;
@@ -280,11 +278,8 @@ public class GenerateurDeCode {
 			//fin for
 			finBloc();
 			this.courante=courante.getParent();
-			// TODO
 			break;
 		case "VARDEC":
-
-			//TODO
 			Variable var = (Variable)courante.get(tree.getChild(0).getText());
 			builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On dÃ©clare "+var.getName()+"\n");
 			//On Ã©value l'expression Ã  assigner
@@ -323,7 +318,42 @@ public class GenerateurDeCode {
 				switch(tree.getChild(1).getText())
 				{
 					case "EXPBEG":
-						//TODO
+						int nbFils = tree.getChild(1).getChildCount();
+						if(nbFils == 2)
+						{
+							switch(tree.getChild(1).getChild(1).getText())
+							{
+								case "BRACBEG" :
+									builderActuel.append("\tLDW R1, HP\t//On met l'adresse du tas dans R1\n");
+									builderActuel.append("\tADQ "+tree.getChild(1).getChild(0).getChild(0).getText()+", HP\t//On augmente HP de la taille du tableau\n");
+									break;
+								case "ASSIGNMENT" :
+									Variable v = (Variable)courante.get(tree.getChild(0).getText());
+									recupererAdresseVariable(v);
+									builderActuel.append("\tLDW R2, (R2)\t//On recupere l'adresse du tableau dans le tas\n");
+									parcourirArbre(tree.getChild(1).getChild(0));
+									builderActuel.append("\tLDW R3, R1\t//On recuperer l'index\n");
+									builderActuel.append("\tLDW R4, #2\n");
+									builderActuel.append("\tMUL R3, R4, R3\t//On calcule le deplacement dans le tas\n");
+									builderActuel.append("\tADC R2, R3, R3\t//On recupere l'adresse dans R3\n");
+									parcourirArbre(tree.getChild(1).getChild(1).getChild(0));
+									builderActuel.append( "\tSTW R1, (R3)\t"+COMMENTAIRE_CHAR+"On stocke le contenu de R1 a l'adresse contenue dans R3\n");
+									break;
+								// TODO autres cas possibles
+							}
+						}
+						else if(nbFils == 1)
+						{
+							Variable v = (Variable)courante.get(tree.getChild(0).getText());
+							recupererAdresseVariable(v);
+							builderActuel.append("\tLDW R2, (R2)\t//On recupere l'adresse du tableau dans le tas\n");
+							parcourirArbre(tree.getChild(1).getChild(0));
+							builderActuel.append("\tLDW R3, R1\t//On recuperer l'index\n");
+							builderActuel.append("\tLDW R4, #2\n");
+							builderActuel.append("\tMUL R3, R4, R3\t//On calcule le deplacement dans le tas\n");
+							builderActuel.append("\tADC R2, R3, R3\t//On recupere l'adresse dans R3\n");
+							builderActuel.append("\tLDW R1, (R3)\t//On met la valeur dans R1\n");
+						}
 						break;
 					case "FIELDEXP":
 						// TODO
@@ -362,8 +392,6 @@ public class GenerateurDeCode {
 					//	this.appelFonction = false;
 						break;
 					case "ASSIGNMENT":	
-						// TODO
-						System.err.println("assignement");
 						Tree noeudAssignment = tree.getChild(1);
 						//System.err.println(noeudAssignment.getText());
 						//traiterExpression(noeudAssignment.getChild(0));
@@ -378,7 +406,6 @@ public class GenerateurDeCode {
 			}
 			break;
 		case "NEGATION" :
-			//TODO
 			// pas de parcours normalement
 
 			break;

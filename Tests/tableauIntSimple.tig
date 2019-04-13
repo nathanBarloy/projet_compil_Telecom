@@ -3,5 +3,8 @@ let
 	var tab := tableau[3] of int
 	var a := 3
 in
-	tab[2] := a
+	(
+	tab[2] := a;
+	printi(tab[2])
+	)
 end

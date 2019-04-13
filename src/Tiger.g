@@ -154,7 +154,7 @@ negation
 	;
 
 idBegin
-	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin)
+	: '[' exp ']' bracBegin 					-> ^(EXPBEG exp bracBegin?)
 	| '.' ID lValue								-> ^(FIELDEXP ID lValue?)
 	| '{' (fieldCreate(',' fieldCreate)*)? '}'	-> ^(RECCREATE fieldCreate*)
 	| assignment

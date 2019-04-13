@@ -560,7 +560,7 @@ public class AnalyseurSemantique {
 							}
 							break;
 						case "ASSIGNMENT": // Concordance des types lors de l'assignment
-							RecordType assign = (RecordType) ((ArrayType) tableParent.getVariableType(tree.getChild(0).getText())).getSousType();
+							Type assign = ((ArrayType) tableParent.getVariableType(tree.getChild(0).getText())).getSousType();
 							String typeAssign = assign.getName();
 							if(typeAssign != detectionTypeExp(tree.getChild(1).getChild(1).getChild(0), tableParent)) {
 								afficherErreurSemantique(tree.getChild(1).getChild(1).getChild(0).getChild(0), "Le type attendu de '"+tree.getChild(1).getChild(1).getChild(0).getChild(0).getText()+"' est '"+detectionTypeExp(tree.getChild(0), tableParent) +"' (actuellement de type '"+detectionTypeExp(tree.getChild(1).getChild(1).getChild(0).getChild(0), tableParent)+"')");
