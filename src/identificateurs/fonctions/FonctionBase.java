@@ -8,7 +8,7 @@ import tableSymbole.TableSymbolesAbs;
 public class FonctionBase extends Fonction {
 
 	public FonctionBase(String name, Type retour) {
-		super(name, retour, new TableSymboleFonctionBase());
+		super(name, retour, new TableSymboleFonctionBase(0));
 		// TODO Auto-generated constructor stub
 	}
 

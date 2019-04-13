@@ -24,7 +24,7 @@ public abstract class Fonction extends Identificateur {
 	
 	public String nomCodeFonction()
 	{
-		return nom+"_ \t\n";
+		return nom+"_"+this.tdsFonction.getNumeroTDS()+" \t\n";
 	}
 	
 	public String debutFonction()

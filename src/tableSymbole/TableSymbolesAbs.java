@@ -50,6 +50,16 @@ public abstract class TableSymbolesAbs {
 		fils = new ArrayList<TableSymbolesAbs>();
 		identificateurs=new HashMap<>();
 	}
+	
+	public TableSymbolesAbs(int numTDS) { // table des symboles pour fonction base
+		this.numeroTDS = numTDS;
+		this.parent = null;
+		this.compteurTDS = 0;
+		niveau = 0;
+
+		fils = new ArrayList<TableSymbolesAbs>();
+		identificateurs=new HashMap<>();
+	}
 
 	public void ajouterTypePrimitif(TypePrimitif type)
 	{
@@ -332,6 +342,11 @@ public abstract class TableSymbolesAbs {
 	public int getCompteurTDS()
 	{
 		return this.compteurTDS;
+	}
+	
+	public int getNumeroTDS()
+	{
+		return this.numeroTDS;
 	}
 	
 	protected abstract String nomBloc();

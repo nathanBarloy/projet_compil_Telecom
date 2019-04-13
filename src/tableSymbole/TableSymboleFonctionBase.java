@@ -3,8 +3,8 @@ package tableSymbole;
 public class TableSymboleFonctionBase extends TableSymbolesAbs{
 
 	
-	public TableSymboleFonctionBase() {
-		super();
+	public TableSymboleFonctionBase(int numTDS) {
+		super(numTDS);
 		niveau++;
 		// TODO Auto-generated constructor stub
 	}
