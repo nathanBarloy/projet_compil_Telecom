@@ -227,7 +227,7 @@ public class GenerateurDeCode {
 				parcourirArbre(tree.getChild(1));
 				builderActuel.append("\tLDW R0, R1 \t"+COMMENTAIRE_CHAR+"Copie de la valeur de retour dans R0\n");
 			}
-			builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
+			//builderActuel.append("\tJEA @"+courante.finBloc()+"\n");
 
 			
 			
@@ -531,11 +531,12 @@ public class GenerateurDeCode {
 			builderActuel.append("\tLDW R1, #"+tree.getChild(0).getText()+COMMENTAIRE_CHAR+"On stocke la valeur de l'entier dans R1\n");
 			break;
 		case "STRING":
-			//TODO
 			ajouterString(tree.getChild(0).getText());
 			builderActuel.append("\tLDW R1, #STRING"+numString+COMMENTAIRE_CHAR+"On charge l'adresse de la chaÃ®ne dans R1\n");
 			numString++;
 			break;
+			
+		// TODO rajouter les operateurs de comparaisons
 		default:
 			//parcourirArbre(tree);//si on est pas dans les cas prÃ©cÃ©dents,on crÃ©e une nouvelle table
 			break;
@@ -1333,7 +1334,7 @@ public class GenerateurDeCode {
 	public static String sauvegarderRegistres()
 	{
 		String res = "";
-		for(int i=1;i<=10;i++)
+		for(int i=2;i<=10;i++)
 		{
 			res+="\tSTW R"+i+",-(SP)\n";
 		}
@@ -1345,7 +1346,7 @@ public class GenerateurDeCode {
 	{
 		String res = "";
 		res+="\tLDW R12, (SP)+\n";
-		for(int i=10;i>0;i--)
+		for(int i=10;i>1;i--)
 		{
 			res +="\tLDW R"+i+",(SP)+\n";
 		}

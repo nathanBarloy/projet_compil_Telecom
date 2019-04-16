@@ -318,7 +318,7 @@ public class AnalyseurSemantique {
 					//System.err.println("Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
 					afficherErreurSemantique(tree.getChild(1), "Le type de "+testReturn+" doit etre void. Type detecte : "+typeDetecteReturn);
 				}
-				parcoursArbre(tree.getChild(0),nouvelle,0);
+				parcoursArbre(tree.getChild(1),nouvelle,0);
 				break;
 
 			case "FOR":
