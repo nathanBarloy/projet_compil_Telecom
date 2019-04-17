@@ -13,7 +13,7 @@ class Main {
 
 	public static void main(String[] args) throws RecognitionException, FileNotFoundException, IOException {
 
-		String path = "Tests/prog1.txt";
+		String path = "Tests/printi.tig";
 		//String path = "Tests/simpleIf.tig";
 
 		//Passe 1 : Analyse lexicale et syntaxique
