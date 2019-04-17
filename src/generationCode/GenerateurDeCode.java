@@ -536,7 +536,22 @@ public class GenerateurDeCode {
 			numString++;
 			break;
 			
-		// TODO rajouter les operateurs de comparaisons
+		case "=":
+		case "<>":
+		case  ">":
+		case  "<":
+		case  ">=":
+		case  "<=":
+			parcourirArbre(tree.getChild(1));
+			builderActuel.append("\tLDW R3, R1\n");
+			parcourirArbre(tree.getChild(0));
+			builderActuel.append("\tCMP R1, R3\n\t");
+			traiterCondition(tree);
+			builderActuel.append(" 6\n");
+			builderActuel.append("\tLDW R1, #0\n");
+			builderActuel.append("\tBMP 2\n");
+			builderActuel.append("\tLDW R1, #1\n");
+			break;
 		default:
 			//parcourirArbre(tree);//si on est pas dans les cas prÃ©cÃ©dents,on crÃ©e une nouvelle table
 			break;

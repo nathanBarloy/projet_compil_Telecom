@@ -18,10 +18,9 @@ public class PrintI extends FonctionBase {
 		//R0 contient l'adresse de la chaîne de caractères se terminant par NUL ;
 		
 		/* Realiser des divisions entiere par 10 successives 
-		 * Stocke le reste en haut de la pile
+		 * Stocke les mots dans la pile
 		 * S'arrete quand le nombre a diviser est inferieur a 10
-		 * Affiche ensuite a partir du haut de la pile chaque chiffre un par un
-		 * Stocke dans R3 le nombre de chiffre a afficher
+		 * Depile dans le tas puis affiche
 		 * */
 		String codeAssembleur="";
 		codeAssembleur+="\tLDW WR,BP\t// On recupere la base\n";
@@ -63,18 +62,7 @@ public class PrintI extends FonctionBase {
 		codeAssembleur+="\tMUL R2, R5, R2\t//On decale de 8 bits\n";
 		codeAssembleur+="\tADC R2, R7, R2\n";
 		codeAssembleur+="\tSTW R2, -(SP)\t//On empile le reste\n";
-		/*
-		codeAssembleur+="\tADQ 48, R2\t//On convertit en ASCII\n";	
-		codeAssembleur+="\tMUL R2, R5, R2\t//On decale de 8 bits\n";
-		codeAssembleur+="\tSTW R2, -(SP)\t//On empile le reste\n";*/
 		codeAssembleur+="affichage\n";
-		/*
-		codeAssembleur+="\tCMP R3,R4\t//On regarde si R3 est egal à 0\n";
-		codeAssembleur+="\tBEQ 10\t//Si oui on a tout affiche\n";
-		codeAssembleur+="\tLDW R0, SP\t//On met l'adresse de SP dans R0\n";
-		codeAssembleur+="\tTRP WR\n"; // lance la trappe WRITE
-		codeAssembleur+="\tADQ 2, SP\t//On decremente SP\n";
-		codeAssembleur+="\tADQ -1, R3\t//On decremente R3\n";*/
 		codeAssembleur+="\tSUB R9, SP, R2\n";
 		codeAssembleur+="\tCMP R2, R4\n";
 		codeAssembleur+="\tBEQ 8\n";
