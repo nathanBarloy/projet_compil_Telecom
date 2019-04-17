@@ -64,12 +64,34 @@ public class RecordType extends Type{
 
 	@Override
 	public int getTaille() {
+	/*	int somme=0;
+		for(Variable v:listeVar)
+		{
+			somme += v.getType().getTaille();
+		}
+		return somme;*/
+		return 2;
+	}
+	
+	public int getDeplacement() {
 		int somme=0;
 		for(Variable v:listeVar)
 		{
 			somme += v.getType().getTaille();
 		}
 		return somme;
+	}
+
+	public int getIndexFromField(String field)
+	{
+		for(int i = 0; i < listeVar.size(); i ++)
+		{
+			if(listeVar.get(i).getName().equals(field))
+			{
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	

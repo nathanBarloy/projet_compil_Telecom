@@ -3,6 +3,8 @@ import java.io.FileWriter;
 import java.io.Writer;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+
+import identificateurs.RecordType;
 import identificateurs.Variable;
 import identificateurs.fonctions.Chr;
 import identificateurs.fonctions.Exit;
@@ -94,7 +96,7 @@ public class GenerateurDeCode {
 
 		parcourirArbre(ast);
 		
-		//TODO ce code termine le main, il doit Ãªtre ajoutÃ© avant le code des fonctions
+		// ce code termine le main, il doit Ãªtre ajoutÃ© avant le code des fonctions
 		builderActuel.append("\tLDW SP, BP\n"); // abandon infos locales
 		builderActuel.append("\tLDW BP, (SP)+\n"); // charge BP avec ancien BP
 		builderActuel.append("\tTRP #EXIT_EXC\n"); // EXIT: arrÃªte le programme*/
@@ -297,7 +299,7 @@ public class GenerateurDeCode {
 			builderActuel .append( "\tSTW R1, (SP)"+COMMENTAIRE_CHAR+"On empile le contenu de R1\n");
 			break;
 		case "TYDEC" :
-			//TODO
+			// Il y a rien a faire normalement
 			// pas de parcours normalement
 			break;
 		case "IDBEG":
@@ -356,13 +358,45 @@ public class GenerateurDeCode {
 						}
 						break;
 					case "FIELDEXP":
-						// TODO
+						// TODO : tableau dans record et record dans record
+						int nbChild = tree.getChild(1).getChildCount();
+						if(nbChild == 1)
+						{
+							Variable v = (Variable)courante.get(tree.getChild(0).getText());
+							recupererAdresseVariable(v);
+							builderActuel.append("\tLDW R2, (R2)\t//On recupere l'adresse du record dans le tas\n");
+							int deplacement = ((RecordType) v.getType()).getIndexFromField(tree.getChild(1).getChild(0).getText()) * 2;
+							builderActuel.append("\tADQ "+deplacement+", R2\t//On ajoute le deplacement\n");
+							builderActuel.append("\tLDW R1, (R2)\t//On met la valeur du champ dans R1\n");
+						}
+						else if (nbChild == 2)
+						{
+							switch(tree.getChild(1).getChild(1).getText())
+							{
+								case "ASSIGNMENT":
+									parcourirArbre(tree.getChild(1).getChild(1).getChild(0));
+									Variable v = (Variable)courante.get(tree.getChild(0).getText());
+									recupererAdresseVariable(v);
+									builderActuel.append("\tLDW R2, (R2)\t//On recupere l'adresse du record dans le tas\n");
+									int deplacement = ((RecordType) v.getType()).getIndexFromField(tree.getChild(1).getChild(0).getText()) * 2;
+									builderActuel.append("\tADQ "+deplacement+", R2\t//On ajoute le deplacement\n");
+									builderActuel.append("\tSTW R1, (R2)\n");
+									break;
+							}
+						}
 						break;
 					case "RECCREATE":
-						//TODO
+						RecordType rec =(RecordType) this.courante.get(tree.getChild(0).getText());
+						int taille = rec.getDeplacement();
+						for(int i = 0; i < tree.getChild(1).getChildCount(); i ++)
+						{
+							parcourirArbre(tree.getChild(1).getChild(i).getChild(1));
+							builderActuel.append("\tSTW R1, (HP)+\t//On initialise la valeur du champ\n");
+						}
+						builderActuel.append("\tLDW R1, HP\n");
+						builderActuel.append("\tADQ -"+taille+", R1\n");
 						break;
 					case "CALLEXP" :
-						//TODO
 					//	this.appelFonction = true;
 						Tree noeudCallExp = tree.getChild(1);
 						//System.err.println(noeudCallExp.getText());
@@ -407,7 +441,7 @@ public class GenerateurDeCode {
 			break;
 		case "NEGATION" :
 			// pas de parcours normalement
-
+			// TODO
 			break;
 		case "IFTHEN" :
 			this.courante.incCompteurTDS();
@@ -678,7 +712,6 @@ public class GenerateurDeCode {
 						switch(noeud.getChild(1).getText())
 						{
 							case "CALLEXP" :
-								//TODO
 							//	this.appelFonction = true;
 								Tree noeudCallExp = noeud.getChild(1);
 								//System.err.println(noeudCallExp.getText());
