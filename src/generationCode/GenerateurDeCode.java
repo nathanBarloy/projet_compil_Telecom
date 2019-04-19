@@ -246,20 +246,16 @@ public class GenerateurDeCode {
 			debutBloc(tableBlocFor);
 			this.courante = tableBlocFor;
 			//debut for
-			/*//on empile registre de boucle avant de l'utiliser 
-			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On dÃ©cale le sommet de pile de la taille du registre de boucle\n");
-			builderActuel .append( "\tSTW "+REGISTREBOUCLEFOR+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du registre de boucle\n");*/
 			//on dÃ©clare la variable de boucle
 			builderActuel.append("\tADQ -2,SP "+COMMENTAIRE_CHAR+"On dÃ©cale le sommet de pile de la taille de variable qui porte la boucle\n");
-			//builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+", (SP)"+COMMENTAIRE_CHAR+"On empile le contenu du rÃ©sultat de l'Ã©valuation de l'expression (DEBUT BOUCLE)\n");
 			//on met la valeur de debut de boucle dans le registre de boucle
-			//traiterExpression(tree.getChild(1)); //on stocke la valeur initiale de la variable de boucle dans REGISTRERETOUREXPRESSION
 			parcourirArbre(tree.getChild(1));
 			builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+","+REGISTREBOUCLEFOR+COMMENTAIRE_CHAR+"On met dans le registre de boucle la valeur de dÃ©part\n");
 			//On met la valeur de fin de boucle dans R8
 			//traiterExpression(tree.getChild(2));
 			parcourirArbre(tree.getChild(2));
 			builderActuel .append( "\tSTW "+REGISTRERETOUREXPRESSION+","+REGISTREMAXBOUCLEFOR+COMMENTAIRE_CHAR+"On met l'indice de fin de boucle dans un registre\n");
+			builderActuel.append("\tADQ 1,"+REGISTREMAXBOUCLEFOR+"\n");
 			builderActuel.append(courante.debutBloc()+"\n");
 			//on met Ã  jour l'indice de boucle avec le registre de boucle
 			builderActuel.append("\tSTW "+REGISTREBOUCLEFOR+",(BP)-4\n");//on met le contenu du registre de boucle dans l'indice de boucle
