@@ -267,7 +267,6 @@ public class GenerateurDeCode {
 			
 			//on compare l'indice de boucle avec la valeur max de boucle
 			builderActuel.append("\tCMP "+REGISTREMAXBOUCLEFOR+","+REGISTREBOUCLEFOR+"\n");
-			//builderActuel.append("\tCMP R1,"+REGISTREBOUCLEFOR+"//On compare le registre de boucle et l'indice de boucle\n");//REGISTREBOUCLEFOR contient l'indice de boucle
 			builderActuel.append("\tBEQ 4\n");
 			builderActuel.append("\tJEA @"+courante.debutBloc()+"\n");
 			builderActuel.append("\tADQ 2,SP//On dÃ©pile la variable qui porte la boucle\n");
@@ -617,21 +616,7 @@ public class GenerateurDeCode {
 		int chainageARemonter=nombreDeChainageARemonter(v);
 		//System.err.println("Nb chainage : "+chainageARemonter);
 		builderActuel.append( "\t"+COMMENTAIRE_CHAR+"On recherche l'adresse de "+v.getName()+"\n");
-		//on a pas de remontÃ©e Ã  faire, on est dans le bloc local
-		builderActuel.append("\tLDW WR, BP\n"); // WR = BP
-		if(chainageARemonter>0)
-		{
-			builderActuel.append( "\tLDW R10,#("+chainageARemonter+")\n");//on met le nombre de chainage Ã  remonter dans R10
-			builderActuel.append( "BOU"+nbRemontees+"\tADQ -2,WR\n");//-2 correspond toujours Ã  la taille d'une adresse
-			builderActuel.append("\tLDW WR,(WR)\n");
-			builderActuel.append( "\tADQ -1,R10\n");//on retire 1 Ã  la valeur dans R10
-			builderActuel.append( "\tBNE BOU"+nbRemontees+"-$-2\n");//si R10 n'est pas Ã©gal Ã  0, on retourne Ã  BOU
-			nbRemontees++;
-		}
-		else
-		{
-			
-		}
+		calculerChainageStatique(chainageARemonter);
 		if(v.getDeplacement()>=0)
 		{
 			builderActuel.append("\tADQ -"+(v.getDeplacement()+4)+", WR\n"); // WR pointe sur la variable locale (+4 pour passer DYN et STAT)
