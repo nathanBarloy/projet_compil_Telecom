@@ -46,7 +46,7 @@ public class Read extends FonctionBase{
 		codeAssembleur+="\tLDW R6, #1\n";
 		codeAssembleur+="\tADQ 1, R3\t//On incremente R3\n";
 		codeAssembleur+="\tCMP R3, R2\n";
-		codeAssembleur+="\tBGE 16\n";
+		codeAssembleur+="\tJGE #fin_read-$-2\n";
 		codeAssembleur+="\tLDW R1, (SP)+\t//On depile\n";
 		codeAssembleur+="\tMUL R6, R4, R6\n";
 		codeAssembleur+="\tADQ 1, R5\n";
@@ -55,6 +55,7 @@ public class Read extends FonctionBase{
 		codeAssembleur+="\tMUL R1, R6, R1\n";
 		codeAssembleur+="\tADC R1, R0, R0\n";
 		codeAssembleur+="\tJEA @depilement\n";
+		codeAssembleur+="fin_read";
 		codeAssembleur+="\tLDW HP, R9\t//On restaure le tas\n";
 		return codeAssembleur;
 	}

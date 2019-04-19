@@ -1,0 +1,77 @@
+let
+  type vector = { x : int, y : int, z : int }
+  type tableau = array of int
+  var v := vector { x = 2, y = 3, z = 5}
+  var tab := tableau[3] of int
+  var entreeUtilisateur : int := 0
+  var resultat : int := 0
+  var coucou : string := "Bonjour "
+
+  function factorielle ( a : int) : int =
+    if a = 1
+      then
+        1
+      else
+        a * factorielle (a-1)
+
+  function puissance ( a : int , b : int ) : int =
+    let
+      var i := 0
+      var resultat := 0
+    in
+      if b = 0 then
+        1
+      else
+      (
+        i := 1;
+        resultat := a ;
+        while i < b do
+          (
+          resultat := resultat * a ;
+          i := i + 1
+          );
+          resultat
+      )
+    end
+
+
+
+in
+ print(coucou);
+ entreeUtilisateur := read();
+ printi(factorielle(entreeUtilisateur));
+ print(" ");
+
+ tab[0] := puissance(2,1);
+ tab[1] := puissance(2,2);
+ tab[2] := puissance(2,3);
+ printi(tab[0]);
+ print(" ");
+ printi(tab[1]);
+ print(" ");
+ printi(tab[2]);
+ for i := 0 to 10 do
+  (
+  printi(i);
+  print(" ");
+  if i = 5
+    then
+      (
+      print("Break");
+      break
+      )
+  );
+  if entreeUtilisateur > 5 | entreeUtilisateur = 3 & entreeUtilisateur = 6
+    then
+      v.y := v.x + v.z
+    else
+     v.x := v.x*2;
+  print(" ");
+  printi(v.x);
+  print(" ");
+  printi(v.y);
+  print(" ");
+  printi(v.z)
+
+
+end
