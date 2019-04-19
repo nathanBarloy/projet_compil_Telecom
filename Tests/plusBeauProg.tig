@@ -5,14 +5,22 @@ let
   var tab := tableau[3] of int
   var entreeUtilisateur : int := 0
   var resultat : int := 0
+  var condition : int := 0
   var coucou : string := "Bonjour "
 
-  function factorielle ( a : int) : int =
-    if a = 1
-      then
-        1
+  function fibonacci ( generations : int ) : int =
+  let
+      function computation ( generations : int , previous : int , pprevious : int ) : int =
+          if generations = 0 then
+              previous
       else
-        a * factorielle (a-1)
+          computation ( generations - 1 , previous + pprevious , previous )
+  in
+      if generations = 0 | generations = 1 then
+          generations
+      else
+          computation ( generations - 2 , 1 , 0)
+  end
 
   function puissance ( a : int , b : int ) : int =
     let
@@ -39,7 +47,7 @@ let
 in
  print(coucou);
  entreeUtilisateur := read();
- printi(factorielle(entreeUtilisateur));
+ printi(fibonacci(entreeUtilisateur));
  print(" ");
 
  tab[0] := puissance(2,1);
@@ -54,7 +62,8 @@ in
   (
   printi(i);
   print(" ");
-  if i = 5
+  condition := i > 5;
+  if condition
     then
       (
       print("Break");
