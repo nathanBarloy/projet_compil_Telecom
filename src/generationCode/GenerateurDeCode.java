@@ -276,7 +276,7 @@ public class GenerateurDeCode {
 			builderActuel.append("\tJEA @"+courante.debutBloc()+"\n");
 			builderActuel.append("\tADQ 2,SP//On dÃ©pile la variable qui porte la boucle\n");
 			
-			
+			builderActuel.append(courante.finBloc()+"\n");
 			//fin for
 			finBloc();
 			this.courante=courante.getParent();
@@ -500,7 +500,18 @@ public class GenerateurDeCode {
 			courante=courante.getParent();
 			break;
 		case "break" :
-			// TODO
+			TableSymbolesAbs TDStemp= courante;
+			int cpt = 0;
+			while(!TDStemp.isBreakable())
+			{
+				TDStemp = TDStemp.getParent();
+				cpt++;
+			}
+			for (int i = 0; i < cpt; i++)
+			{
+				finBloc();
+			}
+			builderActuel.append("\tJEA @"+TDStemp.finBloc()+"\n");
 			// pas de parcours normalement
 			break;
 		case "SEQEXP":

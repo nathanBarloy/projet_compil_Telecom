@@ -696,7 +696,15 @@ public class AnalyseurSemantique {
 				}
 				break;
 			case "break" :
-				if(!tableParent.isBreakable()) {
+				TableSymbolesAbs TDStemp= tableParent;
+				while(TDStemp != null) {
+					if(TDStemp.isBreakable()) {
+						break;
+					}
+					TDStemp = TDStemp.getParent(); 
+				}
+				if(TDStemp == null)
+				{
 					afficherErreurSemantique(tree, "Le mot-clé 'break' ne peut être utilisé que dans un bloc 'while' ou 'for'");
 				}
 				break;
