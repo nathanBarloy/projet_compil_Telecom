@@ -327,7 +327,8 @@ public class GenerateurDeCode {
 							{
 								case "BRACBEG" :
 									builderActuel.append("\tLDW R1, HP\t//On met l'adresse du tas dans R1\n");
-									builderActuel.append("\tADQ "+tree.getChild(1).getChild(0).getChild(0).getText()+", HP\t//On augmente HP de la taille du tableau\n");
+									int tailleTab = Integer.parseInt(tree.getChild(1).getChild(0).getChild(0).getText()) * 2;
+									builderActuel.append("\tADQ "+tailleTab+", HP\t//On augmente HP de la taille du tableau\n");
 									break;
 								case "ASSIGNMENT" :
 									Variable v = (Variable)courante.get(tree.getChild(0).getText());
