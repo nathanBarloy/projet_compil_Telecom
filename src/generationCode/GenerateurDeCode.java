@@ -440,7 +440,9 @@ public class GenerateurDeCode {
 			break;
 		case "NEGATION" :
 			// pas de parcours normalement
-			// TODO
+			parcourirArbre(tree.getChild(0));
+			builderActuel.append("\tLDW R2, #0\n");
+			builderActuel.append("\tSUB R2, R1, R1\n");
 			break;
 		case "IFTHEN" :
 			this.courante.incCompteurTDS();
