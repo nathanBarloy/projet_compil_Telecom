@@ -80,7 +80,11 @@ in
   print(" ");
   printi(v.y);
   print(" ");
-  printi(v.z)
+  printi(v.z);
+  print(" ");
+  print(getchar());
+  print(" ");
+  printi(chr())
 
 
 end
