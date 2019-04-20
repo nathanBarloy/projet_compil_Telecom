@@ -84,7 +84,7 @@ in
   print(" ");
   print(getchar());
   print(" ");
-  printi(chr())
+  print(chr(5))
 
 
 end
